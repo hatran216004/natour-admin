@@ -9,6 +9,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/auth.store';
+import Button from '../../components/Button';
 
 type FormData = Pick<Schema, 'email' | 'password'>;
 const loginSchema = schema.pick(['email', 'password']);
@@ -72,12 +73,7 @@ export default function Signup() {
           register={register}
           errorMessage={errors?.password?.message}
         />
-        <button
-          type="submit"
-          className="center bg-primary rounded-xl text-center h-[45px] text-white uppercase font-bold text-sm hover:opacity-90"
-        >
-          {isPending ? <Spinner /> : 'Login'}
-        </button>
+        <Button type="submit">{isPending ? <Spinner /> : 'Login'}</Button>
         <p className="text-sm text-[#A0AEC0] text-center">
           Already have an account?{' '}
           <Link to="/login" className="text-primary hover:underline">
