@@ -1,30 +1,90 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { type Schema, schema } from '../../utils/rules';
+import { yupResolver } from '@hookform/resolvers/yup';
 import Input from '../../components/Input';
+import { authApi } from '../../services/auth.api';
+import { useMutation } from '@tanstack/react-query';
+import Spinner from '../../components/Spinner/Spinner';
+import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '../../store/auth.store';
 
-export default function Login() {
+type FormData = Pick<Schema, 'email' | 'password'>;
+const loginSchema = schema.pick(['email', 'password']);
+
+export default function Signup() {
   const navigate = useNavigate();
+  const { login } = useAuthStore();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>({
+    resolver: yupResolver(loginSchema)
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: authApi.login
+  });
+
+  async function onSubmit(data: FormData) {
+    mutate(data, {
+      onSuccess: (data) => {
+        const user = data.data?.data?.user;
+        const token = data.data?.token as string;
+        login(token, user);
+        navigate('/');
+        toast.success('Login successfully');
+      },
+      onError: (error) => {
+        const axiosError = error as AxiosError<{ message: string }>;
+        const errorMessage = axiosError.response?.data?.message as string;
+        toast.error(errorMessage);
+      }
+    });
+  }
 
   return (
-    <div className="flex-1 center">
-      <div className="max-w-[452px] text-red p-12 rounded-2xl bg-white shadow-custom">
-        <h2 className="text-lg text-[#2D3748] text-center font-bold">Login</h2>
-        <form className="flex flex-col gap-6">
-          <Input label="email" type="email" placeholder="Your email" />
-          <Input label="password" type="password" placeholder="Your password" />
-          <button
-            onClick={() => navigate('/')}
-            className="bg-primary rounded-xl text-center h-[45px] text-white uppercase font-bold text-sm hover:opacity-90"
-          >
-            login
-          </button>
-          <p className="text-sm text-[#A0AEC0] text-center">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-primary hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </form>
-      </div>
+    <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-30%] max-w-[452px] text-red p-12 rounded-2xl bg-white shadow-custom">
+      <h2 className="text-lg text-[#2D3748] text-center font-bold">Login</h2>
+      <form
+        className="flex flex-col gap-6"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
+        <Input
+          label="email"
+          type="email"
+          placeholder="Your email"
+          name="email"
+          register={register}
+          defaultValue="admin@gmail.com"
+          errorMessage={errors?.email?.message}
+        />
+        <Input
+          label="password"
+          type="password"
+          placeholder="Your password"
+          name="password"
+          defaultValue="test1234"
+          register={register}
+          errorMessage={errors?.password?.message}
+        />
+        <button
+          type="submit"
+          className="center bg-primary rounded-xl text-center h-[45px] text-white uppercase font-bold text-sm hover:opacity-90"
+        >
+          {isPending ? <Spinner /> : 'Login'}
+        </button>
+        <p className="text-sm text-[#A0AEC0] text-center">
+          Already have an account?{' '}
+          <Link to="/login" className="text-primary hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </form>
     </div>
   );
 }
