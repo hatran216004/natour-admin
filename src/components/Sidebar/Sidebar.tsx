@@ -9,11 +9,11 @@ export default function Sidebar() {
 
   return (
     <div className="col-span-3 h-full">
-      <div className="p-6 flex flex-col h-full">
+      <div className="p-6 pb-0 flex flex-col h-full">
         <div className="center gap-3">
           <img src={icons.logo_bold} alt="" />
           <h3 className="text-main font-bold text-sm uppercase">
-            natour dashboard
+            natours dashboard
           </h3>
         </div>
         <span className="h-[2px] w-full block mt-7 mb-[22px] bg-gray-200 rounded-sm"></span>

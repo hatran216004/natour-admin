@@ -6,9 +6,9 @@ export default function MainLayout() {
   return (
     <div className="bg-[#F8F9FA] h-screen">
       <div className="container mx-auto h-full">
-        <div className="pt-7 grid items-start grid-cols-12 gap-8 h-full">
+        <div className="py-7 grid items-start grid-cols-12 gap-8 h-full">
           <Sidebar />
-          <div className="col-span-9">
+          <div className="col-span-9 flex flex-col h-full">
             <Header />
             <Outlet />
           </div>

@@ -28,7 +28,7 @@ export default function Header() {
             className="w-8 h-8 rounded-full object-cover"
           />
           <button
-            className="center gap-3 cursor-pointer p-2"
+            className="center gap-3 cursor-pointer py-2 px-3 hover:opacity-60"
             onClick={() => logout()}
           >
             {isPending ? <Spinner size="sm" /> : <FiLogOut />}

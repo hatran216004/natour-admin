@@ -1,3 +1,5 @@
+import { SuccessResponseApi } from './utils.type';
+
 export type User = {
   id: string;
   name: string;
@@ -8,4 +10,15 @@ export type User = {
     name: string;
     _id: string;
   };
+};
+
+export type Users = SuccessResponseApi<{
+  users: User[];
+}>;
+
+export type UsersListConfig = {
+  page?: number;
+  limit?: number;
+  sort?: 'name' | 'email';
+  active?: boolean;
 };
