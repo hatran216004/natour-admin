@@ -22,7 +22,7 @@ export default function Sidebar() {
             const Icon = link.icon;
             if (link.href === '/profile') {
               return (
-                <>
+                <div key={link.href}>
                   <h4 className="text-base text-main uppercase font-bold my-6">
                     ACCOUNT PAGES
                   </h4>
@@ -53,12 +53,12 @@ export default function Sidebar() {
                       </span>
                     </Link>
                   </li>
-                </>
+                </div>
               );
             }
 
             return (
-              <li>
+              <li key={link.href}>
                 <Link
                   to={link.href}
                   className={`${

@@ -13,5 +13,5 @@ export const authApi = {
   login: (body: { email: string; password: string }) => {
     return http.post<AuthResponse>('/users/login', body);
   },
-  logout: () => http.post<AuthResponse>('/logout')
+  logout: () => http.post<AuthResponse>('/users/logout')
 };

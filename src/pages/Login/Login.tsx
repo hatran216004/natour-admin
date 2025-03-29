@@ -16,7 +16,7 @@ const loginSchema = schema.pick(['email', 'password']);
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { setAccessToken, setUser } = useAuthStore();
 
   const {
     register,
@@ -35,7 +35,8 @@ export default function Signup() {
       onSuccess: (data) => {
         const user = data.data?.data?.user;
         const token = data.data?.token as string;
-        login(token, user);
+        setAccessToken(token);
+        setUser(user);
         navigate('/');
         toast.success('Login successfully');
       },
