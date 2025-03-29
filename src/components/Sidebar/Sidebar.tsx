@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import icons from '../../assets/icons';
 import { links } from '../../utils/links';
 import Button from '../Button';
+import { FiLogOut } from 'react-icons/fi';
 
 export default function Sidebar() {
   const location = useLocation();
@@ -88,7 +89,12 @@ export default function Sidebar() {
             );
           })}
         </ul>
-        <Button className="w-full mt-auto">Logout</Button>
+        <Button
+          className="w-full mt-auto gap-5"
+          icon={<FiLogOut className="w-5 h-5" />}
+        >
+          Logout
+        </Button>
       </div>
     </div>
   );

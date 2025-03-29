@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Input from '../../components/Input';
 import { authApi } from '../../services/auth.api';
 import { useMutation } from '@tanstack/react-query';
-import Spinner from '../../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/auth.store';

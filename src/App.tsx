@@ -1,4 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes
+} from 'react-router-dom';
 import Login from './pages/Login';
 import LoginLayout from './layout/LoginLayout.tsx';
 import { Toaster } from 'react-hot-toast';
@@ -9,23 +15,38 @@ import Bookings from './pages/Bookings/Bookings.tsx';
 import Reviews from './pages/Reviews/Reviews.tsx';
 import Users from './pages/Users/Users.tsx';
 import UserProfile from './pages/UserProfile/UserProfile.tsx';
+import { useAuthStore } from './store/auth.store.ts';
+
+function ProtectedRoutes() {
+  const { isAuthenticated } = useAuthStore();
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+}
+
+function RejectedRoutes() {
+  const { isAuthenticated } = useAuthStore();
+  return !isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
+}
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route element={<MainLayout />}>
-            <Route index element={<Navigate replace to="dashboard" />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="tours" element={<Tours />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="reviews" element={<Reviews />} />
-            <Route path="users" element={<Users />} />
-            <Route path="profile" element={<UserProfile />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route element={<MainLayout />}>
+              <Route index element={<Navigate replace to="dashboard" />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="tours" element={<Tours />} />
+              <Route path="bookings" element={<Bookings />} />
+              <Route path="reviews" element={<Reviews />} />
+              <Route path="users" element={<Users />} />
+              <Route path="profile" element={<UserProfile />} />
+            </Route>
           </Route>
-          <Route element={<LoginLayout />}>
-            <Route path="/login" element={<Login />} />
+          <Route element={<RejectedRoutes />}>
+            <Route element={<LoginLayout />}>
+              <Route path="/login" element={<Login />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

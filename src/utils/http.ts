@@ -18,7 +18,7 @@ class Http {
 
   constructor() {
     this.instance = axios.create({
-      baseURL: 'https://natours-api-chi.vercel.app/api/v2',
+      baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/v2`,
       timeout: 10000,
       headers: { 'Content-Type': 'application/json' },
       withCredentials: true
@@ -37,7 +37,7 @@ class Http {
         if (config.headers && token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-        resolve(this.instance(config));
+        resolve(this.instance(config)); // gửi lại request ban đầu với token mới và hoàn thành Promise
       }
     });
     this.failedQueue = [];
