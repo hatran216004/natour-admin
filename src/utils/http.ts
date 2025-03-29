@@ -74,34 +74,36 @@ class Http {
               });
             });
           }
-        }
-        originalConfig._retry = true;
-        this.isRefreshing = true;
 
-        try {
-          const res = await this.instance.patch<{
-            status: string;
-            token: string;
-          }>('/users/refresh-token');
-          const newAccessToken = res.data.token;
-          useAuthStore.getState().setAccessToken(newAccessToken);
+          originalConfig._retry = true;
+          this.isRefreshing = true;
 
-          // request gốc (originalRequest) đã bị chặn lại trước khi interceptor request có cơ hội chạy => cần cập nhật header của originalConfig
-          originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;
-          this.processQueue(null, newAccessToken);
-          // Xử lý các request trong hàng đợi
-        } catch (refreshError) {
-          // Xử lý khi refresh token thất bại
-          // Đăng xuất người dùng khi refresh token không hợp lệ
-          const { setAccessToken, setUser } = useAuthStore.getState();
-          setUser(null);
-          setAccessToken(null);
-          await authApi.logout();
-          this.processQueue(refreshError as AxiosError, null);
-          return Promise.reject(refreshError);
-        } finally {
-          this.isRefreshing = false;
+          try {
+            const res = await this.instance.patch<{
+              status: string;
+              token: string;
+            }>('/users/refresh-token');
+            const newAccessToken = res.data.token;
+            useAuthStore.getState().setAccessToken(newAccessToken);
+
+            // request gốc (originalRequest) đã bị chặn lại trước khi interceptor request có cơ hội chạy => cần cập nhật header của originalConfig
+            originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;
+            this.processQueue(null, newAccessToken);
+            // Xử lý các request trong hàng đợi
+          } catch (refreshError) {
+            // Xử lý khi refresh token thất bại
+            // Đăng xuất người dùng khi refresh token không hợp lệ
+            const { setAccessToken, setUser } = useAuthStore.getState();
+            setUser(null);
+            setAccessToken(null);
+            await authApi.logout();
+            this.processQueue(refreshError as AxiosError, null);
+            return Promise.reject(refreshError);
+          } finally {
+            this.isRefreshing = false;
+          }
         }
+        return Promise.reject(error);
       }
     );
   }
