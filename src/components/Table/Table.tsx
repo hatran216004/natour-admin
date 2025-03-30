@@ -6,7 +6,7 @@ type PropsType = {
 
 export default function Table({ render = [] }: PropsType) {
   return (
-    <table className="mt-3 w-full text-sm rtl:text-righ">
+    <table className="mt-3 w-full text-sm">
       <thead className="text-xs text-[#A0AEC0] uppercase bg-gray-50">
         <tr>
           <th scope="col" className="px-6 py-3 text-center">

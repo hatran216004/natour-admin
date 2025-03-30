@@ -1,5 +1,5 @@
 import { omitBy, isUndefined } from 'lodash';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { PiDotsThreeVerticalBold } from 'react-icons/pi';
 import { userApi } from '../../services/user.api';
 import Table from '../../components/Table';
@@ -22,13 +22,14 @@ export default function Users() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['users', queryConfig],
-    queryFn: () => userApi.getAllUsers(queryConfig)
+    queryFn: () => userApi.getAllUsers(queryConfig),
+    placeholderData: keepPreviousData
   });
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto pt-7 pb-5 px-5 bg-white rounded-2xl shadow-custom">
       <h3 className="text-lg text-main capitalize font-bold">manage users</h3>
-      <div className="relative overflow-y-auto"></div>
+      <div className="relative"></div>
       {isLoading && <p>Loading...</p>}
       {!isLoading && (
         <Table
@@ -65,8 +66,10 @@ export default function Users() {
                 <td className="px-6 py-4 text-center capitalize text-main font-bold">
                   {user.role?.name}
                 </td>
-                <td className="px-6 py-4 center">
-                  <PiDotsThreeVerticalBold />
+                <td className="px-6 py-4">
+                  <div className="center p-3 cursor-pointer">
+                    <PiDotsThreeVerticalBold />
+                  </div>
                 </td>
               </tr>
             );
