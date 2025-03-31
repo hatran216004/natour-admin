@@ -1,4 +1,4 @@
-export interface SuccessResponseApi<Data> {
+export type SuccessResponseApi<Data> = {
   status: string;
   data: Data;
   token?: string;
@@ -6,9 +6,14 @@ export interface SuccessResponseApi<Data> {
     total: number;
     totalPages: number;
   };
-}
+};
 
-export interface ErrorResponseApi {
+export type ErrorResponseApi = {
   status: string;
   message: string;
-}
+};
+
+export type FilterOptsType = {
+  label: string;
+  value: string;
+};

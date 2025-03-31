@@ -4,15 +4,17 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query';
-import { PiDotsThreeVerticalBold } from 'react-icons/pi';
 import { userApi } from '../../services/user.api';
-import Table from '../../components/Table';
 import { UsersListConfig } from '../../types/user.type';
 import useQueryParms from '../../hooks/useQueryParms';
 import Pagination from '../../components/Pagination';
 import Spinner from '../../components/Spinner';
 import Main from '../../components/Main';
 import useUrl from '../../hooks/useUrl';
+import Table from '../../components/Table';
+import UserRow from '../../components/UserRow';
+import Heading from '../../components/Heading';
+import UserOperator from '../../components/UserOperator';
 
 const PAGE_LIMIT = 6;
 
@@ -27,17 +29,20 @@ export default function Users() {
     {
       page: Number(queryParams.page) || 1,
       limit: Number(queryParams.limit) || PAGE_LIMIT,
-      sort: queryParams.sort
+      sort: queryParams.sort,
+      role: queryParams.role,
+      active: queryParams.active
     },
     isUndefined
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ['users', queryConfig],
     queryFn: () => userApi.getAllUsers(queryConfig),
     placeholderData: keepPreviousData
   });
 
+  const users = data?.data.data.users || [];
   const totalPages = data?.data.pagination?.totalPages as number;
   const page = Number(currentValue);
 
@@ -56,59 +61,42 @@ export default function Users() {
   }
 
   return (
-    <Main title="manage users">
-      {isLoading && (
+    <Main>
+      <div className="flex items-center justify-between">
+        <Heading heading="manage users" />
+        <UserOperator />
+      </div>
+      {isPending && (
         <div className="h-full center">
           <Spinner size="lg" />
         </div>
       )}
-      {!isLoading && (
+      {!isPending && (
         <>
-          <Table
-            render={data?.data.data.users.map((user) => {
-              return (
-                <tr className="bg-white border-b border-gray-200" key={user.id}>
-                  <td
-                    scope="row"
-                    className="px-6 py-4 flex gap-[14px] items-center"
-                  >
-                    <img
-                      className="w-10 h-10 object-cover rounded-xl"
-                      src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${
-                        user.photo
-                      }`}
-                      alt={user.name}
-                    />
-                    <div>
-                      <h2 className="text-main text-sm font-bold capitalize">
-                        {user.name}
-                      </h2>
-                      <h2 className="text-[#718096] text-sm">{user.email}</h2>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      className={`px-4 py-1 text-center ${
-                        user.active ? 'bg-[#48BB78]' : 'bg-[#CBD5E0]'
-                      } rounded-xl capitalize text-white font-bold`}
-                    >
-                      {user.active ? 'active' : 'inactive'}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 text-center capitalize text-main font-bold">
-                    {user.role?.name}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="center p-3 cursor-pointer">
-                      <PiDotsThreeVerticalBold />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          />
+          <Table>
+            <Table.Header>
+              <tr>
+                <th scope="col" className="px-6 py-3 text-center">
+                  user
+                </th>
+                <th scope="col" className="px-6 py-3 text-center">
+                  status
+                </th>
+                <th scope="col" className="px-6 py-3 text-center">
+                  role
+                </th>
+                <th scope="col" className="px-6 py-3 text-center">
+                  actions
+                </th>
+              </tr>
+            </Table.Header>
+            <Table.Body
+              data={users}
+              render={(user) => <UserRow user={user} key={user.id} />}
+            />
+          </Table>
           <Pagination
-            className="ml-auto mt-auto mb-[-10px]"
+            className="ml-auto mt-auto mb-[-12px]"
             totalPages={totalPages}
           />
         </>

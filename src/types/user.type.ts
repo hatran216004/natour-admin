@@ -21,4 +21,5 @@ export type UsersListConfig = {
   limit?: number;
   sort?: 'name' | 'email';
   active?: boolean;
+  role?: string;
 };

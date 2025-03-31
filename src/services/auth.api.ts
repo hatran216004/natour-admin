@@ -1,4 +1,4 @@
-import { AuthResponse } from '../types/auth.type';
+import { AuthResponse, RolesResponse } from '../types/auth.type';
 import http from '../utils/http';
 
 export const authApi = {
@@ -13,5 +13,6 @@ export const authApi = {
   login: (body: { email: string; password: string }) => {
     return http.post<AuthResponse>('/users/login', body);
   },
-  logout: () => http.post<AuthResponse>('/users/logout')
+  logout: () => http.post<AuthResponse>('/users/logout'),
+  getAllRoles: () => http.get<RolesResponse>('/roles')
 };

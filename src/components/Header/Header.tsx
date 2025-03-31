@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import Search from '../Search';
 import { FiLogOut } from 'react-icons/fi';
 import { useAuthStore } from '../../store/auth.store';
-import useLogout from '../../featurs/auth/useLogout';
+import useLogout from '../../features/auth/useLogout';
 import Spinner from '../Spinner';
 
 export default function Header() {

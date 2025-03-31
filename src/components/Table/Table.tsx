@@ -1,29 +1,40 @@
-import { JSX } from 'react';
+import { User } from '../../types/user.type';
 
-type PropsType = {
-  render?: (JSX.Element | null)[];
+type BodyProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+  render: (user: User) => React.ReactNode;
 };
 
-export default function Table({ render = [] }: PropsType) {
+type Props = { children: React.ReactNode };
+
+export default function Table({ children }: Props) {
+  return <table className="mt-3 w-full text-sm">{children}</table>;
+}
+
+function Header({ children }: Props) {
   return (
-    <table className="mt-3 w-full text-sm">
-      <thead className="text-xs text-[#A0AEC0] uppercase bg-gray-50">
-        <tr>
-          <th scope="col" className="px-6 py-3 text-center">
-            user
-          </th>
-          <th scope="col" className="px-6 py-3 text-center">
-            status
-          </th>
-          <th scope="col" className="px-6 py-3 text-center">
-            role
-          </th>
-          <th scope="col" className="px-6 py-3 text-center">
-            actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>{render}</tbody>
-    </table>
+    <thead className="text-xs text-[#A0AEC0] uppercase bg-gray-50">
+      {children}
+    </thead>
   );
 }
+
+function Body({ data, render }: BodyProps) {
+  if (!data.length)
+    return (
+      <tbody className="text-3xl text-gray-400">
+        <tr>
+          <td>
+            <p className="uppercase font-semibold absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+              Data not found
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    );
+  return <tbody>{data.map(render)}</tbody>;
+}
+
+Table.Header = Header;
+Table.Body = Body;

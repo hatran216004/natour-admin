@@ -58,6 +58,7 @@ class Http {
     this.instance.interceptors.response.use(
       (response) => response, // Trả về response nếu không có lỗi
       async (error: AxiosError) => {
+        console.log(error);
         // Xử lý khi có lỗi
         const originalConfig = error.config as InternalAxiosRequestConfig & {
           _retry: boolean;
