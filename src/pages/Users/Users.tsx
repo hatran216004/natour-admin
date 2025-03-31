@@ -36,7 +36,7 @@ export default function Users() {
     isUndefined
   );
 
-  const { data, isPending } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['users', queryConfig],
     queryFn: () => userApi.getAllUsers(queryConfig),
     placeholderData: keepPreviousData
@@ -66,12 +66,12 @@ export default function Users() {
         <Heading heading="manage users" />
         <UserOperator />
       </div>
-      {isPending && (
+      {isLoading && (
         <div className="h-full center">
           <Spinner size="lg" />
         </div>
       )}
-      {!isPending && (
+      {!isLoading && (
         <>
           <Table>
             <Table.Header>

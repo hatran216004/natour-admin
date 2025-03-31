@@ -1,5 +1,12 @@
 import { PiDotsThreeVerticalBold } from 'react-icons/pi';
 import { User } from '../../types/user.type';
+import Popover from '../Popover/Popover';
+import MenuItem from '../MenuItem';
+import { MdDelete } from 'react-icons/md';
+import { LuPencilLine } from 'react-icons/lu';
+import Menu from '../Menu/';
+import Modal from '../Modal';
+import DeleteUserContent from '../../pages/Users/components/DeleteUserContent';
 
 export default function UserRow({ user }: { user: User }) {
   return (
@@ -30,9 +37,28 @@ export default function UserRow({ user }: { user: User }) {
         {user.role?.name}
       </td>
       <td className="px-6 py-4">
-        <div className="center p-3 cursor-pointer">
-          <PiDotsThreeVerticalBold />
-        </div>
+        <Modal>
+          <Popover
+            className="center w-[38px] h-[30px] mx-auto hover:bg-gray-200 rounded-full"
+            placement="bottom-center"
+            renderPopover={
+              <Menu>
+                <Modal.Open openWindowName="delete">
+                  <MenuItem text="delete" icon={<MdDelete />} />
+                </Modal.Open>
+                <MenuItem text="update" isLastItem icon={<LuPencilLine />} />
+              </Menu>
+            }
+          >
+            <button className="center px-3 py-2 cursor-pointer">
+              <PiDotsThreeVerticalBold />
+            </button>
+          </Popover>
+
+          <Modal.Window name="delete">
+            <DeleteUserContent />
+          </Modal.Window>
+        </Modal>
       </td>
     </tr>
   );
