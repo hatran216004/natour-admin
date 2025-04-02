@@ -26,28 +26,33 @@ export default function UpdateUserContent({
   onCloseModal?: () => void;
 }) {
   const {
+    reset,
     register,
     handleSubmit,
-    formState: { errors },
-    reset
+    formState: { errors }
   } = useForm<FormData>({
     resolver: yupResolver(updateUserSchema),
     defaultValues: {
       email: user.email,
-      name: user.email,
-      role: user.role?.name
+      name: user.name,
+      role: user.role?._id
     }
   });
 
   const queryClient = useQueryClient();
   const { mutate: updateUser, isPending } = useMutation({
     mutationFn: userApi.updateUser,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const user = data.data.data.user;
       toast.success('User updated succesfully');
       queryClient.invalidateQueries({
         queryKey: ['users']
       });
-      reset();
+      reset({
+        email: user.email,
+        name: user.name,
+        role: user.role?._id
+      });
       onCloseModal?.();
     },
     onError: (err) => {
@@ -59,8 +64,10 @@ export default function UpdateUserContent({
 
   const onSubmit = useCallback(
     (data: FormData) => {
-      console.log({ userId: user._id, data });
-      //   updateUser({ userId, body: { ...data, role: data.role as string } });
+      updateUser({
+        userId: user._id,
+        body: { ...data, role: data.role as string }
+      });
     },
     [updateUser, user]
   );
@@ -68,7 +75,7 @@ export default function UpdateUserContent({
   return (
     <div className="relative bg-white rounded-lg shadow-sm">
       <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900">Update new user</h3>
+        <h3 className="text-xl font-semibold text-gray-900">Update user</h3>
         <button
           title="Close"
           onClick={() => onCloseModal?.()}

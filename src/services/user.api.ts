@@ -21,6 +21,6 @@ export const userApi = {
     userId: string;
     body: { email: string; name: string; role: string };
   }) => {
-    return http.patch<UserResponse>(`/users${userId}`, body);
+    return http.patch<UserResponse>(`/users/${userId}`, body);
   }
 };
