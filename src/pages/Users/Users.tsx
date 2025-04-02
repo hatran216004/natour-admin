@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { omitBy, isUndefined } from 'lodash';
 import {
   keepPreviousData,
@@ -15,10 +16,16 @@ import Table from '../../components/Table';
 import UserRow from '../../components/UserRow';
 import Heading from '../../components/Heading';
 import UserOperator from '../../components/UserOperator';
+import Button from '../../components/Button';
+import Modal from '../../components/Modal';
+import CreateUserContent from './components/CreateUserContent';
+import { FaPlusCircle } from 'react-icons/fa';
+import { Role } from '../../types/role.type';
 
 const PAGE_LIMIT = 6;
 
 export default function Users() {
+  const [roles, setRoles] = useState<Role[]>([]);
   const { currentValue } = useUrl<number>({
     field: 'page',
     defaultValue: 1
@@ -63,8 +70,24 @@ export default function Users() {
   return (
     <Main>
       <div className="flex items-center justify-between">
-        <Heading heading="manage users" />
-        <UserOperator />
+        <div className="flex items-center gap-6">
+          <Heading heading="manage users" />
+          <Modal>
+            <Modal.Open openWindowName="create-user">
+              <Button
+                variant="md"
+                icon={<FaPlusCircle size={18} />}
+                className="gap-3"
+              >
+                create new user
+              </Button>
+            </Modal.Open>
+            <Modal.Window name="create-user">
+              <CreateUserContent roles={roles} />
+            </Modal.Window>
+          </Modal>
+        </div>
+        <UserOperator setRoles={setRoles} />
       </div>
       {isLoading && (
         <div className="h-full center">

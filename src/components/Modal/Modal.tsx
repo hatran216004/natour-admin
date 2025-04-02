@@ -61,7 +61,6 @@ function Window({
 
   return createPortal(
     <div
-      id="popup-modal"
       tabIndex={-1}
       className={classNames(
         'bg-[#00000080] overflow-y-auto overflow-x-hidden fixed inset-0 z-50 w-full max-h-full',
@@ -70,7 +69,7 @@ function Window({
         }
       )}
     >
-      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] p-4 w-full max-w-md max-h-full">
+      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] p-4 max-h-full">
         <div className="relative bg-white rounded-lg shadow-sm ">
           <button
             onClick={close}

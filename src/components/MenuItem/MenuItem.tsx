@@ -15,6 +15,7 @@ export default function MenuItem({
   onClick
 }: MenuItemProps) {
   function handleClick() {
+    // e.stopPropagation(); // không đóng menu khi click menu item
     onClick?.();
   }
 

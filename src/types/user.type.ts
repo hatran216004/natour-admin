@@ -12,6 +12,10 @@ export type User = {
   };
 };
 
+export type UserResponse = SuccessResponseApi<{
+  user: User;
+}>;
+
 export type Users = SuccessResponseApi<{
   users: User[];
 }>;

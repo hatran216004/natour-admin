@@ -5,7 +5,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Input from '../../components/Input';
 import { authApi } from '../../services/auth.api';
 import { useMutation } from '@tanstack/react-query';
-import Spinner from '../../components/Spinner';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/auth.store';
@@ -74,7 +73,9 @@ export default function Signup() {
           register={register}
           errorMessage={errors?.password?.message}
         />
-        <Button type="submit">{isPending ? <Spinner /> : 'Login'}</Button>
+        <Button type="submit" isLoading={isPending}>
+          Login
+        </Button>
         <p className="text-sm text-[#A0AEC0] text-center">
           Already have an account?{' '}
           <Link to="/login" className="text-primary hover:underline">

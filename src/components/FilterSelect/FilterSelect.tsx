@@ -1,11 +1,11 @@
 import useUrl from '../../hooks/useUrl';
 import { useSearchParams } from 'react-router-dom';
-import { FilterOptsType } from '../../types/utils.type';
+import { SelectOptsType } from '../../types/utils.type';
 
 export type FilterSelectProps = {
   label: string;
   field: string;
-  options: FilterOptsType[];
+  options: SelectOptsType[];
 };
 
 export default function FilterSelect({
@@ -35,7 +35,6 @@ export default function FilterSelect({
       <select
         value={currentValue}
         onChange={handleOnChange}
-        id="users"
         className="bg-gray-50 border border-gray-300 text-main text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1.5 focus:outline-none"
       >
         <option key="all" className="capitalize" value="all">

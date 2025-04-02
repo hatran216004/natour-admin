@@ -13,7 +13,7 @@ export type ErrorResponseApi = {
   message: string;
 };
 
-export type FilterOptsType = {
+export type SelectOptsType = {
   label: string;
   value: string;
 };
