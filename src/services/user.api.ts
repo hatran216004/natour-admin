@@ -1,19 +1,22 @@
-import { AuthResponse } from '../types/auth.type';
-import { UserResponse, Users, UsersListConfig } from '../types/user.type';
+import { User, UsersList, UsersListConfig } from '../types/user.type';
+import { SuccessResponseApi } from '../types/utils.type';
 import http from '../utils/http';
 
+type BodyConfig = {
+  email: string;
+  password: string;
+  name: string;
+  passwordConfirm: string;
+  role: string;
+};
+
 export const userApi = {
-  getMe: () => http.get<AuthResponse>('/users/me'),
-  getAllUsers: (queryConfig: UsersListConfig) =>
-    http.get<Users>('/users', { params: queryConfig }),
+  getMe: () => http.get<SuccessResponseApi<{ user: User }>>('/users/me'),
+  getAllUsers: (params: UsersListConfig) =>
+    http.get<SuccessResponseApi<UsersList>>('/users', { params }),
   deleteUser: (id: string) => http.delete(`/users/${id}`),
-  createNewUser: (body: {
-    email: string;
-    password: string;
-    name: string;
-    passwordConfirm: string;
-    role: string;
-  }) => http.post<UserResponse>('/users', body),
+  createNewUser: (body: BodyConfig) =>
+    http.post<SuccessResponseApi<{ user: User }>>('/users', body),
   updateUser: ({
     userId,
     body
@@ -21,6 +24,9 @@ export const userApi = {
     userId: string;
     body: { email: string; name: string; role: string };
   }) => {
-    return http.patch<UserResponse>(`/users/${userId}`, body);
+    return http.patch<SuccessResponseApi<{ user: User }>>(
+      `/users/${userId}`,
+      body
+    );
   }
 };

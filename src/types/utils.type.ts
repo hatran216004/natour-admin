@@ -1,11 +1,12 @@
 export type SuccessResponseApi<Data> = {
   status: string;
   data: Data;
+};
+
+export type AuthSuccessResponseApi<Data> = {
+  status: string;
+  data: Data;
   token?: string;
-  pagination?: {
-    total: number;
-    totalPages: number;
-  };
 };
 
 export type ErrorResponseApi = {

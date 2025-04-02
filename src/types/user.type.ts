@@ -1,5 +1,3 @@
-import { SuccessResponseApi } from './utils.type';
-
 export type User = {
   _id: string;
   name: string;
@@ -12,13 +10,13 @@ export type User = {
   };
 };
 
-export type UserResponse = SuccessResponseApi<{
-  user: User;
-}>;
-
-export type Users = SuccessResponseApi<{
+export type UsersList = {
   users: User[];
-}>;
+  pagination: {
+    total: number;
+    totalPages: number;
+  };
+};
 
 export type UsersListConfig = {
   page?: number;

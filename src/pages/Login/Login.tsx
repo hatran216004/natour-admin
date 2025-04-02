@@ -32,7 +32,7 @@ export default function Signup() {
   function onSubmit(data: FormData) {
     mutate(data, {
       onSuccess: (data) => {
-        const user = data.data?.data?.user;
+        const user = data.data?.data.user;
         const token = data.data?.token as string;
         setAccessToken(token);
         setUser(user);

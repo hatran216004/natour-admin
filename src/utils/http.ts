@@ -65,7 +65,7 @@ class Http {
         };
         // Kiểm tra nếu lỗi 401 và chưa thử refresh
         if (error.response?.status === 401 && !originalConfig._retry) {
-          // Nếuđang refresh token, request bị lỗi sẽ được đẩy vào failedQueue
+          // Nếu đang refresh token, request bị lỗi sẽ được đẩy vào failedQueue
           if (this.isRefreshing) {
             return new Promise((resolve, reject) => {
               this.failedQueue.push({

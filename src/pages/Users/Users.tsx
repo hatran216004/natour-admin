@@ -58,7 +58,7 @@ export default function Users() {
   });
 
   const users = data?.data.data.users || [];
-  const totalPages = data?.data.pagination?.totalPages as number;
+  const totalPages = data?.data.data.pagination?.totalPages as number;
   const page = Number(currentValue);
 
   if (page < totalPages) {
