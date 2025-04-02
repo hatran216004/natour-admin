@@ -8,49 +8,42 @@ import { userApi } from '../../../services/user.api';
 import Select from '../../../components/Select';
 import Row from '../../../components/Row';
 import toast from 'react-hot-toast';
-import { useSearchParams } from 'react-router-dom';
 import { useCallback } from 'react';
 import { AxiosError } from 'axios';
 import { SelectOptsType } from '../../../types/utils.type';
+import { User } from '../../../types/user.type';
 
-type FormData = Pick<
-  Schema,
-  'email' | 'password' | 'password_confirm' | 'name' | 'role'
->;
-const createUserShema = schema.pick([
-  'email',
-  'password',
-  'password_confirm',
-  'name',
-  'role'
-]);
+type FormData = Pick<Schema, 'email' | 'name' | 'role'>;
+const updateUserSchema = schema.pick(['email', 'name', 'role']);
 
-export default function CreateUserContent({
+export default function UpdateUserContent({
+  user,
   rolesOpts,
   onCloseModal
 }: {
+  user: User;
   rolesOpts: SelectOptsType[];
   onCloseModal?: () => void;
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset
   } = useForm<FormData>({
-    resolver: yupResolver(createUserShema)
+    resolver: yupResolver(updateUserSchema),
+    defaultValues: {
+      email: user.email,
+      name: user.email,
+      role: user.role?.name
+    }
   });
 
   const queryClient = useQueryClient();
-  const { mutate: createNewUser, isPending } = useMutation({
-    mutationFn: userApi.createNewUser,
+  const { mutate: updateUser, isPending } = useMutation({
+    mutationFn: userApi.updateUser,
     onSuccess: () => {
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.set('page', '1');
-      setSearchParams(newSearchParams);
-
-      toast.success('User created succesfully');
+      toast.success('User updated succesfully');
       queryClient.invalidateQueries({
         queryKey: ['users']
       });
@@ -63,24 +56,19 @@ export default function CreateUserContent({
       toast.error(errorMessage || 'An error occurred');
     }
   });
+
   const onSubmit = useCallback(
     (data: FormData) => {
-      const { email, name, password, password_confirm, role } = data;
-      createNewUser({
-        email,
-        name,
-        password,
-        passwordConfirm: password_confirm,
-        role: role ? role : rolesOpts[0].value
-      });
+      console.log({ userId: user._id, data });
+      //   updateUser({ userId, body: { ...data, role: data.role as string } });
     },
-    [createNewUser, rolesOpts]
+    [updateUser, user]
   );
 
   return (
     <div className="relative bg-white rounded-lg shadow-sm">
       <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900">Create new user</h3>
+        <h3 className="text-xl font-semibold text-gray-900">Update new user</h3>
         <button
           title="Close"
           onClick={() => onCloseModal?.()}
@@ -127,30 +115,6 @@ export default function CreateUserContent({
               className="rounded-md min-w-64"
               register={register}
               errorMessage={errors?.email?.message}
-            />
-          </Row>
-          <Row>
-            <Input
-              label="password"
-              name="password"
-              variant="md"
-              type="password"
-              placeholder="Enter password..."
-              roundedFull={false}
-              className="rounded-md min-w-64"
-              register={register}
-              errorMessage={errors?.password?.message}
-            />
-            <Input
-              label="password confirm"
-              name="password_confirm"
-              variant="md"
-              type="password"
-              placeholder="Enter password confirm..."
-              roundedFull={false}
-              className="rounded-md min-w-64"
-              register={register}
-              errorMessage={errors?.password_confirm?.message}
             />
           </Row>
           <Row>

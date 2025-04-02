@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { omitBy, isUndefined } from 'lodash';
 import {
   keepPreviousData,
@@ -20,14 +20,15 @@ import Button from '../../components/Button';
 import Modal from '../../components/Modal';
 import CreateUserContent from './components/CreateUserContent';
 import { FaPlusCircle } from 'react-icons/fa';
-import { Role } from '../../types/role.type';
 import { useAuthStore } from '../../store/auth.store';
+import { authApi } from '../../services/auth.api';
+import { SelectOptsType } from '../../types/utils.type';
 
 const PAGE_LIMIT = 6;
 
 export default function Users() {
   const { user: userLoggined } = useAuthStore();
-  const [roles, setRoles] = useState<Role[]>([]);
+
   const { currentValue } = useUrl<number>({
     field: 'page',
     defaultValue: 1
@@ -44,6 +45,11 @@ export default function Users() {
     },
     isUndefined
   );
+
+  const { data: rolesRes } = useQuery({
+    queryKey: ['roles'],
+    queryFn: authApi.getAllRoles
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ['users', queryConfig],
@@ -69,6 +75,15 @@ export default function Users() {
     });
   }
 
+  const rolesOpts: SelectOptsType[] = useMemo(
+    () =>
+      rolesRes?.data?.data?.roles.map((role) => ({
+        label: role.name,
+        value: role._id
+      })) || [],
+    [rolesRes?.data?.data?.roles]
+  );
+
   return (
     <Main>
       <div className="flex items-center justify-between">
@@ -85,11 +100,11 @@ export default function Users() {
               </Button>
             </Modal.Open>
             <Modal.Window name="create-user">
-              <CreateUserContent roles={roles} />
+              <CreateUserContent rolesOpts={rolesOpts} />
             </Modal.Window>
           </Modal>
         </div>
-        <UserOperator setRoles={setRoles} />
+        <UserOperator rolesOpts={rolesOpts} />
       </div>
       {isLoading && (
         <div className="h-full center">
@@ -119,7 +134,9 @@ export default function Users() {
               data={users}
               render={(user) => {
                 if (user._id === userLoggined?._id) return null;
-                return <UserRow user={user} key={user._id} />;
+                return (
+                  <UserRow user={user} key={user._id} rolesOpts={rolesOpts} />
+                );
               }}
             />
           </Table>

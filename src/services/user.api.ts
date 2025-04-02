@@ -13,5 +13,14 @@ export const userApi = {
     name: string;
     passwordConfirm: string;
     role: string;
-  }) => http.post<UserResponse>('/users', body)
+  }) => http.post<UserResponse>('/users', body),
+  updateUser: ({
+    userId,
+    body
+  }: {
+    userId: string;
+    body: { email: string; name: string; role: string };
+  }) => {
+    return http.patch<UserResponse>(`/users${userId}`, body);
+  }
 };

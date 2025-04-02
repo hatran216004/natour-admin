@@ -53,20 +53,22 @@ export default function DeleteUserContent({
       <h3 className="mb-5 text-lg font-normal text-gray-500">
         Are you sure you want to delete this user?
       </h3>
-      <button
-        onClick={handleDeleteUser}
-        disabled={isPending}
-        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
-      >
-        {isPending ? <Spinner /> : "Yes, I'm sure"}
-      </button>
-      <button
-        disabled={isPending}
-        onClick={() => onCloseModal?.()}
-        className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
-      >
-        No, cancel
-      </button>
+      <div className="flex items-center justify-center">
+        <button
+          onClick={handleDeleteUser}
+          disabled={isPending}
+          className="min-w-[108px] h-[42px] text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm flex items-center justify-center"
+        >
+          {isPending ? <Spinner size="md" /> : "Yes, I'm sure"}
+        </button>
+        <button
+          disabled={isPending}
+          onClick={() => onCloseModal?.()}
+          className="min-w-[108px] h-[42px] ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
+        >
+          No, cancel
+        </button>
+      </div>
     </div>
   );
 }

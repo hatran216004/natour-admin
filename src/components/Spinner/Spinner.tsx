@@ -1,6 +1,10 @@
 import classNames from 'classNames';
 
-export default function Spinner({ size = 'lg' }: { size?: 'lg' | 'sm' }) {
+export default function Spinner({
+  size = 'lg'
+}: {
+  size?: 'lg' | 'sm' | 'md';
+}) {
   return (
     <div role="status">
       <svg
@@ -9,7 +13,8 @@ export default function Spinner({ size = 'lg' }: { size?: 'lg' | 'sm' }) {
           'text-gray-200 animate-spin dark:text-gray-600 fill-primary',
           {
             'w-8 h-8': size === 'lg',
-            'w-3 h-3': size === 'sm'
+            'w-3 h-3': size === 'sm',
+            'w-5 h-5': size === 'md'
           }
         )}
         viewBox="0 0 100 101"

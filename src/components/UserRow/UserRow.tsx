@@ -7,8 +7,17 @@ import { LuPencilLine } from 'react-icons/lu';
 import Menu from '../Menu/';
 import Modal from '../Modal';
 import DeleteUserContent from '../../pages/Users/components/DeleteUserContent';
+import UpdateUserContent from '../../pages/Users/components/UpdateUserContent';
+import { SelectOptsType } from '../../types/utils.type';
+import classNames from 'classNames';
 
-export default function UserRow({ user }: { user: User }) {
+export default function UserRow({
+  user,
+  rolesOpts
+}: {
+  rolesOpts: SelectOptsType[];
+  user: User;
+}) {
   return (
     <tr className="bg-white border-b border-gray-200" key={user._id}>
       <td scope="row" className="px-6 py-4 flex gap-[14px] items-center">
@@ -26,9 +35,13 @@ export default function UserRow({ user }: { user: User }) {
       </td>
       <td className="px-6 py-4 text-center">
         <button
-          className={`px-4 py-1 text-center ${
-            user.active ? 'bg-[#48BB78]' : 'bg-[#CBD5E0]'
-          } rounded-xl capitalize text-white font-bold`}
+          className={classNames(
+            'px-4 py-1 text-center rounded-xl capitalize text-white font-bold',
+            {
+              'bg-[#48BB78]': user.active,
+              'bg-[#CBD5E0]': !user.active
+            }
+          )}
         >
           {user.active ? 'active' : 'inactive'}
         </button>
@@ -46,7 +59,9 @@ export default function UserRow({ user }: { user: User }) {
                 <Modal.Open openWindowName="delete">
                   <MenuItem text="delete" icon={<MdDelete />} />
                 </Modal.Open>
-                <MenuItem text="update" isLastItem icon={<LuPencilLine />} />
+                <Modal.Open openWindowName="update">
+                  <MenuItem text="update" isLastItem icon={<LuPencilLine />} />
+                </Modal.Open>
               </Menu>
             }
           >
@@ -55,6 +70,9 @@ export default function UserRow({ user }: { user: User }) {
             </button>
           </Popover>
 
+          <Modal.Window name="update">
+            <UpdateUserContent user={user} rolesOpts={rolesOpts} />
+          </Modal.Window>
           <Modal.Window name="delete">
             <DeleteUserContent userId={user._id} name={user.name} />
           </Modal.Window>
