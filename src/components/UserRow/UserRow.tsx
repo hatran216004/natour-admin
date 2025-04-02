@@ -10,7 +10,7 @@ import DeleteUserContent from '../../pages/Users/components/DeleteUserContent';
 
 export default function UserRow({ user }: { user: User }) {
   return (
-    <tr className="bg-white border-b border-gray-200" key={user.id}>
+    <tr className="bg-white border-b border-gray-200" key={user._id}>
       <td scope="row" className="px-6 py-4 flex gap-[14px] items-center">
         <img
           className="w-10 h-10 object-cover rounded-xl"
@@ -56,7 +56,7 @@ export default function UserRow({ user }: { user: User }) {
           </Popover>
 
           <Modal.Window name="delete">
-            <DeleteUserContent />
+            <DeleteUserContent userId={user._id} name={user.name} />
           </Modal.Window>
         </Modal>
       </td>

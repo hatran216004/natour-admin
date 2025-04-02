@@ -12,5 +12,6 @@ export const userApi = {
     password: string;
     name: string;
     passwordConfirm: string;
+    role: string;
   }) => http.post<UserResponse>('/users', body)
 };

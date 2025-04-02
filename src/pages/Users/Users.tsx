@@ -21,10 +21,12 @@ import Modal from '../../components/Modal';
 import CreateUserContent from './components/CreateUserContent';
 import { FaPlusCircle } from 'react-icons/fa';
 import { Role } from '../../types/role.type';
+import { useAuthStore } from '../../store/auth.store';
 
 const PAGE_LIMIT = 6;
 
 export default function Users() {
+  const { user: userLoggined } = useAuthStore();
   const [roles, setRoles] = useState<Role[]>([]);
   const { currentValue } = useUrl<number>({
     field: 'page',
@@ -115,7 +117,10 @@ export default function Users() {
             </Table.Header>
             <Table.Body
               data={users}
-              render={(user) => <UserRow user={user} key={user.id} />}
+              render={(user) => {
+                if (user._id === userLoggined?._id) return null;
+                return <UserRow user={user} key={user._id} />;
+              }}
             />
           </Table>
           <Pagination

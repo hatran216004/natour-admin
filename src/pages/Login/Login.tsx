@@ -29,7 +29,7 @@ export default function Signup() {
     mutationFn: authApi.login
   });
 
-  async function onSubmit(data: FormData) {
+  function onSubmit(data: FormData) {
     mutate(data, {
       onSuccess: (data) => {
         const user = data.data?.data?.user;

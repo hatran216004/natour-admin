@@ -1,10 +1,36 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { userApi } from '../../../services/user.api';
+import toast from 'react-hot-toast';
+import Spinner from '../../../components/Spinner';
+
 export default function DeleteUserContent({
+  userId,
+  name,
   onCloseModal
 }: {
+  userId: string;
+  name: string;
   onCloseModal?: () => void;
 }) {
-  function onDelete() {
-    console.log('deleted');
+  const { mutate: deleteUser, isPending } = useMutation({
+    mutationFn: userApi.deleteUser
+  });
+  const queryClient = useQueryClient();
+
+  function handleDeleteUser() {
+    if (!userId) return;
+    deleteUser(userId, {
+      onSuccess: () => {
+        toast.success(`User ${name} deleted`);
+        queryClient.invalidateQueries({
+          queryKey: ['users']
+        });
+        onCloseModal?.();
+      },
+      onError: (err) => {
+        toast.error(err.message);
+      }
+    });
   }
 
   return (
@@ -28,15 +54,14 @@ export default function DeleteUserContent({
         Are you sure you want to delete this user?
       </h3>
       <button
-        onClick={onDelete}
-        data-modal-hide="popup-modal"
-        type="button"
+        onClick={handleDeleteUser}
+        disabled={isPending}
         className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
       >
-        Yes, I'm sure
+        {isPending ? <Spinner /> : "Yes, I'm sure"}
       </button>
       <button
-        data-modal-hide="popup-modal"
+        disabled={isPending}
         onClick={() => onCloseModal?.()}
         className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
       >

@@ -40,7 +40,7 @@ export default function Input({
           className,
           {
             'h-[50px]': variant === 'lg',
-            'h-[40px] text-sm': variant === 'md',
+            'h-[40px] text-sm px-2': variant === 'md',
             'rounded-2xl': roundedFull
           }
         )}
