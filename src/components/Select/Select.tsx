@@ -1,9 +1,9 @@
-import classNames from 'classNames';
+import classNames from 'classnames';
 import { SelectOptsType } from '../../types/utils.type';
 import { UseFormRegister } from 'react-hook-form';
 
 export default function Select({
-  className,
+  className = '',
   options,
   name,
   register
@@ -19,7 +19,7 @@ export default function Select({
     <select
       {...registreResult}
       className={classNames(
-        'bg-gray-50 border border-gray-300 text-main text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1.5 focus:outline-none',
+        'bg-gray-50 border border-gray-300 text-main text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2.5 py-1.5 focus:outline-none',
         className
       )}
     >

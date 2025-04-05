@@ -6,16 +6,14 @@ import {
   useQueryClient
 } from '@tanstack/react-query';
 import { userApi } from '../../services/user.api';
-import { UsersListConfig } from '../../types/user.type';
+import { User, UsersListConfig } from '../../types/user.type';
 import useQueryParms from '../../hooks/useQueryParms';
 import Pagination from '../../components/Pagination';
 import Spinner from '../../components/Spinner';
 import Main from '../../components/Main';
 import useUrl from '../../hooks/useUrl';
 import Table from '../../components/Table';
-import UserRow from '../../components/UserRow';
 import Heading from '../../components/Heading';
-import UserOperator from '../../components/UserOperator';
 import Button from '../../components/Button';
 import Modal from '../../components/Modal';
 import CreateUserContent from './components/CreateUserContent';
@@ -23,6 +21,8 @@ import { FaPlusCircle } from 'react-icons/fa';
 import { useAuthStore } from '../../store/auth.store';
 import { authApi } from '../../services/auth.api';
 import { SelectOptsType } from '../../types/utils.type';
+import UserOperator from './components/UserOperator';
+import UserRow from './components/UserRow';
 
 const PAGE_LIMIT = 6;
 
@@ -92,9 +92,9 @@ export default function Users() {
           <Modal>
             <Modal.Open openWindowName="create-user">
               <Button
-                variant="md"
+                size="md"
                 icon={<FaPlusCircle size={18} />}
-                className="gap-3"
+                className="gap-3 bg-primary"
               >
                 create new user
               </Button>
@@ -113,33 +113,35 @@ export default function Users() {
       )}
       {!isLoading && (
         <>
-          <Table>
-            <Table.Header>
-              <tr>
-                <th scope="col" className="px-6 py-3 text-center">
-                  user
-                </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  status
-                </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  role
-                </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  actions
-                </th>
-              </tr>
-            </Table.Header>
-            <Table.Body
-              data={users}
-              render={(user) => {
-                if (user._id === userLoggined?._id) return null;
-                return (
-                  <UserRow user={user} key={user._id} rolesOpts={rolesOpts} />
-                );
-              }}
-            />
-          </Table>
+          <div className="overflow-y-auto">
+            <Table>
+              <Table.Header>
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    user
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    status
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    role
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    actions
+                  </th>
+                </tr>
+              </Table.Header>
+              <Table.Body
+                data={users}
+                render={(user: User) => {
+                  if (user._id === userLoggined?._id) return null;
+                  return (
+                    <UserRow user={user} key={user._id} rolesOpts={rolesOpts} />
+                  );
+                }}
+              />
+            </Table>
+          </div>
           <Pagination
             className="ml-auto mt-auto mb-[-12px]"
             totalPages={totalPages}

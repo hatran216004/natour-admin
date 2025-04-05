@@ -1,4 +1,4 @@
-import classNames from 'classNames';
+import classNames from 'classnames';
 import React, {
   cloneElement,
   createContext,
@@ -63,9 +63,10 @@ function Window({
     <div
       tabIndex={-1}
       className={classNames(
-        'bg-[#00000080] overflow-y-auto overflow-x-hidden fixed inset-0 z-50 w-full max-h-full',
+        'bg-[#00000080] overflow-y-auto overflow-x-hidden fixed inset-0 z-50 w-full max-h-full transition-[opacity,visibility] duration-[0.25s]',
         {
-          hidden: openName !== name
+          'opacity-0 invisible': openName !== name,
+          'opacity-100 visible': openName === name
         }
       )}
     >

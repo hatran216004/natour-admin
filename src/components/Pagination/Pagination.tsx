@@ -3,7 +3,7 @@ import {
   MdOutlineKeyboardArrowRight
 } from 'react-icons/md';
 import useUrl from '../../hooks/useUrl';
-import classNames from 'classNames';
+import classNames from 'classnames';
 
 type PropsType = {
   className?: string;

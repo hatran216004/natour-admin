@@ -1,13 +1,15 @@
-import classNames from 'classNames';
+import classNames from 'classnames';
 import { InputHTMLAttributes } from 'react';
 import { RegisterOptions, UseFormRegister } from 'react-hook-form';
+
+type InputSize = 'lg' | 'md';
 
 type PropsType = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   name: string;
   rules?: RegisterOptions;
   errorMessage?: string;
-  variant?: 'lg' | 'md';
+  inputSize?: InputSize;
   className?: string;
   roundedFull?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,7 +23,7 @@ export default function Input({
   name,
   rules,
   className = '',
-  variant = 'lg',
+  inputSize = 'lg',
   errorMessage,
   roundedFull = true,
   defaultValue,
@@ -36,11 +38,11 @@ export default function Input({
       </label>
       <div
         className={classNames(
-          'min-w-[350px] bg-transparent border border-[#E2E8F0] overflow-hidden px-5',
+          'bg-transparent border border-[#E2E8F0] overflow-hidden px-5',
           className,
           {
-            'h-[50px]': variant === 'lg',
-            'h-[40px] text-sm px-2': variant === 'md',
+            'h-[50px] min-w-[350px]': inputSize === 'lg',
+            'h-[40px] min-w-64 text-sm px-2': inputSize === 'md',
             'rounded-2xl': roundedFull
           }
         )}

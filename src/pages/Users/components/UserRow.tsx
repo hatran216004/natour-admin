@@ -1,15 +1,15 @@
+import classNames from 'classnames';
 import { PiDotsThreeVerticalBold } from 'react-icons/pi';
-import { User } from '../../types/user.type';
-import Popover from '../Popover/Popover';
-import MenuItem from '../MenuItem';
 import { MdDelete } from 'react-icons/md';
 import { LuPencilLine } from 'react-icons/lu';
-import Menu from '../Menu/';
-import Modal from '../Modal';
-import DeleteUserContent from '../../pages/Users/components/DeleteUserContent';
-import UpdateUserContent from '../../pages/Users/components/UpdateUserContent';
-import { SelectOptsType } from '../../types/utils.type';
-import classNames from 'classNames';
+import { User } from '../../../types/user.type';
+import { SelectOptsType } from '../../../types/utils.type';
+import Popover from '../../../components/Popover/Popover';
+import MenuItem from '../../../components/MenuItem';
+import Menu from '../../../components/Menu';
+import Modal from '../../../components/Modal';
+import DeleteUserContent from './DeleteUserContent';
+import UpdateUserContent from './UpdateUserContent';
 
 export default function UserRow({
   user,
@@ -34,7 +34,7 @@ export default function UserRow({
         </div>
       </td>
       <td className="px-6 py-4 text-center">
-        <button
+        <span
           className={classNames(
             'px-4 py-1 text-center rounded-xl capitalize text-white font-bold',
             {
@@ -44,7 +44,7 @@ export default function UserRow({
           )}
         >
           {user.active ? 'active' : 'inactive'}
-        </button>
+        </span>
       </td>
       <td className="px-6 py-4 text-center capitalize text-main font-bold">
         {user.role?.name}

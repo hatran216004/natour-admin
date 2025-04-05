@@ -1,9 +1,8 @@
-import { User } from '../../types/user.type';
-
 type BodyProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
-  render: (user: User) => React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  render: (data: any) => React.ReactNode;
 };
 
 type Props = { children: React.ReactNode };

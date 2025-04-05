@@ -19,7 +19,7 @@ export type Tour = {
   imageCover: string;
   images: string[];
   startDates: {
-    date: string; // ISO date format
+    date: string;
     participants: number;
     soldOut: boolean;
     _id: string;
@@ -46,7 +46,6 @@ export type Tour = {
   }[];
   slug: string;
   durationWeeks: number;
-  id: string;
 };
 
 export type ToursList = {
@@ -55,4 +54,18 @@ export type ToursList = {
     total: number;
     totalPages: number;
   };
+};
+
+export type ToursListConfig = {
+  sort?: string;
+  limit?: number;
+  page?: number;
+  name?: string;
+  price?: number;
+  duration?: number;
+  maxGroupSize?: number;
+  difficulty?: 'easy' | 'medium' | 'difficult';
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
+  durationWeeks?: number;
 };

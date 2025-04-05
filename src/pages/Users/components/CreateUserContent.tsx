@@ -109,22 +109,22 @@ export default function CreateUserContent({
             <Input
               label="name"
               name="name"
-              variant="md"
+              inputSize="md"
               type="text"
               roundedFull={false}
               placeholder="Enter userame..."
-              className="rounded-md min-w-64"
+              className="rounded-md"
               register={register}
               errorMessage={errors?.name?.message}
             />
             <Input
               label="email"
               name="email"
-              variant="md"
+              inputSize="md"
               type="email"
               roundedFull={false}
               placeholder="Enter email..."
-              className="rounded-md min-w-64"
+              className="rounded-md"
               register={register}
               errorMessage={errors?.email?.message}
             />
@@ -133,22 +133,22 @@ export default function CreateUserContent({
             <Input
               label="password"
               name="password"
-              variant="md"
+              inputSize="md"
               type="password"
               placeholder="Enter password..."
               roundedFull={false}
-              className="rounded-md min-w-64"
+              className="rounded-md"
               register={register}
               errorMessage={errors?.password?.message}
             />
             <Input
               label="password confirm"
               name="password_confirm"
-              variant="md"
+              inputSize="md"
               type="password"
               placeholder="Enter password confirm..."
               roundedFull={false}
-              className="rounded-md min-w-64"
+              className="rounded-md"
               register={register}
               errorMessage={errors?.password_confirm?.message}
             />
@@ -162,7 +162,7 @@ export default function CreateUserContent({
             />
           </Row>
           <Button
-            className="bg-blue-400 w-full capitalize text-[16px] ml-auto"
+            className="w-full capitalize text-[16px]"
             isLoading={isPending}
           >
             Submit

@@ -8,8 +8,8 @@ export default function Sidebar() {
   const location = useLocation();
 
   return (
-    <div className="col-span-3 h-full">
-      <div className="p-6 pb-0 flex flex-col h-full">
+    <div className="col-span-3 h-full bg-white rounded-xl shadow-custom">
+      <div className="p-6 flex flex-col h-full">
         <div className="center gap-3">
           <img src={icons.logo_bold} alt="" />
           <h3 className="text-main font-bold text-sm uppercase">

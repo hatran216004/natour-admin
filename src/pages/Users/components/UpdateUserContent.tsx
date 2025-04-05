@@ -104,22 +104,22 @@ export default function UpdateUserContent({
             <Input
               label="name"
               name="name"
-              variant="md"
+              inputSize="md"
               type="text"
               roundedFull={false}
               placeholder="Enter userame..."
-              className="rounded-md min-w-64"
+              className="rounded-md"
               register={register}
               errorMessage={errors?.name?.message}
             />
             <Input
               label="email"
               name="email"
-              variant="md"
+              inputSize="md"
               type="email"
               roundedFull={false}
               placeholder="Enter email..."
-              className="rounded-md min-w-64"
+              className="rounded-md"
               register={register}
               errorMessage={errors?.email?.message}
             />
@@ -133,7 +133,7 @@ export default function UpdateUserContent({
             />
           </Row>
           <Button
-            className="bg-blue-400 w-full capitalize text-[16px] ml-auto"
+            className="w-full capitalize text-[16px]"
             isLoading={isPending}
           >
             Submit

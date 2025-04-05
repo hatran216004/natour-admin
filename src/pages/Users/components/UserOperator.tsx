@@ -1,5 +1,5 @@
-import FilterSelect from '../FilterSelect';
-import { SelectOptsType } from '../../types/utils.type';
+import FilterSelect from '../../../components/FilterSelect';
+import { SelectOptsType } from '../../../types/utils.type';
 
 export default function UserOperator({
   rolesOpts

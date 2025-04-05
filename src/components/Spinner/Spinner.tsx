@@ -1,4 +1,4 @@
-import classNames from 'classNames';
+import classNames from 'classnames';
 
 export default function Spinner({
   size = 'lg'
