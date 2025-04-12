@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { type Schema, schema } from '../../utils/rules';
+import { type UserSchema, userSchema } from '../../utils/rules';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Input from '../../components/Input';
 import { authApi } from '../../services/auth.api';
@@ -10,8 +10,8 @@ import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/auth.store';
 import Button from '../../components/Button';
 
-type FormData = Pick<Schema, 'email' | 'password'>;
-const loginSchema = schema.pick(['email', 'password']);
+type FormData = Pick<UserSchema, 'email' | 'password'>;
+const loginSchema = userSchema.pick(['email', 'password']);
 
 export default function Signup() {
   const navigate = useNavigate();

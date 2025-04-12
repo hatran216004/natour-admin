@@ -1,14 +1,22 @@
 import classNames from 'classnames';
 
 export default function Row({
-  classname,
+  className,
+  align = 'center',
   children
 }: {
-  classname?: string;
+  className?: string;
+  align?: 'center' | 'start' | 'end';
   children: React.ReactNode;
 }) {
   return (
-    <div className={classNames('flex items-center gap-5', classname)}>
+    <div
+      className={classNames(className, 'flex gap-5', {
+        'items-center': align === 'center',
+        'items-start': align === 'start',
+        'items-end': align === 'end'
+      })}
+    >
       {children}
     </div>
   );

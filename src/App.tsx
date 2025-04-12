@@ -30,7 +30,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route element={<MainLayout />}>
-              <Route index element={<Navigate replace to="users" />} />
+              <Route index element={<Navigate replace to="tours" />} />
               {routes.map((route) => {
                 const Element = route.element;
                 return (

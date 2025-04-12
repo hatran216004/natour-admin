@@ -76,7 +76,7 @@ const Popover = ({
           <div
             ref={refs.setFloating}
             style={{
-              zIndex: '1',
+              zIndex: '1000',
               ...floatingStyles
             }}
             {...getFloatingProps()}

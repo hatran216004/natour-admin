@@ -28,5 +28,7 @@ export const userApi = {
       `/users/${userId}`,
       body
     );
-  }
+  },
+  getAllGuides: () =>
+    http.get<SuccessResponseApi<{ guides: User[] }>>('users/guides')
 };

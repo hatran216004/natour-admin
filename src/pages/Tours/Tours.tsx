@@ -1,6 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FaPlusCircle } from 'react-icons/fa';
-import { tourApi } from '../../services/tour.api';
 import Pagination from '../../components/Pagination';
 import Spinner from '../../components/Spinner';
 import Main from '../../components/Main';
@@ -9,56 +7,12 @@ import Heading from '../../components/Heading';
 import Button from '../../components/Button';
 import Modal from '../../components/Modal';
 import TourRow from './components/TourRow';
-import { Tour, ToursListConfig } from '../../types/tour.type';
-import useQueryParms from '../../hooks/useQueryParms';
-import { omitBy, isUndefined } from 'lodash';
-import useUrl from '../../hooks/useUrl';
+import { Tour } from '../../types/tour.type';
+import CreateTourContent from './components/CreateTourContent';
+import useTours from '../../features/tour/useTours';
 
 export default function Tours() {
-  const { currentValue } = useUrl<number>({ field: 'page', defaultValue: 1 });
-  const page = Number(currentValue);
-  const queryClient = useQueryClient();
-  const queryParams = useQueryParms<ToursListConfig>();
-  const queryConfig: ToursListConfig = omitBy(
-    {
-      limit: Number(queryParams.limit) || 3,
-      page: Number(queryParams.page) || 1,
-      sort: queryParams.sort,
-      name: queryParams.name,
-      price: queryParams.price,
-      duration: queryParams.duration,
-      maxGroupSize: queryParams.maxGroupSize,
-      difficulty: queryParams.difficulty,
-      ratingsAverage: queryParams.ratingsAverage,
-      ratingsQuantity: queryParams.ratingsQuantity,
-      durationWeeks: queryParams.durationWeeks
-    },
-    isUndefined
-  );
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['tours', queryConfig],
-    queryFn: () => tourApi.getAllTours(queryConfig)
-  });
-
-  const tours: Tour[] = data?.data.data.tours || [];
-  const totalPages = data?.data.data.pagination.totalPages as number;
-
-  if (page < totalPages) {
-    queryClient.prefetchQuery({
-      queryKey: ['tours', { ...queryConfig, page: page + 1 }],
-      queryFn: () => tourApi.getAllTours({ ...queryConfig, page: page + 1 })
-    });
-  }
-
-  if (page > 1) {
-    queryClient.prefetchQuery({
-      queryKey: ['tours', { ...queryConfig, page: page - 1 }],
-      queryFn: () => tourApi.getAllTours({ ...queryConfig, page: page - 1 })
-    });
-  }
-
-  if (tours[0]) console.log(tours[0]);
+  const { tours, isLoading, totalPages } = useTours();
 
   return (
     <Main>
@@ -76,7 +30,7 @@ export default function Tours() {
               </Button>
             </Modal.Open>
             <Modal.Window name="create-tour">
-              <h1>test</h1>
+              <CreateTourContent />
             </Modal.Window>
           </Modal>
         </div>
@@ -100,7 +54,7 @@ export default function Tours() {
                     image cover
                   </th>
                   <th scope="col" className="px-6 py-3 text-center">
-                    starts location
+                    start location
                   </th>
                   <th scope="col" className="px-6 py-3 text-center">
                     starts day

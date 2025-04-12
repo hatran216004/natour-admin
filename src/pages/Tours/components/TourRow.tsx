@@ -32,7 +32,9 @@ export default function TourRow({ tour }: { tour: Tour }) {
       <td className="px-6 py-4 text-left">
         <div>
           {tour.startDates.map((day) => (
-            <p className="text-nowrap">{format(day.date, 'dd-MM-yyyy')}</p>
+            <p key={day.date} className="text-nowrap">
+              {format(day.date, 'dd-MM-yyyy')}
+            </p>
           ))}
         </div>
       </td>

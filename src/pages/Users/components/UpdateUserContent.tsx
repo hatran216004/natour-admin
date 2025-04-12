@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
-import { type Schema, schema } from '../../../utils/rules';
+import { type UserSchema, userSchema } from '../../../utils/rules';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { userApi } from '../../../services/user.api';
@@ -13,8 +13,8 @@ import { AxiosError } from 'axios';
 import { SelectOptsType } from '../../../types/utils.type';
 import { User } from '../../../types/user.type';
 
-type FormData = Pick<Schema, 'email' | 'name' | 'role'>;
-const updateUserSchema = schema.pick(['email', 'name', 'role']);
+type FormData = Pick<UserSchema, 'email' | 'name' | 'role'>;
+const updateUserSchema = userSchema.pick(['email', 'name', 'role']);
 
 export default function UpdateUserContent({
   user,

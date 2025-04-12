@@ -5,19 +5,19 @@ export type Tour = {
     address: string;
     description: string;
   };
-  _id: string;
+  _id?: string;
   name: string;
-  secretTour: boolean;
+  secretTour?: boolean;
   price: number;
   duration: number;
   maxGroupSize: number;
   difficulty: 'easy' | 'medium' | 'difficult';
-  ratingsAverage: number;
-  ratingsQuantity: number;
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
   summary: string;
-  description: string;
+  description?: string;
   imageCover: string;
-  images: string[];
+  images?: string[];
   startDates: {
     date: string;
     participants: number;
@@ -25,13 +25,12 @@ export type Tour = {
     _id: string;
     id: string;
   }[];
-  locations: {
+  locations?: {
     type: 'Point';
     coordinates: [number, number];
     description: string;
     day: number;
     _id: string;
-    id: string;
   }[];
   guides: {
     _id: string;
@@ -44,8 +43,8 @@ export type Tour = {
       description: string;
     };
   }[];
-  slug: string;
-  durationWeeks: number;
+  slug?: string;
+  durationWeeks?: number;
 };
 
 export type ToursList = {
