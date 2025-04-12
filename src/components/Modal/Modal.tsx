@@ -5,6 +5,7 @@ import React, {
   Dispatch,
   SetStateAction,
   useContext,
+  useRef,
   useState
 } from 'react';
 import { createPortal } from 'react-dom';
@@ -58,9 +59,17 @@ function Window({
   children: React.ReactElement;
 }) {
   const { close, openName } = useContext(ModalContext);
+  const ref = useRef<HTMLDivElement>(null);
+
+  function closeModal(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (ref.current && !ref.current.contains(e.target as Node)) {
+      close();
+    }
+  }
 
   return createPortal(
     <div
+      onClick={closeModal}
       tabIndex={-1}
       className={classNames(
         'bg-[#00000080] fixed inset-0 z-50 w-full max-h-full transition-[opacity,visibility] duration-[0.25s]',
@@ -70,7 +79,11 @@ function Window({
         }
       )}
     >
-      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] p-4 max-h-full">
+      <div
+        className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] p-4 max-h-full"
+        ref={ref}
+        data-modal-window={name}
+      >
         <div className="relative bg-white rounded-lg shadow-sm ">
           <button
             onClick={close}
@@ -103,6 +116,13 @@ function Window({
     </div>,
     document.body
   );
+}
+
+export function useModalContext() {
+  const context = useContext(ModalContext);
+  if (!context)
+    throw new Error('useModalContext must be used within a ModalProvider');
+  return context;
 }
 
 Modal.Open = Open;

@@ -5,7 +5,7 @@ export type Tour = {
     address: string;
     description: string;
   };
-  _id?: string;
+  _id: string;
   name: string;
   secretTour?: boolean;
   price: number;

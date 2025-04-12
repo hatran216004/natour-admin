@@ -52,6 +52,10 @@ export default function TourRow({ tour }: { tour: Tour }) {
       </td>
       <td className="px-6 py-4">
         <Modal>
+          <Modal.Window name="delete-tour">
+            <DeleteTourContent tourId={tour._id} name={tour.name} />
+          </Modal.Window>
+
           <Popover
             className="center w-[38px] h-[30px] mx-auto hover:bg-gray-200 rounded-full"
             placement="bottom-center"
@@ -68,9 +72,6 @@ export default function TourRow({ tour }: { tour: Tour }) {
               <PiDotsThreeVerticalBold />
             </button>
           </Popover>
-          <Modal.Window name="delete-tour">
-            <DeleteTourContent tourId={tour._id} name={tour.name} />
-          </Modal.Window>
         </Modal>
       </td>
     </tr>

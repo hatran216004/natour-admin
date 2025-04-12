@@ -88,7 +88,6 @@ export default function CreateTourContent({
 
   function onSubmit(data: FormData) {
     const formData = new FormData();
-
     formData.append('name', data.name);
     formData.append('price', data.price);
     formData.append('duration', data.duration);
@@ -103,6 +102,7 @@ export default function CreateTourContent({
         formData.append('images', file);
       });
     }
+    formData.append('guides', JSON.stringify([data.guides]));
     formData.append('startDates', JSON.stringify(data.startDates));
     formData.append('startLocation', JSON.stringify(data.startLocation));
 
@@ -112,7 +112,7 @@ export default function CreateTourContent({
         queryClient.invalidateQueries({
           queryKey: ['tours']
         });
-        toast.success(`Tour ${tour.name} create successfully`);
+        toast.success(`Tour ${tour.name} created successfully`);
         reset();
         onCloseModal?.();
       },
