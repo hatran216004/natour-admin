@@ -1,5 +1,6 @@
-import 'react-day-picker/dist/style.css';
+import toast from 'react-hot-toast';
 import { useMemo, useState } from 'react';
+import { AxiosError } from 'axios';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { type TourSchema, tourSchema } from '../../../utils/rules';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,21 +17,25 @@ import Select from '../../../components/Select';
 import useGuides from '../../../features/tour/useGuides';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { tourApi } from '../../../services/tour.api';
-import toast from 'react-hot-toast';
-import axios, { AxiosError } from 'axios';
+import http from '../../../utils/http';
+import useTour from '../../../features/tour/useTour';
 
 type FormData = TourSchema;
 
 export default function CreateTourContent({
+  tourId,
   onCloseModal
 }: {
+  tourId: string;
   onCloseModal?: () => void;
 }) {
+  const { tour } = useTour(tourId);
   const queryClient = useQueryClient();
   const [isSecret, setIsSecret] = useState(false);
   const { guides } = useGuides();
   const { mutate, isPending } = useMutation({
-    mutationFn: tourApi.createNewTour
+    mutationFn: ({ body, id }: { body: FormData; id: string }) =>
+      tourApi.updateTour({ body, id })
   });
 
   const difficultyOpts: SelectOptsType[] = [
@@ -62,13 +67,9 @@ export default function CreateTourContent({
     formState: { errors }
   } = useForm<FormData>({
     resolver: yupResolver(tourSchema),
-    defaultValues: {
-      startDates: [{ date: new Date(), participants: 1 }],
-      guides: guideOpts[0]?.value,
-      difficulty: difficultyOpts[0].value
-    }
+    values: { ...tour, guides: tour?.guides[0]._id as string }
   });
-  console.log(errors);
+
   const { append, fields, remove } = useFieldArray({
     control,
     name: 'startDates'
@@ -81,6 +82,7 @@ export default function CreateTourContent({
     append({ date: new Date(), participants: 1 });
   }
 
+  console.log(errors);
   function onSubmit(data: FormData) {
     const formData = new FormData();
     formData.append('name', data.name);
@@ -89,7 +91,6 @@ export default function CreateTourContent({
     formData.append('maxGroupSize', data.maxGroupSize);
     formData.append('difficulty', data.difficulty);
     formData.append('summary', data.summary);
-
     formData.append('imageCover', (data.imageCover as FileList)[0]);
 
     if (data.images) {
@@ -97,32 +98,34 @@ export default function CreateTourContent({
         formData.append('images', file);
       });
     }
-
     if (isSecret) {
       formData.append('secret', JSON.stringify(isSecret));
     }
 
-    formData.append('guides', JSON.stringify([data.guides]));
+    formData.append('guides', data.guides);
     formData.append('startDates', JSON.stringify(data.startDates));
     formData.append('startLocation', JSON.stringify(data.startLocation));
     console.log(Object.fromEntries(formData));
-    mutate(formData, {
-      onSuccess: (data) => {
-        const tour = data.data.data.tour;
-        queryClient.invalidateQueries({
-          queryKey: ['tours']
-        });
-        toast.success(`Tour ${tour.name} created successfully`);
-        reset();
-        onCloseModal?.();
-      },
-      onError: (err) => {
-        console.log(err);
-        const axiosError = err as AxiosError<{ message: string }>;
-        const errorMessage = axiosError.response?.data?.message as string;
-        toast.error(errorMessage || 'Something went wrong, try again later');
+    mutate(
+      { body: formData, id: tourId },
+      {
+        onSuccess: (data) => {
+          const tour = data.data.data.tour;
+          queryClient.invalidateQueries({
+            queryKey: ['tours']
+          });
+          toast.success(`Tour ${tour.name} updated successfully`);
+          reset();
+          onCloseModal?.();
+        },
+        onError: (err) => {
+          console.log(err);
+          const axiosError = err as AxiosError<{ message: string }>;
+          const errorMessage = axiosError.response?.data?.message as string;
+          toast.error(errorMessage);
+        }
       }
-    });
+    );
   }
 
   async function handleFetchCoordinates(
@@ -130,7 +133,7 @@ export default function CreateTourContent({
   ) {
     try {
       const query = encodeURIComponent(e.target.value);
-      const res = await axios(
+      const res = await http(
         `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`
       );
       const data = res.data;
@@ -148,7 +151,7 @@ export default function CreateTourContent({
   return (
     <div className="relative bg-white">
       <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900">Create new tour</h3>
+        <h3 className="text-xl font-semibold text-gray-900">Update tour</h3>
       </div>
       <div className="p-4 md:p-5">
         <form

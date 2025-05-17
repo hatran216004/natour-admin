@@ -9,6 +9,7 @@ import { formatCurrency } from '../../../utils/helpers';
 import { format } from 'date-fns';
 import Modal from '../../../components/Modal';
 import DeleteTourContent from './DeleteTourContent';
+import UpdateTourContent from './UpdateTourContent';
 
 export default function TourRow({ tour }: { tour: Tour }) {
   return (
@@ -52,19 +53,17 @@ export default function TourRow({ tour }: { tour: Tour }) {
       </td>
       <td className="px-6 py-4">
         <Modal>
-          <Modal.Window name="delete-tour">
-            <DeleteTourContent tourId={tour._id} name={tour.name} />
-          </Modal.Window>
-
           <Popover
             className="center w-[38px] h-[30px] mx-auto hover:bg-gray-200 rounded-full"
             placement="bottom-center"
             renderPopover={
               <Menu>
-                <Modal.Open openWindowName="delete-tour">
+                <Modal.Open name="delete-tour">
                   <MenuItem text="delete" icon={<MdDelete />} />
                 </Modal.Open>
-                <MenuItem text="update" isLastItem icon={<LuPencilLine />} />
+                <Modal.Open name="update-tour">
+                  <MenuItem text="update" isLastItem icon={<LuPencilLine />} />
+                </Modal.Open>
               </Menu>
             }
           >
@@ -72,6 +71,12 @@ export default function TourRow({ tour }: { tour: Tour }) {
               <PiDotsThreeVerticalBold />
             </button>
           </Popover>
+          <Modal.Content openName="delete-tour">
+            <DeleteTourContent tourId={tour._id} name={tour.name} />
+          </Modal.Content>
+          <Modal.Content openName="update-tour">
+            <UpdateTourContent tourId={tour._id} />
+          </Modal.Content>
         </Modal>
       </td>
     </tr>

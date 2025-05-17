@@ -12,5 +12,14 @@ export const tourApi = {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
-    })
+    }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateTour: ({ body, id }: { body: any; id: string }) =>
+    http.patch<SuccessResponseApi<{ tour: Tour }>>(`/tours/${id}`, body, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }),
+  getTour: (id: string) =>
+    http.get<SuccessResponseApi<{ tour: Tour }>>(`/tours/${id}`)
 };

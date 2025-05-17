@@ -30,9 +30,11 @@ export default function Input({
   defaultValue,
   register,
   onClick,
+  onBlur = () => {},
   ...rest
 }: PropsType) {
-  const registerResult = register && name ? register(name, rules) : null;
+  const registerResult =
+    register && name ? register(name, { onBlur, ...rules }) : null;
 
   return (
     <div onClick={() => onClick?.()}>

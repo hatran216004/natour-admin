@@ -20,7 +20,7 @@ export default function Tours() {
         <div className="flex items-center gap-6">
           <Heading heading="manage tours" />
           <Modal>
-            <Modal.Open openWindowName="create-tour">
+            <Modal.Open>
               <Button
                 size="md"
                 icon={<FaPlusCircle size={18} />}
@@ -29,9 +29,9 @@ export default function Tours() {
                 create new tour
               </Button>
             </Modal.Open>
-            <Modal.Window name="create-tour">
+            <Modal.Content>
               <CreateTourContent />
-            </Modal.Window>
+            </Modal.Content>
           </Modal>
         </div>
         {/* TourOperator */}

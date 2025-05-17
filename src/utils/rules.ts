@@ -74,13 +74,15 @@ export const tourSchema = yup.object().shape({
       message: 'Only image file are allowed',
       test: (value) => {
         const file = (value as FileList)[0];
-        return !!file && file.type.startsWith('image/');
+        if (typeof file === 'string') return true;
+        if (typeof file === 'object') return file.type.startsWith('image/');
       }
     })
     .test({
       name: 'file-size',
       message: 'File too large. Maximum 2MB',
       test: (value) => {
+        if (typeof value === 'string') return true;
         const file = (value as FileList)[0];
         return !!file && file.size <= FILE_SIZE;
       }

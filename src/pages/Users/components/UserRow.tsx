@@ -56,10 +56,11 @@ export default function UserRow({
             placement="bottom-center"
             renderPopover={
               <Menu>
-                <Modal.Open openWindowName="delete">
+                <Modal.Open name="delete-user">
                   <MenuItem text="delete" icon={<MdDelete />} />
                 </Modal.Open>
-                <Modal.Open openWindowName="update">
+
+                <Modal.Open name="update-user">
                   <MenuItem text="update" isLastItem icon={<LuPencilLine />} />
                 </Modal.Open>
               </Menu>
@@ -69,13 +70,13 @@ export default function UserRow({
               <PiDotsThreeVerticalBold />
             </button>
           </Popover>
-
-          <Modal.Window name="update">
-            <UpdateUserContent user={user} rolesOpts={rolesOpts} />
-          </Modal.Window>
-          <Modal.Window name="delete">
+          <Modal.Content openName="delete-user">
             <DeleteUserContent userId={user._id} name={user.name} />
-          </Modal.Window>
+          </Modal.Content>
+
+          <Modal.Content openName="update-user">
+            <UpdateUserContent user={user} rolesOpts={rolesOpts} />
+          </Modal.Content>
         </Modal>
       </td>
     </tr>

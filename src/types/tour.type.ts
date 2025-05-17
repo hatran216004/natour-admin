@@ -19,11 +19,11 @@ export type Tour = {
   imageCover: string;
   images?: string[];
   startDates: {
-    date: string;
+    date: Date;
     participants: number;
-    soldOut: boolean;
-    _id: string;
-    id: string;
+    // soldOut: boolean;
+    // _id: string;
+    // id: string;
   }[];
   locations?: {
     type: 'Point';

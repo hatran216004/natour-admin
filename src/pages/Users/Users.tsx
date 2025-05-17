@@ -1,18 +1,18 @@
 import { User } from '../../types/user.type';
-import { FaPlusCircle } from 'react-icons/fa';
 import { useAuthStore } from '../../store/auth.store';
 import Pagination from '../../components/Pagination';
 import Spinner from '../../components/Spinner';
 import Main from '../../components/Main';
 import Table from '../../components/Table';
 import Heading from '../../components/Heading';
-import Button from '../../components/Button';
-import Modal from '../../components/Modal';
 import CreateUserContent from './components/CreateUserContent';
 import UserOperator from './components/UserOperator';
 import UserRow from './components/UserRow';
 import useUsers from '../../features/user/useUsers';
 import useRoles from '../../features/role/useRoles';
+import Modal from '../../components/Modal';
+import Button from '../../components/Button';
+import { FaPlusCircle } from 'react-icons/fa';
 
 export default function Users() {
   const { user: userLoggined } = useAuthStore();
@@ -25,7 +25,7 @@ export default function Users() {
         <div className="flex items-center gap-6">
           <Heading heading="manage users" />
           <Modal>
-            <Modal.Open openWindowName="create-user">
+            <Modal.Open name="create-user">
               <Button
                 size="md"
                 icon={<FaPlusCircle size={18} />}
@@ -34,9 +34,9 @@ export default function Users() {
                 create new user
               </Button>
             </Modal.Open>
-            <Modal.Window name="create-user">
+            <Modal.Content openName="create-user">
               <CreateUserContent rolesOpts={rolesOpts} />
-            </Modal.Window>
+            </Modal.Content>
           </Modal>
         </div>
         <UserOperator rolesOpts={rolesOpts} />
