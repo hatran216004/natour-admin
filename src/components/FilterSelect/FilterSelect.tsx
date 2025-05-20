@@ -5,16 +5,19 @@ import { SelectOptsType } from '../../types/utils.type';
 export type FilterSelectProps = {
   label: string;
   field: string;
+  operator?: 'gte' | 'gt' | 'lte' | 'lt';
   options: SelectOptsType[];
 };
 
 export default function FilterSelect({
   label,
   field,
+  operator,
   options
 }: FilterSelectProps) {
+  const fieldOperator = operator ? `${field}_${operator}` : field;
   const { currentValue, handler } = useUrl<string | undefined>({
-    field,
+    field: fieldOperator,
     defaultValue: ''
   });
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,7 +25,7 @@ export default function FilterSelect({
   function handleOnChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
     if (value === 'all') {
-      searchParams.delete(field);
+      searchParams.delete(fieldOperator);
       setSearchParams(searchParams);
       return;
     }
@@ -31,11 +34,13 @@ export default function FilterSelect({
 
   return (
     <form className="max-w-sm flex items-center gap-3">
-      <label className="text-main capitalize font-semibold">{label}</label>
+      <label className="text-main capitalize font-semibold text-nowrap">
+        {label}
+      </label>
       <select
         value={currentValue}
         onChange={handleOnChange}
-        className="bg-gray-50 border border-gray-300 text-main text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1.5 focus:outline-none"
+        className="bg-gray-50 border border-gray-300 text-main text-sm rounded-lg block w-full px-2.5 py-1.5 focus:outline-none"
       >
         <option key="all" className="capitalize" value="all">
           all

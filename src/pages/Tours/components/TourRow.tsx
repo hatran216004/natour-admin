@@ -14,7 +14,7 @@ import UpdateTourContent from './UpdateTourContent';
 export default function TourRow({ tour }: { tour: Tour }) {
   return (
     <tr
-      className="bg-white border-b border-gray-200 text-main font-bold capitalize text-center"
+      className="bg-white border-b border-gray-200 text-main capitalize text-center"
       key={tour._id}
     >
       <td className="px-6 py-4">{tour.name}</td>
@@ -32,8 +32,8 @@ export default function TourRow({ tour }: { tour: Tour }) {
       </td>
       <td className="px-6 py-4 text-left">
         <div>
-          {tour.startDates.map((day) => (
-            <p key={day.date} className="text-nowrap">
+          {tour.startDates.map((day, index) => (
+            <p key={index} className="text-nowrap">
               {format(day.date, 'dd-MM-yyyy')}
             </p>
           ))}
@@ -49,7 +49,7 @@ export default function TourRow({ tour }: { tour: Tour }) {
       <td className="px-6 py-4">{tour.maxGroupSize}</td>
       <td className="px-6 py-4">{formatCurrency(tour.price)}</td>
       <td className="px-6 py-4">
-        {tour.ratingsAverage}({tour.ratingsQuantity})
+        {tour.ratingsAverage}⭐({tour.ratingsQuantity})
       </td>
       <td className="px-6 py-4">
         <Modal>

@@ -8,8 +8,6 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-const activeModals: Array<{ close: () => void }> = [];
-
 type ModalPropsType = {
   closeMethods?: Array<'button' | 'overlay' | 'escape'>;
   classNames?: string[];
@@ -34,6 +32,7 @@ type ModalProviderType = {
 } & ModalPropsType;
 
 const ModalContext = createContext<ModalProviderType>(null!);
+const modalStackRef: Array<string> = [];
 export default function Modal({
   closeMethods = ['button', 'overlay', 'escape'],
   classNames,
@@ -54,10 +53,20 @@ export default function Modal({
   const allowButtonClose = closeMethods.includes('button');
   const allowEscapeClose = closeMethods.includes('escape');
 
-  function handleEscapeKey(e: KeyboardEvent) {
-    const isLastModal = close === activeModals[activeModals.length - 1].close;
-    if (isLastModal && e.code === 'Escape') close();
-  }
+  const handleEscapeKey = (e: KeyboardEvent) => {
+    const isLastModal = modalName === modalStackRef[modalStackRef.length - 1];
+    if (isLastModal && e.code === 'Escape') {
+      close();
+    }
+  };
+
+  useEffect(() => {
+    if (modalName && allowEscapeClose) {
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, [modalName]);
 
   function hasScrollbar(target: HTMLElement) {
     if ([document.body, document.documentElement].includes(target)) {
@@ -86,8 +95,9 @@ export default function Modal({
     return scrollbarWidth.current;
   }
 
-  const open = (name: string) => {
-    activeModals.push({ close });
+  function open(name: string) {
+    modalStackRef.push(name);
+
     setTimeout(() => {
       if (backdropRef.current) {
         backdropRef.current.classList.add('opacity-100', 'visible');
@@ -98,14 +108,10 @@ export default function Modal({
     }, 0);
     setModalName(name);
 
-    if (allowEscapeClose) {
-      document.addEventListener('keydown', handleEscapeKey);
-    }
-
     // Disable scrolling
     if (enableScrollLock) {
       const target = scrollLockTarget();
-      if (hasScrollbar(target) && close === activeModals[0].close) {
+      if (hasScrollbar(target) && modalName === modalStackRef[0]) {
         const targetPaddingRight = parseInt(
           getComputedStyle(target).paddingRight
         );
@@ -114,7 +120,7 @@ export default function Modal({
           targetPaddingRight + getScrollbarWidth() + 'px';
       }
     }
-  };
+  }
 
   function handleTransitionEnd(callback: () => void) {
     const backdrop = backdropRef.current!;
@@ -124,8 +130,8 @@ export default function Modal({
     };
   }
 
-  const close = () => {
-    activeModals.pop();
+  function close() {
+    modalStackRef.pop();
 
     const backdrop = backdropRef.current!;
     backdrop.classList.remove('opacity-100', 'visible');
@@ -137,7 +143,7 @@ export default function Modal({
       }
 
       // Enable scrolling
-      if (!activeModals.length && enableScrollLock) {
+      if (!modalStackRef.length && enableScrollLock) {
         const target = scrollLockTarget();
         if (hasScrollbar(target)) {
           target.classList.remove('overflow-hidden');
@@ -147,19 +153,7 @@ export default function Modal({
 
       if (typeof onClose === 'function') onClose();
     });
-
-    if (allowEscapeClose) {
-      document.removeEventListener('keydown', handleEscapeKey);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (allowEscapeClose) {
-        document.removeEventListener('keydown', handleEscapeKey);
-      }
-    };
-  }, []);
+  }
 
   const contextValue: ModalProviderType = {
     open,
@@ -281,5 +275,3 @@ export function useModal() {
 Modal.Open = Open;
 Modal.Content = Content;
 Modal.Footer = Footer;
-
-// Footer, multiple modal

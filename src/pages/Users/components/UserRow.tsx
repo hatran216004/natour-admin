@@ -46,7 +46,7 @@ export default function UserRow({
           {user.active ? 'active' : 'inactive'}
         </span>
       </td>
-      <td className="px-6 py-4 text-center capitalize text-main font-bold">
+      <td className="px-6 py-4 text-center capitalize text-main">
         {user.role?.name}
       </td>
       <td className="px-6 py-4">
