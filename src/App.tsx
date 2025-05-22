@@ -31,7 +31,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route element={<MainLayout />}>
-              <Route index element={<Navigate replace to="tours" />} />
+              <Route index element={<Navigate replace to="messages" />} />
               {routes.map((route) => {
                 const Element = route.element;
                 return (

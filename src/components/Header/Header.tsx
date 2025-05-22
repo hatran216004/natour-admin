@@ -21,7 +21,7 @@ export default function Header() {
         </div>
         <div className="center gap-[18px]">
           <button>
-            <CiBellOn size={24} />
+            <CiBellOn size={26} />
           </button>
           <img
             src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${

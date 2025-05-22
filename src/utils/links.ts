@@ -3,7 +3,7 @@ import { FaHome } from 'react-icons/fa';
 import { FaRegUser } from 'react-icons/fa';
 import { MdCardTravel, MdOutlineRateReview } from 'react-icons/md';
 import { RiBillLine } from 'react-icons/ri';
-import { CiUser, CiChat2 } from 'react-icons/ci';
+import { CiUser } from 'react-icons/ci';
 import Dashboard from '../pages/Dashboard';
 import Tours from '../pages/Tours';
 import Bookings from '../pages/Bookings';
@@ -11,6 +11,7 @@ import Reviews from '../pages/Reviews';
 import Users from '../pages/Users';
 import UserProfile from '../pages/UserProfile';
 import Messages from '../pages/Messages';
+import { IoMdChatbubbles } from 'react-icons/io';
 
 type NavLink = {
   href: string;
@@ -52,7 +53,7 @@ export const links: NavLink[] = [
   {
     href: '/messages',
     label: 'messages',
-    icon: CiChat2
+    icon: IoMdChatbubbles
   },
   {
     href: '/profile',
