@@ -29,6 +29,4 @@ export type ReviewListConfig = {
   sort?: string;
   rating_gte?: number;
   rating_lte?: number;
-  rating_gt?: number;
-  rating_lt?: number;
 };

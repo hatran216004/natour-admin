@@ -1,15 +1,16 @@
+import React from 'react';
 import { FaHome } from 'react-icons/fa';
 import { FaRegUser } from 'react-icons/fa';
 import { MdCardTravel, MdOutlineRateReview } from 'react-icons/md';
 import { RiBillLine } from 'react-icons/ri';
-import { CiUser } from 'react-icons/ci';
+import { CiUser, CiChat2 } from 'react-icons/ci';
 import Dashboard from '../pages/Dashboard';
-import Tours from '../pages/Tours/Tours.tsx';
-import Bookings from '../pages/Bookings/Bookings.tsx';
-import Reviews from '../pages/Reviews/Reviews.tsx';
-import Users from '../pages/Users/Users.tsx';
-import UserProfile from '../pages/UserProfile/UserProfile.tsx';
-import React from 'react';
+import Tours from '../pages/Tours';
+import Bookings from '../pages/Bookings';
+import Reviews from '../pages/Reviews';
+import Users from '../pages/Users';
+import UserProfile from '../pages/UserProfile';
+import Messages from '../pages/Messages';
 
 type NavLink = {
   href: string;
@@ -49,6 +50,11 @@ export const links: NavLink[] = [
     icon: RiBillLine
   },
   {
+    href: '/messages',
+    label: 'messages',
+    icon: CiChat2
+  },
+  {
     href: '/profile',
     label: 'profile',
     icon: CiUser
@@ -79,5 +85,9 @@ export const routes: Routes[] = [
   {
     path: 'profile',
     element: UserProfile
+  },
+  {
+    path: 'messages',
+    element: Messages
   }
 ];

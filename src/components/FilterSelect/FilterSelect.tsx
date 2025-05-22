@@ -5,7 +5,7 @@ import { SelectOptsType } from '../../types/utils.type';
 export type FilterSelectProps = {
   label: string;
   field: string;
-  operator?: 'gte' | 'gt' | 'lte' | 'lt';
+  operator?: 'gte' | 'lte';
   options: SelectOptsType[];
 };
 

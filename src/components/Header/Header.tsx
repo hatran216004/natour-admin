@@ -1,14 +1,15 @@
 import { useLocation } from 'react-router-dom';
-import Search from '../Search';
+// import Search from '../Search';
 import { FiLogOut } from 'react-icons/fi';
 import { useAuthStore } from '../../store/auth.store';
 import useLogout from '../../features/auth/useLogout';
 import Spinner from '../Spinner';
+import { CiBellOn } from 'react-icons/ci';
 
 export default function Header() {
   const { logout, isPending } = useLogout();
-  const location = useLocation();
   const { user } = useAuthStore();
+  const location = useLocation();
   const pageName = location.pathname.split('/')[1];
 
   return (
@@ -19,7 +20,9 @@ export default function Header() {
           <span className="text-[#2D3748]">/ {pageName}</span>
         </div>
         <div className="center gap-[18px]">
-          <Search />
+          <button>
+            <CiBellOn size={24} />
+          </button>
           <img
             src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${
               user?.photo

@@ -18,9 +18,7 @@ export default function useReviews() {
       rating: queryParams.rating,
       sort: queryParams.sort,
       'rating[gte]': queryParams.rating_gte,
-      'rating[lte]': queryParams.rating_lte,
-      'rating[gt]': queryParams.rating_gt,
-      'rating[lt]': queryParams.rating_lt
+      'rating[lte]': queryParams.rating_lte
     },
     isUndefined
   );
