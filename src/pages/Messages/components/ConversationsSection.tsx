@@ -1,4 +1,7 @@
 import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useConversationsStore } from '../../../store/messages.store';
+import { userApi } from '../../../services/user.api';
 import useDebounce from '../../../hooks/useDebounce';
 import useConversations from '../hooks/useConversations';
 import ConversationItem from './ConversationItem';
@@ -7,9 +10,6 @@ import ConversationsList from './ConversationsList';
 import Search from '../../../components/Search';
 import useUrl from '../../../hooks/useUrl';
 import EmptyConversations from './EmptyConversations';
-import { useConversationsStore } from '../../../store/messages.store';
-import { useQuery } from '@tanstack/react-query';
-import { userApi } from '../../../services/user.api';
 
 export default function ConversationsSection() {
   const { conversations, isLoading } = useConversations();
@@ -35,7 +35,7 @@ export default function ConversationsSection() {
   }, [conversations, isSuccess, setConversations]);
 
   useEffect(() => {
-    console.log('2');
+    console.log(2);
     if (isSuccess) {
       const users = data.data.data.users;
       const userIds = users.map((user) => user._id);
@@ -64,7 +64,7 @@ export default function ConversationsSection() {
 
       {isLoading && (
         <div className="px-4">
-          {Array(5)
+          {Array(conversationsStore.length ? conversationsStore.length : 3)
             .fill(0)
             .map((_, index) => (
               <div key={index} className="pr-4 flex flex-col justify-center">

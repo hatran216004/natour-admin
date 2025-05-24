@@ -8,7 +8,7 @@ export default function ConversationsList({
   render: (conversation: Conversation) => React.ReactElement;
 }) {
   return (
-    <ul className="mt-7 space-y-2 max-h-[412px] overflow-auto mr-2 pr-2 pl-4">
+    <ul className="mt-7 space-y-2 h-[432px] overflow-auto mr-2 pr-2 pl-4">
       {data.map(render)}
     </ul>
   );

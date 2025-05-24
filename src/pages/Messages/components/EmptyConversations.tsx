@@ -20,7 +20,7 @@ export default function EmptyConversations() {
           />
         </svg>
       </div>
-      <h2 className="text-lg font-semibold mb-1">No conversation found</h2>
+      <h2 className="text-lg font-semibold mb-1">No conversations found</h2>
     </div>
   );
 }

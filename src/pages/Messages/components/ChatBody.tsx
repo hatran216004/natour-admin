@@ -36,11 +36,12 @@ export default function ChatBody() {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="py-4 px-2 mx-2 flex-1 max-h-[412px] overflow-y-auto space-y-2">
+      <div className="py-4 px-2 mx-2 h-[432px] overflow-y-auto space-y-2">
         {isLoading && (
-          <div className="">
-            <Skeleton size="md" />
-          </div>
+          <>
+            <Skeleton size="sm" />
+            <Skeleton size="sm" side="right" />
+          </>
         )}
         {!isLoading &&
           messages?.map((message) => {
