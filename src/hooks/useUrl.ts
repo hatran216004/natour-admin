@@ -5,7 +5,7 @@ function useUrl<T>({
   defaultValue
 }: {
   field: string;
-  defaultValue: T;
+  defaultValue?: T;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentValue = searchParams.get(field) || defaultValue;

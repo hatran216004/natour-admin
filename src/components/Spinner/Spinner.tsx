@@ -1,22 +1,21 @@
 import classNames from 'classnames';
 
 export default function Spinner({
-  size = 'lg'
+  size = 'lg',
+  className = ''
 }: {
   size?: 'lg' | 'sm' | 'md';
+  className?: string;
 }) {
   return (
-    <div role="status">
+    <div role="status" className={className}>
       <svg
         aria-hidden="true"
-        className={classNames(
-          'text-gray-200 animate-spin dark:text-gray-600 fill-primary',
-          {
-            'w-8 h-8': size === 'lg',
-            'w-3 h-3': size === 'sm',
-            'w-5 h-5': size === 'md'
-          }
-        )}
+        className={classNames('text-gray-200 animate-spin fill-primary', {
+          'w-8 h-8': size === 'lg',
+          'w-3 h-3': size === 'sm',
+          'w-5 h-5': size === 'md'
+        })}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

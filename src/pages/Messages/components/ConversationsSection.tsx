@@ -1,54 +1,67 @@
 import { useEffect } from 'react';
+import useDebounce from '../../../hooks/useDebounce';
 import useConversations from '../hooks/useConversations';
 import ConversationItem from './ConversationItem';
 import ConversationSkeleton from './ConversationSkeleton';
 import ConversationsList from './ConversationsList';
-import { useConversationsStore } from '../../../store/messages.store';
 import Search from '../../../components/Search';
+import useUrl from '../../../hooks/useUrl';
+import EmptyConversations from './EmptyConversations';
+import { useConversationsStore } from '../../../store/messages.store';
+import { useQuery } from '@tanstack/react-query';
+import { userApi } from '../../../services/user.api';
 
 export default function ConversationsSection() {
   const { conversations, isLoading } = useConversations();
   const { conversations: conversationsStore, setConversations } =
     useConversationsStore();
 
+  const { currentValue: searchValue } = useUrl({ field: 'search' });
+  const debounceValue = useDebounce(searchValue);
+  const {
+    data,
+    isLoading: isFetchingUsers,
+    isSuccess
+  } = useQuery({
+    queryKey: ['conversations-search', debounceValue],
+    queryFn: () => userApi.searchUsers((debounceValue as string).trim()),
+    enabled: !!debounceValue
+  });
+
   useEffect(() => {
-    if (conversations.length) {
+    if (conversations.length && !isSuccess) {
       setConversations(conversations);
     }
-  }, [conversations, setConversations]);
+  }, [conversations, isSuccess, setConversations]);
 
-  if (!isLoading && !conversationsStore.length) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 px-4">
-        <div className="mb-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-16 w-16 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M7 8h10M7 12h4m1 8a9 9 0 100-18 9 9 0 000 18zm4.5-4.5L21 21"
-            />
-          </svg>
-        </div>
-        <h2 className="text-lg font-semibold mb-1">No conversation found</h2>
-      </div>
-    );
-  }
+  useEffect(() => {
+    console.log('2');
+    if (isSuccess) {
+      const users = data.data.data.users;
+      const userIds = users.map((user) => user._id);
+
+      const newConversations = conversationsStore.filter((conv) =>
+        userIds.includes(conv.participants[0]._id)
+      );
+      setConversations(newConversations);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess]);
 
   return (
-    <div className="py-4 h-full shadow-lg rounded-lg">
+    <div className="py-4 h-full shadow-lg rounded-lg relative">
       <div className="px-4">
-        <Search />
+        <Search
+          handleClearInput={() => setConversations(conversations)}
+          isLoading={isFetchingUsers}
+        />
         <h4 className="font-semibold text-lg mt-2">
           Messages ({!isLoading ? conversationsStore?.length : 0})
         </h4>
       </div>
+
+      {!isLoading && !conversationsStore.length && <EmptyConversations />}
+
       {isLoading && (
         <div className="px-4">
           {Array(5)

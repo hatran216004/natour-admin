@@ -30,5 +30,7 @@ export const userApi = {
     );
   },
   getAllGuides: () =>
-    http.get<SuccessResponseApi<{ guides: User[] }>>('users/guides')
+    http.get<SuccessResponseApi<{ guides: User[] }>>('users/guides'),
+  searchUsers: (key: string) =>
+    http.get<SuccessResponseApi<UsersList>>(`users/search/${key}`)
 };
