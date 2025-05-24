@@ -1,5 +1,4 @@
 import { useAuthStore } from '../../../store/auth.store';
-import { CiCircleCheck } from 'react-icons/ci';
 import { Conversation } from '../../../types/conversations.type';
 import { useSelectedConversation } from '../../../store/messages.store';
 
@@ -13,6 +12,12 @@ export default function ConversationItem({
   const { user } = useAuthStore();
   const { setSelectedConversation } = useSelectedConversation();
 
+  const messageElements = Array.from(lastMessage?.text);
+  const message =
+    messageElements.length > 20
+      ? messageElements.slice(0, 20).join('') + '...'
+      : lastMessage?.text;
+
   function handleSelectecConversation() {
     setSelectedConversation({
       _id: conversation._id,
@@ -25,7 +30,7 @@ export default function ConversationItem({
 
   return (
     <li
-      className="cursor-pointer hover:opacity-90 p-2 bg-slate-200 rounded-lg shadow-sm"
+      className="cursor-pointer hover:opacity-90 p-2 bg-white rounded-lg shadow-sm"
       onClick={handleSelectecConversation}
     >
       <div className="flex items-center ">
@@ -44,11 +49,9 @@ export default function ConversationItem({
             {recipient?.name}
           </h2>
           <div className="flex items-center gap-1 mt-1">
-            {user?._id === lastMessage?.sender && (
-              <CiCircleCheck size={18} className="flex-shrink-0" />
-            )}
             <p className="text-gray-600 font-medium text-sm max-w-[170px] line-clamp-1 break-words">
-              {lastMessage?.text}
+              {user?._id === lastMessage?.sender && 'You: '}
+              {message}
             </p>
           </div>
         </div>

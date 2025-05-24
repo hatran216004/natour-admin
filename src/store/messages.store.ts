@@ -1,11 +1,32 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { selectedConversationType } from '../types/conversations.type';
+import {
+  Conversation,
+  selectedConversationType
+} from '../types/conversations.type';
 
 interface SelectedConversationState {
   selectedConversation: selectedConversationType;
   setSelectedConversation: (conversation: selectedConversationType) => void;
 }
+
+interface ConversationsState {
+  conversations: Conversation[];
+  setConversations: (conversations: Conversation[]) => void;
+}
+
+export const useConversationsStore = create<ConversationsState>()(
+  persist(
+    (set) => ({
+      conversations: [],
+      setConversations: (conversations) => set(() => ({ conversations }))
+    }),
+    {
+      name: 'conversations',
+      partialize: ({ conversations }) => ({ conversations })
+    }
+  )
+);
 
 export const useSelectedConversation = create<SelectedConversationState>()(
   persist(

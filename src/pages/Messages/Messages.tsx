@@ -5,7 +5,7 @@ import ChatSection from './components/ChatSection';
 export default function Messages() {
   return (
     <Main>
-      <div className="grid grid-cols-12 h-full">
+      <div className="grid grid-cols-12 h-full gap-2">
         <div className="col-span-4">
           <ConversationsSection />
         </div>

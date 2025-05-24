@@ -1,12 +1,23 @@
-import Skeleton from '../../../components/Skeleton/Skeleton';
+import { useEffect } from 'react';
 import useConversations from '../hooks/useConversations';
 import ConversationItem from './ConversationItem';
+import ConversationSkeleton from './ConversationSkeleton';
 import ConversationsList from './ConversationsList';
+import { useConversationsStore } from '../../../store/messages.store';
+import Search from '../../../components/Search';
 
 export default function ConversationsSection() {
   const { conversations, isLoading } = useConversations();
+  const { conversations: conversationsStore, setConversations } =
+    useConversationsStore();
 
-  if (!isLoading && !conversations) {
+  useEffect(() => {
+    if (conversations.length) {
+      setConversations(conversations);
+    }
+  }, [conversations, setConversations]);
+
+  if (!isLoading && !conversationsStore.length) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 px-4">
         <div className="mb-4">
@@ -31,28 +42,34 @@ export default function ConversationsSection() {
   }
 
   return (
-    <div className="py-4 h-full">
+    <div className="py-4 h-full shadow-lg rounded-lg">
+      <div className="px-4">
+        <Search />
+        <h4 className="font-semibold text-lg mt-2">
+          Messages ({!isLoading ? conversationsStore?.length : 0})
+        </h4>
+      </div>
       {isLoading && (
-        <div className="pr-4 flex flex-col justify-center">
-          <Skeleton size="md" />
-          <Skeleton size="md" />
+        <div className="px-4">
+          {Array(5)
+            .fill(0)
+            .map((_, index) => (
+              <div key={index} className="pr-4 flex flex-col justify-center">
+                <ConversationSkeleton />
+              </div>
+            ))}
         </div>
       )}
       {!isLoading && (
-        <>
-          <h4 className="font-semibold text-lg">
-            Messages ({conversations?.length})
-          </h4>
-          <ConversationsList
-            data={conversations!}
-            render={(conversation) => (
-              <ConversationItem
-                key={conversation._id}
-                conversation={conversation}
-              />
-            )}
-          />
-        </>
+        <ConversationsList
+          data={conversationsStore!}
+          render={(conversation) => (
+            <ConversationItem
+              key={conversation._id}
+              conversation={conversation}
+            />
+          )}
+        />
       )}
     </div>
   );

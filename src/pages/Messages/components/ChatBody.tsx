@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import Skeleton from '../../../components/Skeleton/Skeleton';
 import { useAuthStore } from '../../../store/auth.store';
 import { useSelectedConversation } from '../../../store/messages.store';
@@ -10,6 +11,15 @@ export default function ChatBody() {
   const { selectedConversation } = useSelectedConversation();
   const { messages, isLoading } = useMessages(selectedConversation.userId);
   const { user } = useAuthStore();
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+  function scrollToBottom() {
+    messagesEndRef.current?.scrollIntoView();
+  }
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   if (!selectedConversation.userId) {
     return (
@@ -45,6 +55,7 @@ export default function ChatBody() {
               />
             );
           })}
+        <div ref={messagesEndRef} />
       </div>
       <ChatInput disabled={isLoading} />
     </div>

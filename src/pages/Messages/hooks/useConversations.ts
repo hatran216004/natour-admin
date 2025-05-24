@@ -6,7 +6,7 @@ function useConversations() {
     queryKey: ['conversations'],
     queryFn: conversationsApi.getUserConversations
   });
-  return { conversations: data?.data.data.conversations, isLoading };
+  return { conversations: data?.data.data.conversations || [], isLoading };
 }
 
 export default useConversations;
