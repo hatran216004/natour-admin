@@ -36,7 +36,8 @@ export const useSelectedConversation = create<SelectedConversationState>()(
         userId: '',
         photo: '',
         username: '',
-        email: ''
+        email: '',
+        mock: false
       },
       setSelectedConversation: (conversation) =>
         set({ selectedConversation: conversation })

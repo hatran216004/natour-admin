@@ -9,6 +9,7 @@ export default function ConversationItem({
 }) {
   const recipient = conversation.participants[0];
   const lastMessage = conversation.lastMessage;
+
   const { user } = useAuthStore();
   const { setSelectedConversation } = useSelectedConversation();
 
@@ -24,7 +25,8 @@ export default function ConversationItem({
       photo: recipient.photo,
       userId: recipient._id,
       username: recipient.name,
-      email: recipient.email
+      email: recipient.email,
+      mock: conversation.mock
     });
   }
 

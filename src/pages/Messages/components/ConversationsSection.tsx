@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useConversationsStore } from '../../../store/messages.store';
 import { userApi } from '../../../services/user.api';
 import useDebounce from '../../../hooks/useDebounce';
@@ -10,8 +10,12 @@ import ConversationsList from './ConversationsList';
 import Search from '../../../components/Search';
 import useUrl from '../../../hooks/useUrl';
 import EmptyConversations from './EmptyConversations';
+import { Conversation } from '../../../types/conversations.type';
+import { useAuthStore } from '../../../store/auth.store';
 
 export default function ConversationsSection() {
+  const queryClient = useQueryClient();
+  const { user: currentUser } = useAuthStore();
   const { conversations, isLoading } = useConversations();
   const { conversations: conversationsStore, setConversations } =
     useConversationsStore();
@@ -19,7 +23,7 @@ export default function ConversationsSection() {
   const { currentValue: searchValue } = useUrl({ field: 'search' });
   const debounceValue = useDebounce(searchValue);
   const {
-    data,
+    data: searchData,
     isLoading: isFetchingUsers,
     isSuccess
   } = useQuery({
@@ -30,29 +34,64 @@ export default function ConversationsSection() {
 
   useEffect(() => {
     if (conversations.length && !isSuccess) {
-      setConversations(conversations);
+      const cloneConversations = conversations
+        .map((ele) => ({
+          ...ele,
+          mock: false
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      setConversations(cloneConversations);
     }
   }, [conversations, isSuccess, setConversations]);
 
   useEffect(() => {
-    console.log(2);
-    if (isSuccess) {
-      const users = data.data.data.users;
-      const userIds = users.map((user) => user._id);
+    if (searchValue && isSuccess && !isLoading) {
+      const users = searchData?.data?.data?.users;
 
-      const newConversations = conversationsStore.filter((conv) =>
-        userIds.includes(conv.participants[0]._id)
-      );
+      const newConversations: Conversation[] = users
+        .map((user, index) => {
+          const isExistConversation = conversations.find(
+            (ele) => ele.participants[0]._id === user._id
+          );
+          if (isExistConversation)
+            return { ...isExistConversation, mock: false };
+          return {
+            _id: index.toString(),
+            lastMessage: {
+              text: '',
+              sender: user._id
+            },
+            participants: [
+              {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                photo: user.photo
+              }
+            ],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            mock: true
+          };
+        })
+        .filter((conv) => conv.participants[0]._id !== currentUser?._id);
       setConversations(newConversations);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess]);
+  }, [isSuccess, isLoading]);
 
   return (
     <div className="py-4 h-full shadow-lg rounded-lg relative">
       <div className="px-4">
         <Search
-          handleClearInput={() => setConversations(conversations)}
+          handleClearInput={() =>
+            queryClient.invalidateQueries({
+              queryKey: ['conversations']
+            })
+          }
           isLoading={isFetchingUsers}
         />
         <h4 className="font-semibold text-lg mt-2">
@@ -64,7 +103,7 @@ export default function ConversationsSection() {
 
       {isLoading && (
         <div className="px-4">
-          {Array(conversationsStore.length ? conversationsStore.length : 3)
+          {Array(3)
             .fill(0)
             .map((_, index) => (
               <div key={index} className="pr-4 flex flex-col justify-center">

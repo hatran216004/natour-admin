@@ -25,7 +25,7 @@ export default function ChatBubble({
         />
       )}
       <p
-        className={classNames('p-2 rounded-xl', {
+        className={classNames('px-2 py-1 rounded-xl', {
           'bg-primary text-white': isMine,
           'bg-white': !isMine
         })}

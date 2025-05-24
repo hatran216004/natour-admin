@@ -14,6 +14,7 @@ export type Conversation = {
   participants: Participant[];
   createdAt: Date;
   updatedAt: Date;
+  mock: boolean;
 };
 
 export type ConversationsList = {
@@ -26,4 +27,5 @@ export type selectedConversationType = {
   username: string;
   photo: string;
   email: string;
+  mock?: boolean;
 };

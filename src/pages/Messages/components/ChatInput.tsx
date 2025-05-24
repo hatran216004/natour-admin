@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoMdSend } from 'react-icons/io';
 import { IoImagesOutline } from 'react-icons/io5';
 import useSendMessage from '../hooks/useSendMessage';
@@ -10,12 +10,20 @@ import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 export default function ChatInput({ disabled }: { disabled?: boolean }) {
-  const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
-  const { selectedConversation } = useSelectedConversation();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const { sendMessage, isPending } = useSendMessage();
+  const { selectedConversation, setSelectedConversation } =
+    useSelectedConversation();
   const { conversations: conversationsStore, setConversations } =
     useConversationsStore();
-  const { sendMessage, isPending } = useSendMessage();
+
+  useEffect(() => {
+    if (!isPending) inputRef.current?.focus();
+  }, [isPending]);
 
   function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,17 +39,27 @@ export default function ChatInput({ disabled }: { disabled?: boolean }) {
           const newMessage = data.data.data.newMessage.text;
           const sender = data.data.data.newMessage.sender;
 
+          const newConversations = conversationsStore.map((conv) =>
+            conv._id === selectedConversation._id
+              ? {
+                  ...conv,
+                  lastMessage: { text: newMessage, sender },
+                  mock: false
+                }
+              : conv
+          );
+          const newSelecteConversation = {
+            ...selectedConversation,
+            mock: false
+          };
+
+          setMessage('');
+          setConversations(newConversations);
+          setSelectedConversation(newSelecteConversation);
+
           queryClient.invalidateQueries({
             queryKey: ['messages-conversation']
           });
-
-          const newConversations = conversationsStore.map((conv) =>
-            conv._id === selectedConversation._id
-              ? { ...conv, lastMessage: { text: newMessage, sender } }
-              : conv
-          );
-          setMessage('');
-          setConversations(newConversations);
         },
         onError: () => {
           toast.error('Error sending message, please try again later');
@@ -65,6 +83,7 @@ export default function ChatInput({ disabled }: { disabled?: boolean }) {
           <IoImagesOutline size={24} />
         </label>
         <input
+          ref={inputRef}
           disabled={isPending}
           onChange={(e) => setMessage(e.target.value)}
           value={message}

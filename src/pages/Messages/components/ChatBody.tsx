@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
-import Skeleton from '../../../components/Skeleton/Skeleton';
 import { useAuthStore } from '../../../store/auth.store';
 import { useSelectedConversation } from '../../../store/messages.store';
 import useMessages from '../hooks/useMessages';
+import Skeleton from '../../../components/Skeleton/Skeleton';
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
-import { BsChatSquareDots } from 'react-icons/bs';
+import EmptyChatMessages from './EmptyChatMessages';
 
 export default function ChatBody() {
   const { selectedConversation } = useSelectedConversation();
-  const { messages, isLoading } = useMessages(selectedConversation.userId);
+  const { messages, isLoading } = useMessages();
   const { user } = useAuthStore();
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
@@ -23,14 +23,9 @@ export default function ChatBody() {
 
   if (!selectedConversation.userId) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div>
-          <BsChatSquareDots size={220} className="mx-auto" />
-          <p className="text-center mt-2 font-medium">
-            Choose a user to start chatting
-          </p>
-        </div>
-      </div>
+      <EmptyChatMessages>
+        Empty conversations. Start a new conversation
+      </EmptyChatMessages>
     );
   }
 
@@ -42,6 +37,11 @@ export default function ChatBody() {
             <Skeleton size="sm" />
             <Skeleton size="sm" side="right" />
           </>
+        )}
+        {selectedConversation.mock && (
+          <EmptyChatMessages>
+            No messages yet. Start the conversation!
+          </EmptyChatMessages>
         )}
         {!isLoading &&
           messages?.map((message) => {
