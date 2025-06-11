@@ -12,9 +12,7 @@ export default function ReviewRow({ review }: { review: Review }) {
         <div className="flex gap-[14px] items-center">
           <img
             className="w-10 h-10 object-cover rounded-xl"
-            src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${
-              review.user.photo
-            }`}
+            src={`${import.meta.env.VITE_IMG_URL}/users/${review.user.photo}`}
             alt={review.user.name}
           />
           <h2 className="text-main text-sm capitalize text-nowrap">

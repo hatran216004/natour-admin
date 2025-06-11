@@ -11,7 +11,7 @@ export default function UserListItem({
     <div className="flex gap-[14px] items-center">
       <img
         className="w-10 h-10 object-cover rounded-xl"
-        src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${photo}`}
+        src={`${import.meta.env.VITE_IMG_URL}/users/${photo}`}
         alt={name}
       />
       <div>

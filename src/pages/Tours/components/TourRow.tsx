@@ -21,9 +21,7 @@ export default function TourRow({ tour }: { tour: Tour }) {
       <td scope="row" className="px-6 py-4">
         <img
           className="min-w-52 h-[108px] object-cover rounded-md"
-          src={`${import.meta.env.VITE_API_BASE_URL}/img/tours/${
-            tour.imageCover
-          }`}
+          src={`${import.meta.env.VITE_IMG_URL}/tours/${tour.imageCover}`}
           alt={tour.name}
         />
       </td>

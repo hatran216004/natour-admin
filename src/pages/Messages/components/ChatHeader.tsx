@@ -1,7 +1,11 @@
+import classNames from 'classnames';
+import { useSocket } from '../../../context/SocketContext';
 import { useSelectedConversation } from '../../../store/messages.store';
 
 export default function ChatHeader() {
   const { selectedConversation } = useSelectedConversation();
+  const { onlineUsers } = useSocket();
+  const isOnline = onlineUsers.includes(selectedConversation.userId);
 
   if (!selectedConversation.userId) return null;
 
@@ -11,12 +15,20 @@ export default function ChatHeader() {
         <figure className="relative">
           <img
             className="w-10 h-10 object-cover rounded-full"
-            src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${
+            src={`${import.meta.env.VITE_IMG_URL}/users/${
               selectedConversation?.photo
             }`}
             alt={selectedConversation?.username}
           />
-          <span className="w-3 h-3 border-gray-600 border-2 rounded-full bg-green-500 absolute right-0 bottom-0"></span>
+          <span
+            className={classNames(
+              'w-3 h-3 border-gray-600 border-2 rounded-full  absolute right-0 bottom-0',
+              {
+                'bg-green-500': isOnline,
+                'bg-gray-400': !isOnline
+              }
+            )}
+          ></span>
         </figure>
         <div>
           <h2 className="text-main text-sm font-bold capitalize">

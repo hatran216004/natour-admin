@@ -13,6 +13,7 @@ import { routes } from './utils/links.ts';
 import Login from './pages/Login';
 import LoginLayout from './layout/LoginLayout.tsx';
 import MainLayout from './layout/MainLayout.tsx';
+import SocketProvider from './context/SocketContext.tsx';
 
 function ProtectedRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -26,7 +27,7 @@ function RejectedRoutes() {
 
 function App() {
   return (
-    <>
+    <SocketProvider>
       <BrowserRouter>
         <Routes>
           <Route element={<ProtectedRoutes />}>
@@ -71,7 +72,7 @@ function App() {
           }
         }}
       />
-    </>
+    </SocketProvider>
   );
 }
 

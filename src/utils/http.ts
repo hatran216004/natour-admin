@@ -58,8 +58,17 @@ class Http {
     // Response interceptor - xử lý refresh token
     this.instance.interceptors.response.use(
       (response) => response, // Trả về response nếu không có lỗi
-      async (error: AxiosError) => {
+
+      async (error: AxiosError<{ message: string }>) => {
         console.log(error);
+        if (
+          !error.response?.data?.message.includes(
+            'Token invalid or has expired'
+          )
+        ) {
+          return Promise.reject(error);
+        }
+
         // Xử lý khi có lỗi
         const originalConfig = error.config as InternalAxiosRequestConfig & {
           _retry: boolean;

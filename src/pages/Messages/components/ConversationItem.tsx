@@ -1,22 +1,29 @@
 import { useAuthStore } from '../../../store/auth.store';
 import { Conversation } from '../../../types/conversations.type';
 import { useSelectedConversation } from '../../../store/messages.store';
+import classNames from 'classnames';
+import { timeAgo } from '../../../utils/helpers';
+import { useSocket } from '../../../context/SocketContext';
 
 export default function ConversationItem({
   conversation
 }: {
   conversation: Conversation;
 }) {
+  const { onlineUsers } = useSocket();
+  const { user } = useAuthStore();
+  const { selectedConversation, setSelectedConversation } =
+    useSelectedConversation();
+
   const recipient = conversation.participants[0];
   const lastMessage = conversation.lastMessage;
-
-  const { user } = useAuthStore();
-  const { setSelectedConversation } = useSelectedConversation();
+  const isActive = selectedConversation._id === conversation._id;
+  const isOnline = onlineUsers.includes(recipient._id);
 
   const messageElements = Array.from(lastMessage?.text);
   const message =
     messageElements.length > 20
-      ? messageElements.slice(0, 20).join('') + '...'
+      ? messageElements.slice(0, 10).join('') + '...'
       : lastMessage?.text;
 
   function handleSelectecConversation() {
@@ -32,19 +39,31 @@ export default function ConversationItem({
 
   return (
     <li
-      className="cursor-pointer hover:opacity-90 p-2 bg-white rounded-lg shadow-sm"
+      className={classNames(
+        'cursor-pointer hover:opacity-90 p-2 rounded-lg shadow-sm',
+        {
+          'bg-gray-200': isActive,
+          'bg-white': !isActive
+        }
+      )}
       onClick={handleSelectecConversation}
     >
       <div className="flex items-center ">
         <figure className="relative flex-shrink-0 mr-4">
           <img
             className="w-10 h-10 object-cover rounded-full"
-            src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${
-              recipient?.photo
-            }`}
+            src={`${import.meta.env.VITE_IMG_URL}/users/${recipient?.photo}`}
             alt={recipient?.name}
           />
-          <span className="w-3 h-3 border-gray-600 border-2 rounded-full bg-green-500 absolute right-0 bottom-0"></span>
+          <span
+            className={classNames(
+              'w-3 h-3 border-gray-600 border-2 rounded-full absolute right-0 bottom-0',
+              {
+                'bg-green-500': isOnline,
+                'bg-gray-400': !isOnline
+              }
+            )}
+          ></span>
         </figure>
         <div className="flex-1">
           <h2 className="text-main line-clamp-1 text-sm font-bold capitalize">
@@ -57,7 +76,9 @@ export default function ConversationItem({
             </p>
           </div>
         </div>
-        <span className="ml-auto mb-auto text-xs">5 minutes ago</span>
+        <span className="ml-auto mb-auto text-xs">
+          {timeAgo(conversation.updatedAt)}
+        </span>
       </div>
     </li>
   );

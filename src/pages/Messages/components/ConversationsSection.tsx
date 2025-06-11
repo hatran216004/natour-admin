@@ -22,6 +22,7 @@ export default function ConversationsSection() {
 
   const { currentValue: searchValue } = useUrl({ field: 'search' });
   const debounceValue = useDebounce(searchValue);
+
   const {
     data: searchData,
     isLoading: isFetchingUsers,

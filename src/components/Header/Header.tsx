@@ -1,5 +1,4 @@
 import { useLocation } from 'react-router-dom';
-// import Search from '../Search';
 import { FiLogOut } from 'react-icons/fi';
 import { useAuthStore } from '../../store/auth.store';
 import useLogout from '../../features/auth/useLogout';
@@ -24,9 +23,7 @@ export default function Header() {
             <CiBellOn size={26} />
           </button>
           <img
-            src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${
-              user?.photo
-            }`}
+            src={`${import.meta.env.VITE_IMG_URL}/users/${user?.photo}`}
             alt={user?.name}
             className="w-8 h-8 rounded-full object-cover"
           />
