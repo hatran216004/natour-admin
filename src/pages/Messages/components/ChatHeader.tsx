@@ -4,8 +4,7 @@ import { useSelectedConversation } from '../../../store/messages.store';
 
 export default function ChatHeader() {
   const { selectedConversation } = useSelectedConversation();
-  const { onlineUsers } = useSocket();
-  const isOnline = onlineUsers.includes(selectedConversation.userId);
+  const { isOnline } = useSocket();
 
   if (!selectedConversation.userId) return null;
 

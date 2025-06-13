@@ -1,6 +1,6 @@
 export type Message = {
   _id: string;
-  conservationId: string;
+  conversationId: string;
   sender: string;
   text: string;
   createdAt: Date;

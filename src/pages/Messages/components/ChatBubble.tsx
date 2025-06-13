@@ -1,15 +1,15 @@
 import classNames from 'classnames';
 
 export default function ChatBubble({
-  message,
   isMine,
   username,
-  photo
+  photo,
+  children
 }: {
-  message?: string;
   isMine?: boolean;
   username?: string;
   photo?: string;
+  children: React.ReactNode;
 }) {
   return (
     <div
@@ -20,18 +20,18 @@ export default function ChatBubble({
       {!isMine && (
         <img
           className="w-8 h-8 object-cover rounded-full flex-shrink-0"
-          src={`${import.meta.env.VITE_API_BASE_URL}/img/users/${photo}`}
+          src={`${import.meta.env.VITE_IMG_URL}/users/${photo}`}
           alt={username}
         />
       )}
-      <p
+      <div
         className={classNames('px-2 py-1 rounded-xl', {
           'bg-primary text-white': isMine,
-          'bg-white': !isMine
+          'bg-[#eee]': !isMine
         })}
       >
-        {message}
-      </p>
+        {children}
+      </div>
     </div>
   );
 }

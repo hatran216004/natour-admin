@@ -6,6 +6,7 @@ type ValueType = {
   socket: Socket | null;
   setSocket: React.Dispatch<React.SetStateAction<Socket | null>>;
   onlineUsers: string[];
+  isOnline: boolean;
 };
 
 const SocketContext = createContext<ValueType>(null!);
@@ -14,6 +15,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuthStore();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [isOnline, setIsOnline] = useState(false);
 
   useEffect(() => {
     const socket = io('http://localhost:3000', {
@@ -23,7 +25,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
     });
     socket.on('getOnlineUsers', (users) => {
       setOnlineUsers(users);
-      console.log(users);
+      setIsOnline(users.includes(user?._id));
     });
 
     setSocket(socket);
@@ -36,7 +38,9 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
   }, [user?._id]);
 
   return (
-    <SocketContext.Provider value={{ socket, onlineUsers, setSocket }}>
+    <SocketContext.Provider
+      value={{ socket, onlineUsers, isOnline, setSocket }}
+    >
       {children}
     </SocketContext.Provider>
   );

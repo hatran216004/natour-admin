@@ -10,7 +10,7 @@ export default function ConversationItem({
 }: {
   conversation: Conversation;
 }) {
-  const { onlineUsers } = useSocket();
+  const { isOnline } = useSocket();
   const { user } = useAuthStore();
   const { selectedConversation, setSelectedConversation } =
     useSelectedConversation();
@@ -18,7 +18,6 @@ export default function ConversationItem({
   const recipient = conversation.participants[0];
   const lastMessage = conversation.lastMessage;
   const isActive = selectedConversation._id === conversation._id;
-  const isOnline = onlineUsers.includes(recipient._id);
 
   const messageElements = Array.from(lastMessage?.text);
   const message =
@@ -77,7 +76,7 @@ export default function ConversationItem({
           </div>
         </div>
         <span className="ml-auto mb-auto text-xs">
-          {timeAgo(conversation.updatedAt)}
+          {!conversation.mock && timeAgo(conversation.updatedAt)}
         </span>
       </div>
     </li>

@@ -9,7 +9,7 @@ export function timeAgo(isoDate: Date) {
   const date = new Date(isoDate);
   const now = new Date();
 
-  if (isNaN(date.getTime())) return 'Invalid date';
+  if (isNaN(date.getTime())) return null;
 
   const second = Math.floor((now.getTime() - date.getTime()) / 1000);
   if (second < 60) return 'Just now';
