@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../../store/auth.store';
 import { useSelectedConversation } from '../../../store/messages.store';
 import useMessages from '../hooks/useMessages';
@@ -10,22 +10,16 @@ import { useSocket } from '../../../context/SocketContext';
 import TypingIndicator from './TypingIndicator';
 import { Message } from '../../../types/messages.type';
 import useScrollEndMessage from '../hooks/useScrollEndMessage';
-
-type TypingType = {
-  conversationId: string;
-  recipientId: string | null;
-  senderId: string | null;
-};
+import useTyping from '../hooks/useTyping';
 
 export default function ChatBody() {
-  const { messagesEndRef, scrollToBottom } = useScrollEndMessage();
   const [messages, setMessages] = useState<Message[]>([]);
-  const { socket } = useSocket();
-  const { messages: messagesApi, isLoading } = useMessages();
-  const [isTyping, setIsTyping] = useState(false);
-  const typingTimeoutRef = useRef<number | null>(null);
 
+  const { socket } = useSocket();
+  const { messagesEndRef, scrollToBottom } = useScrollEndMessage();
+  const { messages: messagesApi, isLoading } = useMessages();
   const { selectedConversation } = useSelectedConversation();
+  const { isTyping, setIsTyping } = useTyping();
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -37,7 +31,7 @@ export default function ChatBody() {
       setMessages(messagesApi);
       setIsTyping(false);
     }
-  }, [messagesApi, selectedConversation._id]);
+  }, [messagesApi, selectedConversation._id, setIsTyping]);
 
   useEffect(() => {
     if (!socket) return;
@@ -46,33 +40,10 @@ export default function ChatBody() {
       setMessages((pre) => [...pre, message]);
     }
 
-    function handleTyping(data: TypingType) {
-      if (
-        data.conversationId === selectedConversation._id &&
-        data.senderId !== user?._id
-      )
-        setIsTyping(true);
-
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-
-      typingTimeoutRef.current = setTimeout(() => {
-        setIsTyping(false);
-        typingTimeoutRef.current = null;
-      }, 3000);
-    }
-
     socket.on('newMessage', handleNewMessage);
-    socket.on('userTyping', handleTyping);
 
     return () => {
       socket.off('newMessage', handleNewMessage);
-      socket.off('userTyping', handleTyping);
-
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
     };
   }, [socket, selectedConversation._id, user?._id]);
 

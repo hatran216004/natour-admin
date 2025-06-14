@@ -64,7 +64,6 @@ export default function ChatInput({
       {
         onSuccess: (data) => {
           const { newMessage } = data.data.data;
-
           const text = newMessage.text;
           const sender = newMessage.sender;
           const conversationId = newMessage.conversationId;
@@ -79,15 +78,24 @@ export default function ChatInput({
                 }
               : conv
           );
-          const newSelecteConversation = {
-            ...selectedConversation,
-            _id: conversationId,
-            mock: false
-          };
 
           setMessages((pre) => [...pre, newMessage]);
           setConversations(newConversations);
-          setSelectedConversation(newSelecteConversation);
+
+          if (selectedConversation.mock) {
+            const newSelecteConversation = {
+              ...selectedConversation,
+              _id: conversationId,
+              mock: false
+            };
+            setSelectedConversation(newSelecteConversation);
+          }
+
+          // Emit event
+          socket?.emit('stopTyping', {
+            recipientId: selectedConversation.userId
+          });
+          socket?.emit('sendMessage', newMessage);
         },
         onError: () => {
           toast.error('Error sending message, please try again later');
