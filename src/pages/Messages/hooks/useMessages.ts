@@ -4,13 +4,13 @@ import { useSelectedConversation } from '../../../store/messages.store';
 
 function useMessages() {
   const {
-    selectedConversation: { userId, mock }
+    selectedConversation: { userId, mock, _id }
   } = useSelectedConversation();
 
   const { data, isLoading } = useQuery({
     queryKey: ['messages-conversation', userId],
     queryFn: () => conversationsApi.getAllMessages(userId),
-    enabled: !mock
+    enabled: !mock && !!_id
   });
 
   return { messages: data?.data.data.messages, isLoading };

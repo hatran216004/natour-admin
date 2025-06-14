@@ -11,6 +11,7 @@ import { useSocket } from '../../../context/SocketContext';
 import { useAuthStore } from '../../../store/auth.store';
 import useDebounce from '../../../hooks/useDebounce';
 import { Message } from '../../../types/messages.type';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ChatInput({
   disabled,
@@ -19,6 +20,7 @@ export default function ChatInput({
   disabled?: boolean;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }) {
+  const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
   const { socket } = useSocket();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -64,9 +66,7 @@ export default function ChatInput({
       {
         onSuccess: (data) => {
           const { newMessage } = data.data.data;
-          const text = newMessage.text;
-          const sender = newMessage.sender;
-          const conversationId = newMessage.conversationId;
+          const { text, sender, conversationId } = newMessage;
 
           const newConversations = conversations.map((conv) =>
             conv._id === selectedConversation._id
@@ -78,7 +78,6 @@ export default function ChatInput({
                 }
               : conv
           );
-
           setMessages((pre) => [...pre, newMessage]);
           setConversations(newConversations);
 
@@ -89,13 +88,18 @@ export default function ChatInput({
               mock: false
             };
             setSelectedConversation(newSelecteConversation);
+            queryClient.invalidateQueries({
+              queryKey: ['conversations']
+            });
           }
 
+          if (!socket) return;
+
           // Emit event
-          socket?.emit('stopTyping', {
+          socket.emit('stopTyping', {
             recipientId: selectedConversation.userId
           });
-          socket?.emit('sendMessage', newMessage);
+          socket.emit('sendMessage', newMessage);
         },
         onError: () => {
           toast.error('Error sending message, please try again later');

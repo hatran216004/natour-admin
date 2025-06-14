@@ -34,7 +34,7 @@ export default function ConversationsSection() {
   });
 
   useEffect(() => {
-    if (conversations.length && !isSuccess) {
+    if (conversations && !searchValue) {
       const cloneConversations = conversations
         .map((ele) => ({
           ...ele,
@@ -46,10 +46,10 @@ export default function ConversationsSection() {
         );
       setConversations(cloneConversations);
     }
-  }, [conversations, isSuccess, setConversations]);
+  }, [conversations, searchValue, setConversations]);
 
   useEffect(() => {
-    if (searchValue && isSuccess && !isLoading) {
+    if (debounceValue && isSuccess && conversations) {
       const users = searchData?.data?.data?.users;
 
       const newConversations: Conversation[] = users
@@ -82,7 +82,7 @@ export default function ConversationsSection() {
       setConversations(newConversations);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, isLoading]);
+  }, [isSuccess, conversations, debounceValue, conversations]);
 
   return (
     <div className="py-4 h-full shadow-lg rounded-lg relative">

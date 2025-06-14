@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../../store/auth.store';
 import { useSelectedConversation } from '../../../store/messages.store';
 import useMessages from '../hooks/useMessages';
-import Skeleton from '../../../components/Skeleton';
+import Loading from '../../../components/Loading';
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import EmptyChatMessages from './EmptyChatMessages';
@@ -37,13 +37,31 @@ export default function ChatBody() {
     if (!socket) return;
 
     function handleNewMessage(message: Message) {
-      setMessages((pre) => [...pre, message]);
+      const { _id, conversationId, sender } = message;
+      if (message.conversationId === selectedConversation._id) {
+        socket?.emit('seenMeessage', {
+          _id,
+          conversationId,
+          senderId: sender
+        });
+        setMessages((pre) => [...pre, message]);
+      }
+    }
+
+    function handleMessageSeen(message: Message) {
+      setMessages((pre) => {
+        const cloneMessages = [...pre];
+        cloneMessages[pre.length - 1].isSeen = message.isSeen;
+        return cloneMessages;
+      });
     }
 
     socket.on('newMessage', handleNewMessage);
+    socket.on('messageSeen', handleMessageSeen);
 
     return () => {
       socket.off('newMessage', handleNewMessage);
+      socket.off('messageSeen', handleMessageSeen);
     };
   }, [socket, selectedConversation._id, user?._id]);
 
@@ -58,7 +76,7 @@ export default function ChatBody() {
   return (
     <div className="flex flex-col flex-1">
       <div className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-4">
-        {isLoading && <Skeleton />}
+        {isLoading && <Loading />}
 
         {selectedConversation.mock && (
           <EmptyChatMessages>
@@ -68,16 +86,19 @@ export default function ChatBody() {
 
         {!selectedConversation.mock &&
           messages.length > 0 &&
-          messages.map((message) => {
+          messages.map((message, index) => {
             const isMine = message.sender === user?._id;
+            const isSeen = index === messages.length - 1 && message.isSeen;
             const isLastMessage =
               messages.length - 1 === messages.indexOf(message);
+
             return (
               <div
                 key={message._id}
                 ref={isLastMessage ? messagesEndRef : null}
               >
                 <ChatBubble
+                  isSeen={isSeen}
                   photo={selectedConversation.photo}
                   username={selectedConversation.username}
                   isMine={isMine}
