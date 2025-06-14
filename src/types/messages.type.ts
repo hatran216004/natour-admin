@@ -5,6 +5,7 @@ export type Message = {
   text: string;
   createdAt: Date;
   updatedAt: Date;
+  seen?: boolean;
 };
 export type MessagesList = {
   messages: Message[];

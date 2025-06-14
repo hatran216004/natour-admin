@@ -7,23 +7,23 @@ import {
   useConversationsStore,
   useSelectedConversation
 } from '../../../store/messages.store';
-import { Message } from '../../../types/messages.type';
 import { useSocket } from '../../../context/SocketContext';
 import { useAuthStore } from '../../../store/auth.store';
 import useDebounce from '../../../hooks/useDebounce';
+import { Message } from '../../../types/messages.type';
 
 export default function ChatInput({
   disabled,
   setMessages
 }: {
   disabled?: boolean;
-  setMessages?: React.Dispatch<React.SetStateAction<Message[]>>;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }) {
   const [message, setMessage] = useState('');
   const { socket } = useSocket();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuthStore();
-  const debounceValue = useDebounce(message, 100);
+  const debounceValue = useDebounce(message);
 
   const { sendMessage, isPending } = useSendMessage();
   const { selectedConversation, setSelectedConversation } =
@@ -45,8 +45,6 @@ export default function ChatInput({
 
     if (debounceValue) {
       socket?.emit('typing', typingData);
-    } else {
-      socket?.emit('stopTyping', typingData);
     }
   }, [debounceValue, selectedConversation, socket, user?._id]);
 
@@ -66,6 +64,7 @@ export default function ChatInput({
       {
         onSuccess: (data) => {
           const { newMessage } = data.data.data;
+
           const text = newMessage.text;
           const sender = newMessage.sender;
           const conversationId = newMessage.conversationId;
@@ -86,12 +85,11 @@ export default function ChatInput({
             mock: false
           };
 
+          setMessages((pre) => [...pre, newMessage]);
           setConversations(newConversations);
           setSelectedConversation(newSelecteConversation);
-          setMessages?.((pre) => [...pre, newMessage]);
         },
-        onError: (error) => {
-          console.log(error);
+        onError: () => {
           toast.error('Error sending message, please try again later');
         },
         onSettled: () => setMessage('')

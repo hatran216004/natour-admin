@@ -6,13 +6,14 @@ function useMessages() {
   const {
     selectedConversation: { userId, mock }
   } = useSelectedConversation();
+
   const { data, isLoading } = useQuery({
     queryKey: ['messages-conversation', userId],
     queryFn: () => conversationsApi.getAllMessages(userId),
     enabled: !mock
   });
 
-  return { messages: data?.data?.data?.messages, isLoading };
+  return { messages: data?.data.data.messages, isLoading };
 }
 
 export default useMessages;

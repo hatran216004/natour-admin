@@ -7,8 +7,9 @@ import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import EmptyChatMessages from './EmptyChatMessages';
 import { useSocket } from '../../../context/SocketContext';
-import { Message } from '../../../types/messages.type';
 import TypingIndicator from './TypingIndicator';
+import { Message } from '../../../types/messages.type';
+import useScrollEndMessage from '../hooks/useScrollEndMessage';
 
 type TypingType = {
   conversationId: string;
@@ -17,30 +18,26 @@ type TypingType = {
 };
 
 export default function ChatBody() {
-  const { socket, onlineUsers } = useSocket();
-  const { messages: messagesApi, isLoading } = useMessages();
+  const { messagesEndRef, scrollToBottom } = useScrollEndMessage();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [dataTyping, setDataTyping] = useState<TypingType | null>(null);
+  const { socket } = useSocket();
+  const { messages: messagesApi, isLoading } = useMessages();
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef<number | null>(null);
 
   const { selectedConversation } = useSelectedConversation();
   const { user } = useAuthStore();
 
-  const messagesEndRef = useRef<null | HTMLDivElement>(null);
-
-  function scrollToBottom() {
-    messagesEndRef.current?.scrollIntoView();
-  }
-
   useEffect(() => {
     scrollToBottom();
-  }, [messages, dataTyping]);
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     if (messagesApi) {
       setMessages(messagesApi);
-      setDataTyping(null);
+      setIsTyping(false);
     }
-  }, [messagesApi]);
+  }, [messagesApi, selectedConversation._id]);
 
   useEffect(() => {
     if (!socket) return;
@@ -54,21 +51,28 @@ export default function ChatBody() {
         data.conversationId === selectedConversation._id &&
         data.senderId !== user?._id
       )
-        setDataTyping(data);
-    }
+        setIsTyping(true);
 
-    function handleStopTyping() {
-      setDataTyping(null);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+        typingTimeoutRef.current = null;
+      }, 3000);
     }
 
     socket.on('newMessage', handleNewMessage);
     socket.on('userTyping', handleTyping);
-    socket.on('userStopTyping', handleStopTyping);
 
     return () => {
       socket.off('newMessage', handleNewMessage);
       socket.off('userTyping', handleTyping);
-      socket.off('userStopTyping', handleStopTyping);
+
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
     };
   }, [socket, selectedConversation._id, user?._id]);
 
@@ -97,8 +101,6 @@ export default function ChatBody() {
             const isMine = message.sender === user?._id;
             const isLastMessage =
               messages.length - 1 === messages.indexOf(message);
-            if (message.conversationId !== selectedConversation._id)
-              return null;
             return (
               <div
                 key={message._id}
@@ -115,16 +117,14 @@ export default function ChatBody() {
             );
           })}
 
-        {dataTyping &&
-          dataTyping?.conversationId === selectedConversation._id &&
-          onlineUsers.includes(dataTyping.senderId!) && (
-            <ChatBubble
-              photo={selectedConversation.photo}
-              username={selectedConversation.username}
-            >
-              <TypingIndicator />
-            </ChatBubble>
-          )}
+        {isTyping && (
+          <ChatBubble
+            photo={selectedConversation.photo}
+            username={selectedConversation.username}
+          >
+            <TypingIndicator />
+          </ChatBubble>
+        )}
       </div>
       <ChatInput disabled={isLoading} setMessages={setMessages} />
     </div>

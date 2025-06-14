@@ -10,7 +10,7 @@ export default function ConversationItem({
 }: {
   conversation: Conversation;
 }) {
-  const { isOnline } = useSocket();
+  const { onlineUsers } = useSocket();
   const { user } = useAuthStore();
   const { selectedConversation, setSelectedConversation } =
     useSelectedConversation();
@@ -58,8 +58,8 @@ export default function ConversationItem({
             className={classNames(
               'w-3 h-3 border-gray-600 border-2 rounded-full absolute right-0 bottom-0',
               {
-                'bg-green-500': isOnline,
-                'bg-gray-400': !isOnline
+                'bg-green-500': onlineUsers.includes(recipient._id),
+                'bg-gray-400': !onlineUsers.includes(recipient._id)
               }
             )}
           ></span>
