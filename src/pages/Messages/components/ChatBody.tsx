@@ -1,42 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import _ from 'lodash';
+
 import { useAuthStore } from '../../../store/auth.store';
 import { useSelectedConversation } from '../../../store/messages.store';
+import { useSocket } from '../../../context/SocketContext';
 import useMessages from '../hooks/useMessages';
+
+import TypingIndicator from './TypingIndicator';
 import Loading from '../../../components/Loading';
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import EmptyChatMessages from './EmptyChatMessages';
-import { useSocket } from '../../../context/SocketContext';
-import TypingIndicator from './TypingIndicator';
 import { Message } from '../../../types/messages.type';
-import useScrollEndMessage from '../hooks/useScrollEndMessage';
 import useTyping from '../hooks/useTyping';
 
 // 1. LỖI GIẬT CHAT ĐỐI VỚI FAKE CONVERSATION: OK
-// 2. TIN NHẮN VỪA NHẮN BỊ DELAY HIỂN THỊ KHI CHUYỂN GIỮA CÁC CONVERSATION
+// 2. TIN NHẮN VỪA NHẮN BỊ DELAY HIỂN THỊ KHI CHUYỂN GIỮA CÁC CONVERSATION: OK
 // 3. TIẾP TUC SEEN/UNSEEN MESSAGE
 // 4. HIỂN THỊ CONVERSATIN Ở PHÍA NGƯỜI NHẬN KHI NGƯỜI GỬI BẮT ĐẦU CUỘC TRÒ CHUYỆN
 
 export default function ChatBody() {
-  const [messages, setMessages] = useState<Message[]>([]);
-
   const { socket } = useSocket();
-  const { messagesEndRef, scrollToBottom } = useScrollEndMessage();
-  const { messages: messagesApi, isLoading } = useMessages();
+  const { isTyping } = useTyping();
+  const { messages, isLoading, messagesEndRef, setMessages } = useMessages();
   const { selectedConversation } = useSelectedConversation();
-  const { isTyping, setIsTyping } = useTyping();
   const { user } = useAuthStore();
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
-
-  useEffect(() => {
-    if (messagesApi) {
-      setMessages(messagesApi);
-      setIsTyping(false);
-    }
-  }, [messagesApi, selectedConversation._id, setIsTyping]);
 
   useEffect(() => {
     if (!socket) return;
@@ -55,7 +43,7 @@ export default function ChatBody() {
 
     function handleMessageSeen(message: Message) {
       setMessages((pre) => {
-        const cloneMessages = [...pre];
+        const cloneMessages = _.cloneDeep(pre);
         cloneMessages[pre.length - 1].isSeen = message.isSeen;
         return cloneMessages;
       });
@@ -68,7 +56,7 @@ export default function ChatBody() {
       socket.off('newMessage', handleNewMessage);
       socket.off('messageSeen', handleMessageSeen);
     };
-  }, [socket, selectedConversation._id, user?._id]);
+  }, [socket, selectedConversation._id, setMessages]);
 
   if (!selectedConversation.userId) {
     return (
@@ -88,20 +76,14 @@ export default function ChatBody() {
           </EmptyChatMessages>
         )}
 
-        {!selectedConversation.mock &&
-          messages.length > 0 &&
-          messages.map((message, index) => {
-            const isMine = message.sender === user?._id;
-            const isSeen = index === messages.length - 1 && message.isSeen;
-            const isLastMessage =
-              messages.length - 1 === messages.indexOf(message);
-
-            return (
-              <div
-                key={message._id}
-                ref={isLastMessage ? messagesEndRef : null}
-              >
+        {!selectedConversation.mock && messages.length > 0 && (
+          <>
+            {messages.map((message, index) => {
+              const isMine = message.sender === user?._id;
+              const isSeen = index === messages.length - 1 && message.isSeen;
+              return (
                 <ChatBubble
+                  key={message._id}
                   isSeen={isSeen}
                   photo={selectedConversation.photo}
                   username={selectedConversation.username}
@@ -109,9 +91,11 @@ export default function ChatBody() {
                 >
                   {message.text}
                 </ChatBubble>
-              </div>
-            );
-          })}
+              );
+            })}
+            <span ref={messagesEndRef}></span>
+          </>
+        )}
 
         {isTyping && (
           <ChatBubble
@@ -122,6 +106,7 @@ export default function ChatBody() {
           </ChatBubble>
         )}
       </div>
+
       <ChatInput disabled={isLoading} setMessages={setMessages} />
     </div>
   );

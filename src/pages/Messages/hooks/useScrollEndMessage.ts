@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 
 function useScrollEndMessage() {
-  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const messagesEndRef = useRef<null | HTMLSpanElement>(null);
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView();

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { IoMdSend } from 'react-icons/io';
 import { IoImagesOutline } from 'react-icons/io5';
 import toast from 'react-hot-toast';
+
 import useSendMessage from '../hooks/useSendMessage';
 import {
   useConversationsStore,
@@ -44,7 +45,6 @@ export default function ChatInput({
       senderId: user?._id,
       recipientId: selectedConversation.userId
     };
-
     if (debounceValue) {
       socket?.emit('typing', typingData);
     }
@@ -78,13 +78,13 @@ export default function ChatInput({
                 }
               : conv
           );
+          setConversations(newConversations);
           setMessages((pre) => {
             const cloneMessages = pre.filter(
-              (msg) => msg.conversationId === selectedConversation._id
+              (msg) => msg.conversationId === conversationId
             );
             return [...cloneMessages, newMessage];
           });
-          setConversations(newConversations);
 
           if (selectedConversation.mock) {
             const newSelecteConversation = {

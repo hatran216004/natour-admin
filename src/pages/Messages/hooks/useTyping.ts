@@ -26,7 +26,7 @@ function useTyping(typingTimeout = 3000) {
         data.conversationId === selectedConversation._id &&
         data.senderId !== user?._id
       )
-        setIsTyping?.(true);
+        setIsTyping(true);
 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
@@ -37,7 +37,7 @@ function useTyping(typingTimeout = 3000) {
 
     function handleStopTyping() {
       typingTimeoutRef.current = null;
-      setIsTyping?.(false);
+      setIsTyping(false);
     }
 
     socket.on('userTyping', handleTyping);
