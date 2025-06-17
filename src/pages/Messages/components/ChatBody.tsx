@@ -12,6 +12,11 @@ import { Message } from '../../../types/messages.type';
 import useScrollEndMessage from '../hooks/useScrollEndMessage';
 import useTyping from '../hooks/useTyping';
 
+// 1. LỖI GIẬT CHAT ĐỐI VỚI FAKE CONVERSATION: OK
+// 2. TIN NHẮN VỪA NHẮN BỊ DELAY HIỂN THỊ KHI CHUYỂN GIỮA CÁC CONVERSATION
+// 3. TIẾP TUC SEEN/UNSEEN MESSAGE
+// 4. HIỂN THỊ CONVERSATIN Ở PHÍA NGƯỜI NHẬN KHI NGƯỜI GỬI BẮT ĐẦU CUỘC TRÒ CHUYỆN
+
 export default function ChatBody() {
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -75,9 +80,8 @@ export default function ChatBody() {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-4">
-        {isLoading && <Loading />}
-
+      <div className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-4 relative">
+        {isLoading && !messages.length && <Loading />}
         {selectedConversation.mock && (
           <EmptyChatMessages>
             No messages yet. Start the conversation
