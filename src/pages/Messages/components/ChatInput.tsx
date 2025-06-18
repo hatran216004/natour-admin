@@ -26,7 +26,7 @@ export default function ChatInput({
   const { socket } = useSocket();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuthStore();
-  const debounceValue = useDebounce(message);
+  const debounceValue = useDebounce(message, 1000);
 
   const { sendMessage, isPending } = useSendMessage();
   const { selectedConversation, setSelectedConversation } =
@@ -121,7 +121,7 @@ export default function ChatInput({
           disabled={isPending}
           onChange={handleChange}
           value={message}
-          className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:outline-none"
+          className="placeholder:italic block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:outline-none"
           placeholder="Write your thoughts here..."
         />
         <button type="submit" disabled={disabled || isPending}>

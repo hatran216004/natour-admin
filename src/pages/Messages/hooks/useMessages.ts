@@ -4,6 +4,7 @@ import { useSelectedConversation } from '../../../store/messages.store';
 import { AxiosResponse } from 'axios';
 import { SuccessResponseApi } from '../../../types/utils.type';
 import { Message, MessagesList } from '../../../types/messages.type';
+import { produce } from 'immer';
 
 function useMessages() {
   const queryClient = useQueryClient();
@@ -17,22 +18,23 @@ function useMessages() {
     enabled: !mock && !!_id
   });
 
-  function handleUpdateMessages(newMessage: Message) {
+  function handleUpdateMessages(message: Message, updateSeen: boolean = false) {
+    const queryKey = ['messages-conversation', userId];
     queryClient.setQueryData(
-      ['messages-conversation', userId],
+      queryKey,
       (oldData: AxiosResponse<SuccessResponseApi<MessagesList>>) => {
         if (!oldData) return;
-        const messages = oldData.data.data.messages;
-        return {
-          ...oldData,
-          data: {
-            ...oldData.data,
-            data: {
-              ...oldData.data.data,
-              messages: [...messages, newMessage]
+
+        return produce(oldData, (draft) => {
+          const messages = draft.data.data.messages;
+          if (!updateSeen) {
+            messages.push(message);
+          } else {
+            if (messages.length > 0) {
+              messages[messages.length - 1].isSeen = message.isSeen;
             }
           }
-        };
+        });
       }
     );
   }

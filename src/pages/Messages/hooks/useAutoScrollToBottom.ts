@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Message } from '../../../types/messages.type';
+import { useAuthStore } from '../../../store/auth.store';
 
 function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
   messages: Message[],
-  threshold: number = 50
+  threshold: number = 100
 ) {
+  const { user } = useAuthStore();
+
+  const hasInitialScrolled = useRef<boolean>(false);
   const scrollRef = useRef<T>(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const scrollTimeoutRef = useRef<number>(null);
@@ -25,7 +29,7 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
     });
   }
 
-  function handleScroll() {
+  function handleScroll(callback: () => void) {
     setIsUserScrolling(true);
 
     if (scrollTimeoutRef.current) {
@@ -35,24 +39,34 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
     // Sau 1 giây không scroll thì coi như user đã dừng scroll
     scrollTimeoutRef.current = setTimeout(() => {
       setIsUserScrolling(false);
+      if (isNearBottom()) callback();
     }, 1000);
   }
 
+  // Nếu user không đang scroll và đang ở gần cuối
   useEffect(() => {
     if (!messages.length) return;
 
-    // Nếu user không đang scroll và đang ở gần cuối
-    if (!isUserScrolling && isNearBottom()) {
+    if (
+      !isUserScrolling &&
+      isNearBottom() &&
+      messages[messages.length - 1].sender === user?._id
+    ) {
+      console.log('scroll');
       scrollToBottom();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, isUserScrolling]);
 
+  // Scroll khi vừa mở conversation
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && !hasInitialScrolled.current) {
       scrollToBottom(false);
+      hasInitialScrolled.current = true;
     }
-  }, [messages]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length > 0]);
 
   useEffect(() => {
     return () => {
@@ -62,7 +76,12 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
     };
   }, []);
 
-  return { scrollRef, isNearBottom, scrollToBottom, handleScroll };
+  return {
+    scrollRef,
+    isNearBottom,
+    scrollToBottom,
+    handleScroll
+  };
 }
 
 export default useAutoScrollToBottom;

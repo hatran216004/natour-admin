@@ -28,22 +28,30 @@ export default function ChatBody() {
   const { selectedConversation } = useSelectedConversation();
   const { conversations, setConversations } = useConversationsStore();
   const { user } = useAuthStore();
-  const { scrollRef, handleScroll } = useAutoScrollToBottom(messages);
+  const { scrollRef, handleScroll, scrollToBottom, isNearBottom } =
+    useAutoScrollToBottom(messages);
 
-  // const emitSeenOnViewLastMessage = useCallback(() => {
-  //   const unSeenMessage = messages.find((msg) => !msg.isSeen);
-  //   if (unSeenMessage && unSeenMessage.sender === selectedConversation.userId) {
-  //     socket?.emit('seenMeessage', {
-  //       _id: unSeenMessage?._id,
-  //       conversationId: unSeenMessage?.conversationId,
-  //       senderId: unSeenMessage?.sender
-  //     });
-  //   }
-  // }, [socket, messages, selectedConversation.userId]);
+  function emitSeenMessage() {
+    const unSeenMessage = messages.find((msg) => !msg.isSeen);
 
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [scrollToBottom]);
+    if (unSeenMessage && unSeenMessage.sender === selectedConversation.userId) {
+      socket?.emit('seenMeessage', {
+        _id: unSeenMessage?._id,
+        conversationId: unSeenMessage?.conversationId,
+        senderId: unSeenMessage?.sender
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (isTyping && isNearBottom()) scrollToBottom();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTyping]);
+
+  useEffect(() => {
+    if (messages.length > 0 && isNearBottom()) emitSeenMessage();
+  }, []);
 
   useEffect(() => {
     if (!socket) return;
@@ -51,12 +59,6 @@ export default function ChatBody() {
     function handleNewMessage(message: Message) {
       const { _id, conversationId, sender } = message;
       if (message.conversationId === selectedConversation._id) {
-        socket?.emit('seenMeessage', {
-          _id,
-          conversationId,
-          senderId: sender
-        });
-
         handleUpdateMessages(message);
         setConversations(
           conversations.map((ele) => {
@@ -68,16 +70,19 @@ export default function ChatBody() {
               : ele;
           })
         );
+
+        if (isNearBottom()) {
+          socket?.emit('seenMeessage', {
+            _id,
+            conversationId,
+            senderId: sender
+          });
+        }
       }
     }
 
     function handleMessageSeen(message: Message) {
-      console.log(message);
-      // setMessages((pre) => {
-      //   const cloneMessages = _.cloneDeep(pre);
-      //   cloneMessages[pre.length - 1].isSeen = message.isSeen;
-      //   return cloneMessages;
-      // });
+      handleUpdateMessages(message, true);
     }
 
     socket.on('newMessage', handleNewMessage);
@@ -86,6 +91,8 @@ export default function ChatBody() {
       socket.off('newMessage', handleNewMessage);
       socket.off('messageSeen', handleMessageSeen);
     };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     socket,
     selectedConversation._id,
@@ -107,7 +114,7 @@ export default function ChatBody() {
       <div
         className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-4 relative"
         ref={scrollRef}
-        onScroll={handleScroll}
+        onScroll={() => handleScroll(emitSeenMessage)}
       >
         {isLoading && !messages.length && <Loading />}
         {selectedConversation.mock && (
@@ -124,6 +131,7 @@ export default function ChatBody() {
               const isSeen = isLastIndex && message.isSeen;
               return (
                 <ChatBubble
+                  key={message._id}
                   isSeen={isSeen}
                   photo={selectedConversation.photo}
                   username={selectedConversation.username}
