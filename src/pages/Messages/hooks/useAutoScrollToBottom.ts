@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Message } from '../../../types/messages.type';
-import { useAuthStore } from '../../../store/auth.store';
+import { useSelectedConversation } from '../../../store/messages.store';
 
 function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
   messages: Message[],
   threshold: number = 100
 ) {
-  const { user } = useAuthStore();
-
+  const { selectedConversation } = useSelectedConversation();
   const hasInitialScrolled = useRef<boolean>(false);
   const scrollRef = useRef<T>(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
@@ -47,12 +46,7 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
   useEffect(() => {
     if (!messages.length) return;
 
-    if (
-      !isUserScrolling &&
-      isNearBottom() &&
-      messages[messages.length - 1].sender === user?._id
-    ) {
-      console.log('scroll');
+    if (!isUserScrolling && isNearBottom()) {
       scrollToBottom();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,6 +61,10 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length > 0]);
+
+  useEffect(() => {
+    scrollToBottom(false);
+  }, [selectedConversation._id]);
 
   useEffect(() => {
     return () => {

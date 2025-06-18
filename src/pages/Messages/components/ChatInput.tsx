@@ -26,7 +26,7 @@ export default function ChatInput({
   const { socket } = useSocket();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuthStore();
-  const debounceValue = useDebounce(message, 1000);
+  const debounceValue = useDebounce(message, 800);
 
   const { sendMessage, isPending } = useSendMessage();
   const { selectedConversation, setSelectedConversation } =
@@ -68,6 +68,14 @@ export default function ChatInput({
           const { newMessage } = data.data.data;
           const { text, sender, conversationId } = newMessage;
 
+          if (!socket) return;
+
+          // Emit event
+          socket.emit('stopTyping', {
+            recipientId: selectedConversation.userId
+          });
+          socket.emit('sendMessage', newMessage);
+
           const newConversations = conversations.map((conv) =>
             conv._id === selectedConversation._id
               ? {
@@ -92,14 +100,6 @@ export default function ChatInput({
               queryKey: ['conversations']
             });
           }
-
-          if (!socket) return;
-
-          // Emit event
-          socket.emit('stopTyping', {
-            recipientId: selectedConversation.userId
-          });
-          socket.emit('sendMessage', newMessage);
         },
         onError: () => {
           toast.error('Error sending message, please try again later');

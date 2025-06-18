@@ -36,7 +36,15 @@ export default function ChatBubble({
           {children}
         </div>
       </div>
-      {isSeen && isMine && <p className="text-xs mt-1 ml-auto">Seen </p>}
+      {isSeen && isMine && (
+        <div className="mt-2 flex items-center gap-1 justify-end">
+          <img
+            className="w-4 h-4 rounded-full object-cover flex-shrink-0"
+            src={`${import.meta.env.VITE_IMG_URL}/users/${photo}`}
+            alt={username}
+          />
+        </div>
+      )}
     </div>
   );
 }

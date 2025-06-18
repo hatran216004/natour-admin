@@ -31,10 +31,17 @@ export default function ChatBody() {
   const { scrollRef, handleScroll, scrollToBottom, isNearBottom } =
     useAutoScrollToBottom(messages);
 
-  function emitSeenMessage() {
-    const unSeenMessage = messages.find((msg) => !msg.isSeen);
+  function hasUnseenMessage() {
+    return messages.find((msg) => !msg.isSeen);
+  }
 
-    if (unSeenMessage && unSeenMessage.sender === selectedConversation.userId) {
+  function tryEmitSeenMessage() {
+    const unSeenMessage = hasUnseenMessage();
+
+    if (
+      unSeenMessage &&
+      messages[messages.length - 1].sender === selectedConversation.userId
+    ) {
       socket?.emit('seenMeessage', {
         _id: unSeenMessage?._id,
         conversationId: unSeenMessage?.conversationId,
@@ -50,8 +57,12 @@ export default function ChatBody() {
   }, [isTyping]);
 
   useEffect(() => {
-    if (messages.length > 0 && isNearBottom()) emitSeenMessage();
-  }, []);
+    if (messages.length > 0 && isNearBottom()) {
+      tryEmitSeenMessage();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
 
   useEffect(() => {
     if (!socket) return;
@@ -114,7 +125,7 @@ export default function ChatBody() {
       <div
         className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-4 relative"
         ref={scrollRef}
-        onScroll={() => handleScroll(emitSeenMessage)}
+        onScroll={() => handleScroll(tryEmitSeenMessage)}
       >
         {isLoading && !messages.length && <Loading />}
         {selectedConversation.mock && (
