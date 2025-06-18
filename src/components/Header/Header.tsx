@@ -41,6 +41,7 @@ export default function Header() {
             alt={user?.name}
             className="w-8 h-8 rounded-full object-cover"
           />
+          <h4 className="text-sm font-semibold capitalize">{user?.name}</h4>
           <button
             className="center gap-3 cursor-pointer py-2 px-3 hover:opacity-60"
             onClick={() => logout()}

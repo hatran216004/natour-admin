@@ -70,7 +70,11 @@ export default function ConversationItem({
           </h2>
           <div className="flex items-center gap-1 mt-1">
             <p className="text-gray-600 font-medium text-sm max-w-[170px] line-clamp-1 break-words">
-              {user?._id === lastMessage?.sender && 'You: '}
+              <span className="capitalize">
+                {user?._id === lastMessage?.sender
+                  ? 'you: '
+                  : !conversation.mock && `${recipient.name}: `}
+              </span>
               {message}
             </p>
           </div>

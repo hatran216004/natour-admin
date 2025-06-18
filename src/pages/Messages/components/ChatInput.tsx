@@ -11,15 +11,15 @@ import {
 import { useSocket } from '../../../context/SocketContext';
 import { useAuthStore } from '../../../store/auth.store';
 import useDebounce from '../../../hooks/useDebounce';
-import { Message } from '../../../types/messages.type';
 import { useQueryClient } from '@tanstack/react-query';
+import { Message } from '../../../types/messages.type';
 
 export default function ChatInput({
   disabled,
-  setMessages
+  handleUpdateMessages
 }: {
   disabled?: boolean;
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  handleUpdateMessages: (message: Message) => void;
 }) {
   const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
@@ -79,12 +79,7 @@ export default function ChatInput({
               : conv
           );
           setConversations(newConversations);
-          setMessages((pre) => {
-            const cloneMessages = pre.filter(
-              (msg) => msg.conversationId === conversationId
-            );
-            return [...cloneMessages, newMessage];
-          });
+          handleUpdateMessages(newMessage);
 
           if (selectedConversation.mock) {
             const newSelecteConversation = {
