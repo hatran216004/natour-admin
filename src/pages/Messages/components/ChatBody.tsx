@@ -17,9 +17,8 @@ import { Message } from '../../../types/messages.type';
 import useTyping from '../hooks/useTyping';
 import useAutoScrollToBottom from '../hooks/useAutoScrollToBottom';
 
-// 1. SỬA LỖI DELAY CHAT KHI CHUYỂN GIỮA CÁC CONVERSATION
-// 2. SEEN/UNSEEN
-// 3. HIỂN THỊ CONVERSATIN Ở PHÍA NGƯỜI NHẬN KHI NGƯỜI GỬI BẮT ĐẦU CUỘC TRÒ CHUYỆN
+// 1. GIẬT SCOLL NHẸ KHI CHAT Ở PHÍA NGƯỜI GỬI ĐƯỢC SEEN
+// 2. HIỂN THỊ CONVERSATIN Ở PHÍA NGƯỜI NHẬN KHI NGƯỜI GỬI BẮT ĐẦU CUỘC TRÒ CHUYỆN
 
 export default function ChatBody() {
   const { socket } = useSocket();
@@ -123,7 +122,7 @@ export default function ChatBody() {
   return (
     <div className="flex flex-col flex-1">
       <div
-        className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-4 relative"
+        className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-2 relative"
         ref={scrollRef}
         onScroll={() => handleScroll(tryEmitSeenMessage)}
       >
@@ -138,10 +137,11 @@ export default function ChatBody() {
           <>
             {messages.map((message, index) => {
               const isMine = message.sender === user?._id;
-              const isLastIndex = index === messages.length - 1;
-              const isSeen = isLastIndex && message.isSeen;
+              const isLastMsg = index === messages.length - 1;
+              const isSeen = isLastMsg && message.isSeen;
               return (
                 <ChatBubble
+                  isLastMsg={isLastMsg}
                   key={message._id}
                   isSeen={isSeen}
                   photo={selectedConversation.photo}
@@ -168,6 +168,8 @@ export default function ChatBody() {
       <ChatInput
         disabled={isLoading}
         handleUpdateMessages={handleUpdateMessages}
+        scrollToBottom={scrollToBottom}
+        isNearBottom={isNearBottom}
       />
     </div>
   );

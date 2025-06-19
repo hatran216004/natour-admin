@@ -16,10 +16,14 @@ import { Message } from '../../../types/messages.type';
 
 export default function ChatInput({
   disabled,
-  handleUpdateMessages
+  handleUpdateMessages,
+  scrollToBottom,
+  isNearBottom
 }: {
   disabled?: boolean;
   handleUpdateMessages: (message: Message) => void;
+  scrollToBottom: (smooth?: boolean) => void;
+  isNearBottom: () => boolean;
 }) {
   const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
@@ -66,15 +70,7 @@ export default function ChatInput({
       {
         onSuccess: (data) => {
           const { newMessage } = data.data.data;
-          const { text, sender, conversationId } = newMessage;
-
-          if (!socket) return;
-
-          // Emit event
-          socket.emit('stopTyping', {
-            recipientId: selectedConversation.userId
-          });
-          socket.emit('sendMessage', newMessage);
+          const { text, sender, conversationId, updatedAt } = newMessage;
 
           const newConversations = conversations.map((conv) =>
             conv._id === selectedConversation._id
@@ -82,7 +78,8 @@ export default function ChatInput({
                   ...conv,
                   _id: conversationId,
                   lastMessage: { text, sender },
-                  mock: false
+                  mock: false,
+                  updatedAt
                 }
               : conv
           );
@@ -100,6 +97,18 @@ export default function ChatInput({
               queryKey: ['conversations']
             });
           }
+
+          if (selectedConversation.userId !== user?._id && !isNearBottom()) {
+            scrollToBottom(false);
+          }
+
+          if (!socket) return;
+
+          // Emit event
+          socket.emit('stopTyping', {
+            recipientId: selectedConversation.userId
+          });
+          socket.emit('sendMessage', newMessage);
         },
         onError: () => {
           toast.error('Error sending message, please try again later');

@@ -35,10 +35,10 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
       clearTimeout(scrollTimeoutRef.current);
     }
 
-    // Sau 1 giây không scroll thì coi như user đã dừng scroll
+    if (isNearBottom()) callback();
+
     scrollTimeoutRef.current = setTimeout(() => {
       setIsUserScrolling(false);
-      if (isNearBottom()) callback();
     }, 1000);
   }
 
@@ -49,6 +49,7 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
     if (!isUserScrolling && isNearBottom()) {
       scrollToBottom();
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, isUserScrolling]);
 
