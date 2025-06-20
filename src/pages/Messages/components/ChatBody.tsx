@@ -16,9 +16,10 @@ import EmptyChatMessages from './EmptyChatMessages';
 import { Message } from '../../../types/messages.type';
 import useTyping from '../hooks/useTyping';
 import useAutoScrollToBottom from '../hooks/useAutoScrollToBottom';
+import { Conversation } from '../../../types/conversations.type';
+import { IoArrowDown } from 'react-icons/io5';
 
-// 1. GIẬT SCOLL NHẸ KHI CHAT Ở PHÍA NGƯỜI GỬI ĐƯỢC SEEN
-// 2. HIỂN THỊ CONVERSATIN Ở PHÍA NGƯỜI NHẬN KHI NGƯỜI GỬI BẮT ĐẦU CUỘC TRÒ CHUYỆN
+// 1. HIỂN THỊ CONVERSATIN Ở PHÍA NGƯỜI NHẬN KHI NGƯỜI GỬI BẮT ĐẦU CUỘC TRÒ CHUYỆN
 
 export default function ChatBody() {
   const { socket } = useSocket();
@@ -27,25 +28,28 @@ export default function ChatBody() {
   const { selectedConversation } = useSelectedConversation();
   const { conversations, setConversations } = useConversationsStore();
   const { user } = useAuthStore();
-  const { scrollRef, handleScroll, scrollToBottom, isNearBottom } =
-    useAutoScrollToBottom(messages);
-
-  function hasUnseenMessage() {
-    return messages.find((msg) => !msg.isSeen);
-  }
+  const {
+    scrollRef,
+    scrollRefPanel,
+    previousConversationId,
+    handleScroll,
+    scrollToBottom,
+    isNearBottom
+  } = useAutoScrollToBottom(messages);
 
   function tryEmitSeenMessage() {
-    const unSeenMessage = hasUnseenMessage();
+    const unSeenMessage = messages.filter(
+      (msg) => !msg.isSeen && msg.sender !== user?._id
+    );
 
-    if (
-      unSeenMessage &&
-      messages[messages.length - 1].sender === selectedConversation.userId
-    ) {
-      socket?.emit('seenMeessage', {
-        _id: unSeenMessage?._id,
-        conversationId: unSeenMessage?.conversationId,
-        senderId: unSeenMessage?.sender
-      });
+    if (unSeenMessage.length > 0) {
+      const seenData = unSeenMessage.map((msg) => ({
+        _id: msg?._id,
+        conversationId: msg?.conversationId,
+        senderId: msg?.sender,
+        recipientId: user?._id
+      }));
+      socket?.emit('seenMeessage', seenData);
     }
   }
 
@@ -56,7 +60,9 @@ export default function ChatBody() {
   }, [isTyping]);
 
   useEffect(() => {
-    if (messages.length > 0 && isNearBottom()) {
+    const conversationChanged =
+      previousConversationId.current !== selectedConversation._id;
+    if (messages.length > 0 && isNearBottom() && !conversationChanged) {
       tryEmitSeenMessage();
     }
 
@@ -70,36 +76,64 @@ export default function ChatBody() {
       const { _id, conversationId, sender } = message;
       if (message.conversationId === selectedConversation._id) {
         handleUpdateMessages(message);
-        setConversations(
-          conversations.map((ele) => {
-            return ele._id === conversationId
-              ? {
-                  ...ele,
-                  lastMessage: { sender, text: message.text }
-                }
-              : ele;
-          })
-        );
 
-        if (isNearBottom()) {
-          socket?.emit('seenMeessage', {
-            _id,
+        if (isNearBottom() && sender !== user?._id) {
+          socket?.emit('seenMeessage', [
+            {
+              _id,
+              conversationId,
+              senderId: sender,
+              recipientId: user?._id
+            }
+          ]);
+        } else {
+          socket?.emit('updateUnreadConversation', {
             conversationId,
-            senderId: sender
+            recipientId: user?._id
           });
         }
+      } else {
+        socket?.emit('updateUnreadConversation', {
+          conversationId,
+          recipientId: user?._id
+        });
       }
+
+      setConversations(
+        conversations.map((conv) =>
+          conv._id === conversationId
+            ? {
+                ...conv,
+                lastMessage: { sender, text: message.text }
+              }
+            : conv
+        )
+      );
     }
 
-    function handleMessageSeen(message: Message) {
-      handleUpdateMessages(message, true);
+    function handleMessageSeen(messages: Message[]) {
+      handleUpdateMessages(messages, true);
+    }
+
+    function handleUpdateUnreadCount(conversation: Conversation) {
+      setConversations(
+        conversations.map((conv) =>
+          conv._id === conversation._id
+            ? { ...conv, unreadCount: conversation.unreadCount }
+            : conv
+        )
+      );
     }
 
     socket.on('newMessage', handleNewMessage);
     socket.on('messageSeen', handleMessageSeen);
+    socket.on('updatedUnreadConversation', handleUpdateUnreadCount);
+    socket.on('removeUnreadCount', handleUpdateUnreadCount);
     return () => {
       socket.off('newMessage', handleNewMessage);
       socket.off('messageSeen', handleMessageSeen);
+      socket.off('updatedUnreadConversation', handleUpdateUnreadCount);
+      socket.off('removeUnreadCount', handleUpdateUnreadCount);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,10 +154,18 @@ export default function ChatBody() {
   }
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 relative">
+      {!isNearBottom() && (
+        <button
+          onClick={() => scrollToBottom(false)}
+          className="animate-bounce z-10 border-gray-300 w-11 h-11 flex items-center justify-center cursor-pointer text-primary top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white absolute rounded-[50%] shadow-custom"
+        >
+          <IoArrowDown size={24} />
+        </button>
+      )}
       <div
-        className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-2 relative"
-        ref={scrollRef}
+        className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-1 relative"
+        ref={scrollRefPanel}
         onScroll={() => handleScroll(tryEmitSeenMessage)}
       >
         {isLoading && !messages.length && <Loading />}
@@ -139,17 +181,21 @@ export default function ChatBody() {
               const isMine = message.sender === user?._id;
               const isLastMsg = index === messages.length - 1;
               const isSeen = isLastMsg && message.isSeen;
+              const seprate =
+                index > 0 &&
+                messages[index].sender !== messages[index - 1].sender;
               return (
-                <ChatBubble
-                  isLastMsg={isLastMsg}
-                  key={message._id}
-                  isSeen={isSeen}
-                  photo={selectedConversation.photo}
-                  username={selectedConversation.username}
-                  isMine={isMine}
-                >
-                  {message.text}
-                </ChatBubble>
+                <div className={`${seprate ? 'pt-8' : ''}`} key={message._id}>
+                  <ChatBubble
+                    isLastMsg={isLastMsg}
+                    isSeen={isSeen}
+                    photo={selectedConversation.photo}
+                    username={selectedConversation.username}
+                    isMine={isMine}
+                  >
+                    {message.text}
+                  </ChatBubble>
+                </div>
               );
             })}
           </>
@@ -157,30 +203,20 @@ export default function ChatBody() {
 
         {isTyping && (
           <ChatBubble
+            isTyping={isTyping}
             photo={selectedConversation.photo}
             username={selectedConversation.username}
           >
             <TypingIndicator />
           </ChatBubble>
         )}
+        <span ref={scrollRef}></span>
       </div>
 
       <ChatInput
         disabled={isLoading}
         handleUpdateMessages={handleUpdateMessages}
-        scrollToBottom={scrollToBottom}
-        isNearBottom={isNearBottom}
       />
     </div>
   );
 }
-
-/*
-  | Trạng thái                    | Hành động                           |
-  | ----------------------------- | ----------------------------------- |
-  | Vào conversation mới          | Kiểm tra tin nhắn chưa xem → emit   |
-  | Có tin nhắn mới từ người khác | Nếu đang ở đúng conversation → emit |
-  | User scroll tới cuối tin nhắn | Nếu có tin nhắn chưa xem → emit     |
-
-  IntersectionObserver: Nó giúp bạn biết khi nào một phần tử đi vào (hoặc ra khỏi) màn hình
-*/

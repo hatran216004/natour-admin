@@ -75,7 +75,8 @@ export default function ConversationsSection() {
             ],
             createdAt: new Date(),
             updatedAt: new Date(),
-            mock: true
+            mock: true,
+            unreadCount: 0
           };
         })
         .filter((conv) => conv.participants[0]._id !== currentUser?._id);
@@ -116,12 +117,14 @@ export default function ConversationsSection() {
       {!isLoading && (
         <ConversationsList
           data={conversationsStore!}
-          render={(conversation) => (
-            <ConversationItem
-              key={conversation._id}
-              conversation={conversation}
-            />
-          )}
+          render={(conversation) => {
+            return (
+              <ConversationItem
+                key={conversation._id}
+                conversation={conversation}
+              />
+            );
+          }}
         />
       )}
     </div>

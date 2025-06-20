@@ -2,16 +2,18 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '../types/user.type';
 
-interface AuthState {
+type AuthState = {
   token: string | null;
   user: User | null;
   isAuthenticated: boolean;
+};
 
+type AuthAction = {
   setAccessToken: (token: string | null) => void;
   setUser: (user: User | null) => void;
-}
+};
 
-export const useAuthStore = create<AuthState>()(
+export const useAuthStore = create<AuthState & AuthAction>()(
   persist(
     (set) => ({
       token: null,

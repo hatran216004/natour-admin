@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Message } from '../../../types/messages.type';
+import { useAuthStore } from '../../../store/auth.store';
 import { useSelectedConversation } from '../../../store/messages.store';
 
 function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
@@ -7,23 +8,28 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
   threshold: number = 100
 ) {
   const { selectedConversation } = useSelectedConversation();
-  const hasInitialScrolled = useRef<boolean>(false);
+  const { user } = useAuthStore();
+
   const scrollRef = useRef<T>(null);
-  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const scrollRefPanel = useRef<T>(null);
   const scrollTimeoutRef = useRef<number>(null);
 
-  function isNearBottom() {
-    if (!scrollRef.current) return false;
+  const hasInitialScrolled = useRef<boolean>(false);
+  const previousConversationId = useRef<string>(selectedConversation._id);
 
-    const { scrollTop, clientHeight, scrollHeight } = scrollRef.current;
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+
+  function isNearBottom() {
+    if (!scrollRefPanel.current) return false;
+
+    const { scrollTop, clientHeight, scrollHeight } = scrollRefPanel.current;
     return scrollHeight - scrollTop - clientHeight < threshold;
   }
 
   function scrollToBottom(smooth: boolean = true) {
     if (!scrollRef.current) return;
 
-    scrollRef.current.scrollTo({
-      top: scrollRef.current.scrollHeight,
+    scrollRef.current.scrollIntoView({
       behavior: smooth ? 'smooth' : 'instant'
     });
   }
@@ -42,30 +48,41 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
     }, 1000);
   }
 
-  // Nếu user không đang scroll và đang ở gần cuối
+  useEffect(() => {
+    const conversationChanged =
+      previousConversationId.current !== selectedConversation._id;
+
+    if (conversationChanged && messages.length > 0) {
+      scrollToBottom(false);
+      previousConversationId.current = selectedConversation._id;
+    }
+  }, [messages, selectedConversation._id]);
+
   useEffect(() => {
     if (!messages.length) return;
 
     if (!isUserScrolling && isNearBottom()) {
       scrollToBottom();
+      return;
+    }
+
+    const lastMsg = messages[messages.length - 1];
+    const hasNewMsg =
+      (Date.now() - new Date(lastMsg.createdAt).getTime()) / 1000 < 1;
+
+    if (hasNewMsg && lastMsg.sender === user?._id && !isUserScrolling) {
+      scrollToBottom(false);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, isUserScrolling]);
 
-  // Scroll khi vừa mở conversation
   useEffect(() => {
     if (messages.length > 0 && !hasInitialScrolled.current) {
       scrollToBottom(false);
       hasInitialScrolled.current = true;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages.length > 0]);
-
-  useEffect(() => {
-    scrollToBottom(false);
-  }, [selectedConversation._id]);
+  }, [messages]);
 
   useEffect(() => {
     return () => {
@@ -77,6 +94,8 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
 
   return {
     scrollRef,
+    scrollRefPanel,
+    previousConversationId,
     isNearBottom,
     scrollToBottom,
     handleScroll

@@ -39,7 +39,7 @@ export default function ConversationItem({
   return (
     <li
       className={classNames(
-        'cursor-pointer hover:opacity-90 p-2 rounded-lg shadow-sm',
+        'cursor-pointer hover:opacity-90 px-3 py-2 rounded-lg shadow-sm',
         {
           'bg-gray-200': isActive,
           'bg-white': !isActive
@@ -63,25 +63,34 @@ export default function ConversationItem({
               }
             )}
           ></span>
+          {conversation.unreadCount > 0 && (
+            <span className="absolute -top-1 -left-1 mt-auto px-2 py-1 text-[9px] flex items-center justify-center rounded-full bg-red-600 text-white">
+              {conversation.unreadCount}
+            </span>
+          )}
         </figure>
-        <div className="flex-1">
-          <h2 className="text-main line-clamp-1 text-sm font-bold capitalize">
-            {recipient?.name}
-          </h2>
-          <div className="flex items-center gap-1 mt-1">
-            <p className="text-gray-600 font-medium text-sm max-w-[170px] line-clamp-1 break-words">
-              <span className="capitalize">
-                {user?._id === lastMessage?.sender
-                  ? 'you: '
-                  : !conversation.mock && `${recipient.name}: `}
-              </span>
-              {message}
-            </p>
+        <div className="flex flex-1">
+          <div className="flex-1">
+            <h2 className="text-main line-clamp-1 text-sm font-bold capitalize">
+              {recipient?.name}
+            </h2>
+            <div className="flex items-center gap-1 mt-1">
+              <p className="text-gray-600 font-medium text-sm max-w-[170px] line-clamp-1 break-words">
+                <span className="capitalize">
+                  {user?._id === lastMessage?.sender
+                    ? 'you: '
+                    : !conversation.mock && `${recipient.name}: `}
+                </span>
+                {message}
+              </p>
+            </div>
+          </div>
+          <div className="ml-auto flex flex-col items-end">
+            <span className="text-xs">
+              {!conversation.mock && timeAgo(conversation.updatedAt)}
+            </span>
           </div>
         </div>
-        <span className="ml-auto mb-auto text-xs">
-          {!conversation.mock && timeAgo(conversation.updatedAt)}
-        </span>
       </div>
     </li>
   );

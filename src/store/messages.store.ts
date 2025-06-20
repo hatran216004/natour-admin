@@ -2,20 +2,28 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import {
   Conversation,
-  selectedConversationType
+  SelectedConversationType
 } from '../types/conversations.type';
 
-interface SelectedConversationState {
-  selectedConversation: selectedConversationType;
-  setSelectedConversation: (conversation: selectedConversationType) => void;
-}
+type SelectedConversationState = {
+  selectedConversation: SelectedConversationType;
+};
 
-interface ConversationsState {
+type SelectedConversationAct = {
+  setSelectedConversation: (conversation: SelectedConversationType) => void;
+};
+
+type ConversationsState = {
   conversations: Conversation[];
-  setConversations: (conversations: Conversation[]) => void;
-}
+};
 
-export const useConversationsStore = create<ConversationsState>()(
+type ConversationsAct = {
+  setConversations: (conversations: Conversation[]) => void;
+};
+
+export const useConversationsStore = create<
+  ConversationsState & ConversationsAct
+>()(
   persist(
     (set) => ({
       conversations: [],
@@ -28,7 +36,9 @@ export const useConversationsStore = create<ConversationsState>()(
   )
 );
 
-export const useSelectedConversation = create<SelectedConversationState>()(
+export const useSelectedConversation = create<
+  SelectedConversationState & SelectedConversationAct
+>()(
   persist(
     (set) => ({
       selectedConversation: {

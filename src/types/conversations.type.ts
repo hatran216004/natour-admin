@@ -15,13 +15,14 @@ export type Conversation = {
   createdAt: Date;
   updatedAt: Date;
   mock: boolean;
+  unreadCount: number;
 };
 
 export type ConversationsList = {
   conversations: Conversation[];
 };
 
-export type selectedConversationType = {
+export type SelectedConversationType = {
   _id: string;
   userId: string;
   username: string;

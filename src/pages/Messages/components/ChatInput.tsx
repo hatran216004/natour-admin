@@ -16,14 +16,10 @@ import { Message } from '../../../types/messages.type';
 
 export default function ChatInput({
   disabled,
-  handleUpdateMessages,
-  scrollToBottom,
-  isNearBottom
+  handleUpdateMessages
 }: {
   disabled?: boolean;
   handleUpdateMessages: (message: Message) => void;
-  scrollToBottom: (smooth?: boolean) => void;
-  isNearBottom: () => boolean;
 }) {
   const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
@@ -44,19 +40,14 @@ export default function ChatInput({
   useEffect(() => {
     if (!selectedConversation || !socket || !user?._id) return;
 
-    const typingData = {
-      conversationId: selectedConversation._id,
-      senderId: user?._id,
-      recipientId: selectedConversation.userId
-    };
     if (debounceValue) {
-      socket?.emit('typing', typingData);
+      socket?.emit('typing', {
+        conversationId: selectedConversation._id,
+        senderId: user?._id,
+        recipientId: selectedConversation.userId
+      });
     }
   }, [debounceValue, selectedConversation, socket, user?._id]);
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setMessage(e.target.value);
-  }
 
   function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -98,10 +89,6 @@ export default function ChatInput({
             });
           }
 
-          if (selectedConversation.userId !== user?._id && !isNearBottom()) {
-            scrollToBottom(false);
-          }
-
           if (!socket) return;
 
           // Emit event
@@ -110,7 +97,8 @@ export default function ChatInput({
           });
           socket.emit('sendMessage', newMessage);
         },
-        onError: () => {
+        onError: (error) => {
+          console.log(error);
           toast.error('Error sending message, please try again later');
         },
         onSettled: () => setMessage('')
@@ -128,7 +116,7 @@ export default function ChatInput({
         <input
           ref={inputRef}
           disabled={isPending}
-          onChange={handleChange}
+          onChange={(e) => setMessage(e.target.value)}
           value={message}
           className="placeholder:italic block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:outline-none"
           placeholder="Write your thoughts here..."

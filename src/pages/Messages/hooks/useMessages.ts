@@ -18,7 +18,10 @@ function useMessages() {
     enabled: !mock && !!_id
   });
 
-  function handleUpdateMessages(message: Message, updateSeen: boolean = false) {
+  function handleUpdateMessages(
+    data: Message | Message[],
+    updateSeen: boolean = false
+  ) {
     const queryKey = ['messages-conversation', userId];
     queryClient.setQueryData(
       queryKey,
@@ -28,10 +31,15 @@ function useMessages() {
         return produce(oldData, (draft) => {
           const messages = draft.data.data.messages;
           if (!updateSeen) {
-            messages.push(message);
+            messages.push(data as Message);
           } else {
             if (messages.length > 0) {
-              messages[messages.length - 1].isSeen = message.isSeen;
+              (data as Message[]).forEach((msg) => {
+                const index = messages.findIndex((m) => m._id === msg._id);
+                if (index !== -1) {
+                  messages[index].isSeen = msg.isSeen;
+                }
+              });
             }
           }
         });
