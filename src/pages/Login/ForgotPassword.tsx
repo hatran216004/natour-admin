@@ -4,6 +4,8 @@ import Input from '../../components/Input';
 import { userSchema, UserSchema } from '../../utils/rules';
 import { yupResolver } from '@hookform/resolvers/yup';
 import toast from 'react-hot-toast';
+import { FaArrowLeftLong } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
 
 type FormData = Pick<UserSchema, 'email'>;
 const forgotPasswordSchema = userSchema.pick(['email']);
@@ -43,11 +45,17 @@ export default function ForgotPassword() {
           defaultValue="admin@gmail.com"
           errorMessage={errors?.email?.message}
         />
-
         <Button type="submit" isLoading={false}>
           Submit
         </Button>
       </form>
+      <Link
+        to="/login"
+        className="absolute bottom-3 left-4 group text-lèt text-sm text-primary inline-flex items-center gap-2"
+      >
+        <FaArrowLeftLong className="mt-1 group-hover:-translate-x-1 transition-transform duration-300" />{' '}
+        Back to login
+      </Link>
     </div>
   );
 }
