@@ -34,6 +34,7 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
     });
   }
 
+  // Chạy vào 16 lần khi có tin nhắn mới (cần fix)
   function handleScroll(callback: () => void) {
     setIsUserScrolling(true);
 

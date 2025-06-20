@@ -1,6 +1,12 @@
 import classNames from 'classnames';
 import { useSocket } from '../../../context/SocketContext';
 import { useSelectedConversation } from '../../../store/messages.store';
+import Popover from '../../../components/Popover';
+import Menu from '../../../components/Menu';
+import MenuItem from '../../../components/MenuItem';
+import { MdDelete, MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import Modal from '../../../components/Modal';
+import DeleteConversationContent from './DeleteConversationContent';
 
 export default function ChatHeader() {
   const { selectedConversation } = useSelectedConversation();
@@ -9,7 +15,7 @@ export default function ChatHeader() {
   if (!selectedConversation.userId) return null;
 
   return (
-    <div className="pb-3 px-4 border-b-2 border-gray-100">
+    <div className="flex items-center gap-10 pb-3 px-4 border-b-2 border-gray-100">
       <div className="flex gap-[14px] items-center">
         <figure className="relative">
           <img
@@ -42,6 +48,31 @@ export default function ChatHeader() {
           </h2>
         </div>
       </div>
+
+      <Modal>
+        <Popover
+          className="center w-[38px] h-[30px] hover:bg-gray-200 rounded-full"
+          placement="bottom-center"
+          renderPopover={
+            <Menu>
+              <Modal.Open name="delete-conversation">
+                <MenuItem
+                  className="border-b-slate-50"
+                  text="delete conversation"
+                  icon={<MdDelete />}
+                />
+              </Modal.Open>
+            </Menu>
+          }
+        >
+          <button className="center px-3 py-2 cursor-pointer">
+            <MdOutlineKeyboardArrowDown />
+          </button>
+        </Popover>
+        <Modal.Content openName="delete-conversation">
+          <DeleteConversationContent />
+        </Modal.Content>
+      </Modal>
     </div>
   );
 }

@@ -18,10 +18,13 @@ import useTyping from '../hooks/useTyping';
 import useAutoScrollToBottom from '../hooks/useAutoScrollToBottom';
 import { Conversation } from '../../../types/conversations.type';
 import { IoArrowDown } from 'react-icons/io5';
+// import { useQueryClient } from '@tanstack/react-query';
 
-// 1. HIỂN THỊ CONVERSATIN Ở PHÍA NGƯỜI NHẬN KHI NGƯỜI GỬI BẮT ĐẦU CUỘC TRÒ CHUYỆN
+// Lỗi message badge message unseen xuất hiện cả phía người gửi
+//
 
 export default function ChatBody() {
+  // const queryClient = useQueryClient();
   const { socket } = useSocket();
   const { isTyping } = useTyping();
   const { messages, isLoading, handleUpdateMessages } = useMessages();
@@ -74,6 +77,10 @@ export default function ChatBody() {
 
     function handleNewMessage(message: Message) {
       const { _id, conversationId, sender } = message;
+      // if (!selectedConversation) {
+      //   queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      // }
+
       if (message.conversationId === selectedConversation._id) {
         handleUpdateMessages(message);
 
@@ -155,7 +162,7 @@ export default function ChatBody() {
 
   return (
     <div className="flex flex-col flex-1 relative">
-      {!isNearBottom() && (
+      {!isNearBottom() && messages.length > 0 && (
         <button
           onClick={() => scrollToBottom(false)}
           className="animate-bounce z-10 border-gray-300 w-11 h-11 flex items-center justify-center cursor-pointer text-primary top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white absolute rounded-[50%] shadow-custom"

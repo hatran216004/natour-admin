@@ -63,7 +63,7 @@ export default function ConversationItem({
               }
             )}
           ></span>
-          {conversation.unreadCount > 0 && (
+          {conversation.unreadCount > 0 && lastMessage.sender !== user?._id && (
             <span className="absolute -top-1 -left-1 mt-auto px-2 py-1 text-[9px] flex items-center justify-center rounded-full bg-red-600 text-white">
               {conversation.unreadCount}
             </span>

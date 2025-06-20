@@ -84,6 +84,7 @@ export default function ChatInput({
               mock: false
             };
             setSelectedConversation(newSelecteConversation);
+
             queryClient.invalidateQueries({
               queryKey: ['conversations']
             });

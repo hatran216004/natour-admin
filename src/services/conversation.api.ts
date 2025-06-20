@@ -7,5 +7,6 @@ export const conversationsApi = {
   getUserConversations: () =>
     http.get<SuccessResponseApi<ConversationsList>>('/messages/conversations'),
   getAllMessages: (otherUserId: string) =>
-    http.get<SuccessResponseApi<MessagesList>>(`/messages/${otherUserId}`)
+    http.get<SuccessResponseApi<MessagesList>>(`/messages/${otherUserId}`),
+  deleteConversation: (id: string) => http.delete(`/conversations/${id}`)
 };
