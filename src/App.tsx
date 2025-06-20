@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import LoginLayout from './layout/LoginLayout.tsx';
 import MainLayout from './layout/MainLayout.tsx';
 import SocketProvider from './context/SocketContext.tsx';
+import ForgotPassword from './pages/Login/ForgotPassword.tsx';
 
 function ProtectedRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -32,7 +33,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route element={<MainLayout />}>
-              <Route index element={<Navigate replace to="messages" />} />
+              <Route index element={<Navigate replace to="dashboard" />} />
               {routes.map((route) => {
                 const Element = route.element;
                 return (
@@ -48,6 +49,7 @@ function App() {
           <Route element={<RejectedRoutes />}>
             <Route element={<LoginLayout />}>
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
           </Route>
         </Routes>

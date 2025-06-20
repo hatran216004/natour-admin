@@ -48,10 +48,10 @@ export default function Signup() {
   }
 
   return (
-    <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-30%] max-w-[452px] text-red p-12 rounded-2xl bg-white shadow-custom">
+    <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-[30%] max-w-[452px] text-red p-12 rounded-2xl bg-white shadow-custom">
       <h2 className="text-lg text-[#2D3748] text-center font-bold">Login</h2>
       <form
-        className="flex flex-col gap-6"
+        className="flex flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
@@ -73,15 +73,15 @@ export default function Signup() {
           register={register}
           errorMessage={errors?.password?.message}
         />
+        <Link
+          to="/forgot-password"
+          className="text-right text-sm text-primary hover:underline"
+        >
+          Forgot password
+        </Link>
         <Button type="submit" isLoading={isPending}>
           Login
         </Button>
-        <p className="text-sm text-[#A0AEC0] text-center">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
       </form>
     </div>
   );

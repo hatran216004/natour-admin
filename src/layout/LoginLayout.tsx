@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import icons from '../assets/icons';
 
 export default function LoginLayout() {
@@ -14,24 +14,24 @@ export default function LoginLayout() {
               </h2>
             </div>
             <div className="ml-[112px] center gap-8">
-              <Link to="/" className="center gap-3 p-2">
+              <div className="center gap-3 p-2">
                 <img src={icons.dashboard} alt="Dashboard" />
                 <h2 className="uppercase text-xs text-white leading-5 font-bold ">
                   dashboard
                 </h2>
-              </Link>
-              <Link to="/" className="center gap-3 p-2">
+              </div>
+              <div className="center gap-3 p-2">
                 <img src={icons.userCircle} alt="User" />
                 <h2 className="uppercase text-xs text-white leading-5 font-bold ">
                   sign up
                 </h2>
-              </Link>
-              <Link to="/" className="center gap-3 p-2">
+              </div>
+              <div className="center gap-3 p-2">
                 <img src={icons.key} alt="User" />
                 <h2 className="uppercase text-xs text-white leading-5 font-bold ">
                   sign in
                 </h2>
-              </Link>
+              </div>
             </div>
           </div>
           <div className="center flex-col mt-8">
