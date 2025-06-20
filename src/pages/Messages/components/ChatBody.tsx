@@ -18,13 +18,10 @@ import useTyping from '../hooks/useTyping';
 import useAutoScrollToBottom from '../hooks/useAutoScrollToBottom';
 import { Conversation } from '../../../types/conversations.type';
 import { IoArrowDown } from 'react-icons/io5';
-// import { useQueryClient } from '@tanstack/react-query';
-
-// Lỗi message badge message unseen xuất hiện cả phía người gửi
-//
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ChatBody() {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { socket } = useSocket();
   const { isTyping } = useTyping();
   const { messages, isLoading, handleUpdateMessages } = useMessages();
@@ -56,6 +53,17 @@ export default function ChatBody() {
     }
   }
 
+  function handleStartNewConversation(conversationId: string) {
+    const existingConversation = conversations.find(
+      (conv) => conv._id === conversationId
+    );
+    if (!existingConversation) {
+      queryClient.invalidateQueries({
+        queryKey: ['conversations']
+      });
+    }
+  }
+
   useEffect(() => {
     if (isTyping && isNearBottom()) scrollToBottom();
 
@@ -77,9 +85,8 @@ export default function ChatBody() {
 
     function handleNewMessage(message: Message) {
       const { _id, conversationId, sender } = message;
-      // if (!selectedConversation) {
-      //   queryClient.invalidateQueries({ queryKey: ['conversations'] });
-      // }
+
+      handleStartNewConversation(conversationId);
 
       if (message.conversationId === selectedConversation._id) {
         handleUpdateMessages(message);
