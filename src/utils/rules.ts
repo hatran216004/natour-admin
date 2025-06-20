@@ -38,28 +38,28 @@ export const tourSchema = yup.object().shape({
     .min(10, 'A tour name must have more or equals than 10 charactors')
     .max(40, 'A tour name must have less or equals than 40 charactors'),
   price: yup
-    .string()
+    .number()
     .required('A tour must have a price')
     .test({
       name: 'price',
       message: 'Price must be greater than 0',
-      test: (value) => Number(value) > 0
+      test: (value) => value > 0
     }),
   duration: yup
-    .string()
+    .number()
     .required('A tour must have a duration')
     .test({
       name: 'duration',
       message: 'Duration must be greater than 0',
-      test: (value) => Number(value) > 0
+      test: (value) => value > 0
     }),
   maxGroupSize: yup
-    .string()
+    .number()
     .required('A tour must have a max group size')
     .test({
       name: 'maxGroupSize',
       message: 'Max group size must be greater than 0',
-      test: (value) => Number(value) > 0
+      test: (value) => value > 0
     }),
   difficulty: yup.string().required('A tour must have a difficulty'),
   summary: yup

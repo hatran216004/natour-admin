@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { authApi } from '../../services/auth.api';
 import { useMemo } from 'react';
-import { SelectOptsType } from '../../types/utils.type';
+import { authApi } from '../../../services/auth.api';
+import { SelectOptsType } from '../../../types/utils.type';
 
 function useRoles() {
   const { data, isLoading } = useQuery({

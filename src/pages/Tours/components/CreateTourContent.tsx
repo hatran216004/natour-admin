@@ -13,11 +13,11 @@ import ToggleButton from '../../../components/ToggleButton';
 import InputFile from '../../../components/InputFile';
 import Popover from '../../../components/Popover';
 import Select from '../../../components/Select';
-import useGuides from '../../../features/tour/useGuides';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { tourApi } from '../../../services/tour.api';
 import toast from 'react-hot-toast';
 import axios, { AxiosError } from 'axios';
+import useGuides from '../hooks/useGuides';
 
 type FormData = TourSchema;
 
@@ -84,9 +84,9 @@ export default function CreateTourContent({
   function onSubmit(data: FormData) {
     const formData = new FormData();
     formData.append('name', data.name);
-    formData.append('price', data.price);
-    formData.append('duration', data.duration);
-    formData.append('maxGroupSize', data.maxGroupSize);
+    formData.append('price', data.price.toString());
+    formData.append('duration', data.duration.toString());
+    formData.append('maxGroupSize', data.maxGroupSize.toString());
     formData.append('difficulty', data.difficulty);
     formData.append('summary', data.summary);
 

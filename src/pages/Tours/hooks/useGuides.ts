@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { userApi } from '../../services/user.api';
+import { userApi } from '../../../services/user.api';
 
 function useGuides() {
   const { data, isLoading } = useQuery({

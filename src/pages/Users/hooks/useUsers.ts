@@ -3,11 +3,12 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query';
-import useUrl from '../../hooks/useUrl';
-import useQueryParms from '../../hooks/useQueryParms';
-import { UsersListConfig } from '../../types/user.type';
+
 import { isUndefined, omitBy } from 'lodash';
-import { userApi } from '../../services/user.api';
+import useUrl from '../../../hooks/useUrl';
+import useQueryParms from '../../../hooks/useQueryParms';
+import { UsersListConfig } from '../../../types/user.type';
+import { userApi } from '../../../services/user.api';
 
 const PAGE_LIMIT = 6;
 

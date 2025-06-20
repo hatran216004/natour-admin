@@ -4,9 +4,9 @@ import Pagination from '../../components/Pagination';
 import ReviewRow from './components/ReviewRow';
 import Table from '../../components/Table';
 import Spinner from '../../components/Spinner';
-import useReviews from '../../features/review/useReviews';
 import { Review } from '../../types/review.type';
 import ReviewOperator from './components/ReviewOperator';
+import useReviews from './hooks/useReviews';
 
 export default function Reviews() {
   const { data, totalPages, isLoading } = useReviews();

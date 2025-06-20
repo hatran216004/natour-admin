@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import useUrl from '../../hooks/useUrl';
-import useQueryParms from '../../hooks/useQueryParms';
-import { Tour, ToursListConfig } from '../../types/tour.type';
 import { isUndefined, omitBy } from 'lodash';
-import { tourApi } from '../../services/tour.api';
+import useUrl from '../../../hooks/useUrl';
+import { Tour, ToursListConfig } from '../../../types/tour.type';
+import useQueryParms from '../../../hooks/useQueryParms';
+import { tourApi } from '../../../services/tour.api';
 
 function useTours() {
   const { currentValue } = useUrl<number>({ field: 'page', defaultValue: 1 });

@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { reviewsApi } from '../../services/review.api';
 import { useSearchParams } from 'react-router-dom';
-import { ReviewListConfig } from '../../types/review.type';
-import useQueryParms from '../../hooks/useQueryParms';
 import { isUndefined, omitBy } from 'lodash';
+import useQueryParms from '../../../hooks/useQueryParms';
+import { ReviewListConfig } from '../../../types/review.type';
+import { reviewsApi } from '../../../services/review.api';
 
 export default function useReviews() {
   const [searchParams] = useSearchParams();

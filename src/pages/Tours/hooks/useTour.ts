@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { tourApi } from '../../services/tour.api';
+import { tourApi } from '../../../services/tour.api';
 
 function useTour(id: string) {
   const { data, isLoading } = useQuery({

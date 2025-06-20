@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AxiosError } from 'axios';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { type TourSchema, tourSchema } from '../../../utils/rules';
@@ -14,11 +14,11 @@ import ToggleButton from '../../../components/ToggleButton';
 import InputFile from '../../../components/InputFile';
 import Popover from '../../../components/Popover';
 import Select from '../../../components/Select';
-import useGuides from '../../../features/tour/useGuides';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { tourApi } from '../../../services/tour.api';
 import http from '../../../utils/http';
-import useTour from '../../../features/tour/useTour';
+import useGuides from '../hooks/useGuides';
+import useTour from '../hooks/useTour';
 
 type FormData = TourSchema;
 
@@ -30,11 +30,14 @@ export default function CreateTourContent({
   onCloseModal?: () => void;
 }) {
   const { tour } = useTour(tourId);
+  const { guides } = useGuides();
+
   const queryClient = useQueryClient();
   const [isSecret, setIsSecret] = useState(false);
-  const { guides } = useGuides();
+
   const { mutate, isPending } = useMutation({
-    mutationFn: ({ body, id }: { body: FormData; id: string }) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutationFn: ({ body, id }: { body: any; id: string }) =>
       tourApi.updateTour({ body, id })
   });
 
@@ -66,14 +69,22 @@ export default function CreateTourContent({
     reset,
     formState: { errors }
   } = useForm<FormData>({
-    resolver: yupResolver(tourSchema),
-    values: { ...tour, guides: tour?.guides[0]._id as string }
+    resolver: yupResolver(tourSchema)
   });
 
   const { append, fields, remove } = useFieldArray({
     control,
     name: 'startDates'
   });
+
+  useEffect(() => {
+    if (tour) {
+      reset({
+        ...tour,
+        guides: tour.guides?.[0]?._id ?? ''
+      });
+    }
+  }, [tour, reset]);
 
   function handleAddStartDay(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -82,13 +93,12 @@ export default function CreateTourContent({
     append({ date: new Date(), participants: 1 });
   }
 
-  console.log(errors);
   function onSubmit(data: FormData) {
     const formData = new FormData();
     formData.append('name', data.name);
-    formData.append('price', data.price);
-    formData.append('duration', data.duration);
-    formData.append('maxGroupSize', data.maxGroupSize);
+    formData.append('price', data.price.toString());
+    formData.append('duration', data.duration.toString());
+    formData.append('maxGroupSize', data.maxGroupSize.toString());
     formData.append('difficulty', data.difficulty);
     formData.append('summary', data.summary);
     formData.append('imageCover', (data.imageCover as FileList)[0]);
@@ -105,7 +115,6 @@ export default function CreateTourContent({
     formData.append('guides', data.guides);
     formData.append('startDates', JSON.stringify(data.startDates));
     formData.append('startLocation', JSON.stringify(data.startLocation));
-    console.log(Object.fromEntries(formData));
     mutate(
       { body: formData, id: tourId },
       {

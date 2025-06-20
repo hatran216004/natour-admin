@@ -8,11 +8,11 @@ import Heading from '../../components/Heading';
 import CreateUserContent from './components/CreateUserContent';
 import UserOperator from './components/UserOperator';
 import UserRow from './components/UserRow';
-import useUsers from '../../features/user/useUsers';
-import useRoles from '../../features/role/useRoles';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import { FaPlusCircle } from 'react-icons/fa';
+import useRoles from './hooks/useRoles';
+import useUsers from './hooks/useUsers';
 
 export default function Users() {
   const { user: userLoggined } = useAuthStore();

@@ -9,7 +9,7 @@ import Modal from '../../components/Modal';
 import TourRow from './components/TourRow';
 import { Tour } from '../../types/tour.type';
 import CreateTourContent from './components/CreateTourContent';
-import useTours from '../../features/tour/useTours';
+import useTours from './hooks/useTours';
 
 export default function Tours() {
   const { tours, isLoading, totalPages } = useTours();
