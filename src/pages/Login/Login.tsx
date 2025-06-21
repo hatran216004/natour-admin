@@ -61,7 +61,7 @@ export default function Signup() {
           placeholder="Your email"
           name="email"
           register={register}
-          defaultValue="admin@gmail.com"
+          defaultValue="minhhatran153@gmail.com"
           errorMessage={errors?.email?.message}
         />
         <Input

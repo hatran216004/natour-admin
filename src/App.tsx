@@ -15,6 +15,7 @@ import LoginLayout from './layout/LoginLayout.tsx';
 import MainLayout from './layout/MainLayout.tsx';
 import SocketProvider from './context/SocketContext.tsx';
 import ForgotPassword from './pages/Login/ForgotPassword.tsx';
+import ResetNewPassword from './pages/Login/ResetNewPassword.tsx';
 
 function ProtectedRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -50,6 +51,10 @@ function App() {
             <Route element={<LoginLayout />}>
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/forgot-password/:token"
+                element={<ResetNewPassword />}
+              />
             </Route>
           </Route>
         </Routes>

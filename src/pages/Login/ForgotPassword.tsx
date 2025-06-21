@@ -6,6 +6,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import toast from 'react-hot-toast';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { authApi } from '../../services/auth.api';
+import { AxiosError } from 'axios';
 
 type FormData = Pick<UserSchema, 'email'>;
 const forgotPasswordSchema = userSchema.pick(['email']);
@@ -18,12 +21,25 @@ export default function ForgotPassword() {
   } = useForm<FormData>({
     resolver: yupResolver(forgotPasswordSchema)
   });
+  const { mutate, isPending } = useMutation({
+    mutationFn: authApi.forgotPassowrd
+  });
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-    toast.success(
-      'If the email you entered exists, we have sent a password reset link. Please check your gmail'
-    );
+  const onSubmit = ({ email }: FormData) => {
+    mutate(email, {
+      onSuccess: () => {
+        toast.success(
+          'If the email you entered exists, we have sent a password reset link. Please check your gmail'
+        );
+      },
+      onError: (error) => {
+        const message = (error as AxiosError<{ message: string }>).response
+          ?.data.message;
+        toast.error(
+          message || 'There was an error sending the email. Try again later!'
+        );
+      }
+    });
   };
 
   return (
@@ -42,16 +58,16 @@ export default function ForgotPassword() {
           placeholder="Your email"
           name="email"
           register={register}
-          defaultValue="admin@gmail.com"
+          defaultValue="minhhatran153@gmail.com"
           errorMessage={errors?.email?.message}
         />
-        <Button type="submit" isLoading={false}>
+        <Button type="submit" isLoading={isPending}>
           Submit
         </Button>
       </form>
       <Link
         to="/login"
-        className="absolute bottom-3 left-4 group text-lèt text-sm text-primary inline-flex items-center gap-2"
+        className="absolute top-3 left-4 group text-left text-sm text-primary inline-flex items-center gap-2"
       >
         <FaArrowLeftLong className="mt-1 group-hover:-translate-x-1 transition-transform duration-300" />{' '}
         Back to login

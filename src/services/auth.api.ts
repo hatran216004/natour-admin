@@ -14,5 +14,17 @@ export const authApi = {
     return http.post<AuthResponse>('/users/login', body);
   },
   logout: () => http.post<AuthResponse>('/users/logout'),
-  getAllRoles: () => http.get<RolesResponse>('/roles')
+  getAllRoles: () => http.get<RolesResponse>('/roles'),
+  forgotPassowrd: (email: string) =>
+    http.post('/users/forgot-password', { email }),
+  resetPassword: ({
+    token,
+    password,
+    passwordConfirm
+  }: {
+    token: string;
+    password: string;
+    passwordConfirm: string;
+  }) =>
+    http.patch(`/users/reset-password/${token}`, { password, passwordConfirm })
 };
