@@ -23,7 +23,7 @@ export default function Reviews() {
       )}
       {!isLoading && (
         <>
-          <div className="overflow-y-auto">
+          <div className="overflow-y-auto flex-1">
             <Table>
               <Table.Header>
                 <tr>

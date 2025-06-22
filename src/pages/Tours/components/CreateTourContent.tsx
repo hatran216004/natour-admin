@@ -1,5 +1,5 @@
 import 'react-day-picker/dist/style.css';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { type TourSchema, tourSchema } from '../../../utils/rules';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,6 +53,8 @@ export default function CreateTourContent({
     [guides]
   );
 
+  console.log(guideOpts);
+
   const {
     register,
     handleSubmit,
@@ -68,11 +70,18 @@ export default function CreateTourContent({
       difficulty: difficultyOpts[0].value
     }
   });
-  console.log(errors);
+
   const { append, fields, remove } = useFieldArray({
     control,
     name: 'startDates'
   });
+
+  useEffect(() => {
+    if (guides)
+      reset({
+        guides: guides[0]._id
+      });
+  }, [guides, reset]);
 
   function handleAddStartDay(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -105,7 +114,7 @@ export default function CreateTourContent({
     formData.append('guides', JSON.stringify([data.guides]));
     formData.append('startDates', JSON.stringify(data.startDates));
     formData.append('startLocation', JSON.stringify(data.startLocation));
-    console.log(Object.fromEntries(formData));
+
     mutate(formData, {
       onSuccess: (data) => {
         const tour = data.data.data.tour;
@@ -117,9 +126,8 @@ export default function CreateTourContent({
         onCloseModal?.();
       },
       onError: (err) => {
-        console.log(err);
-        const axiosError = err as AxiosError<{ message: string }>;
-        const errorMessage = axiosError.response?.data?.message as string;
+        const errorMessage = (err as AxiosError<{ message: string }>).response
+          ?.data.message;
         toast.error(errorMessage || 'Something went wrong, try again later');
       }
     });

@@ -3,8 +3,8 @@ import { JSX } from 'react';
 
 type MenuItemProps = {
   isLastItem?: boolean;
-  icon?: JSX.Element;
-  text?: string;
+  icon: JSX.Element;
+  text: string;
   className?: string;
   onClick?: () => void;
 };
@@ -32,7 +32,7 @@ export default function MenuItem({
       )}
     >
       {icon && icon}
-      <p className="font-semibold capitalize">{text}</p>
+      <p className="font-semibold">{text[0].toUpperCase() + text?.slice(1)}</p>
     </button>
   );
 }

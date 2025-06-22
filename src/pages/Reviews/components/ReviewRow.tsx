@@ -2,12 +2,15 @@ import { MdDelete } from 'react-icons/md';
 import Modal from '../../../components/Modal';
 import { Review } from '../../../types/review.type';
 import MenuItem from '../../../components/MenuItem';
-import { format } from 'date-fns';
 import DeleteReviewContent from './DeleteReviewContent';
+import { formatDate } from '../../../utils/helpers';
 
 export default function ReviewRow({ review }: { review: Review }) {
   return (
-    <tr className="bg-white border-b border-gray-200" key={review._id}>
+    <tr
+      className="bg-white border-b border-gray-200 font-medium"
+      key={review._id}
+    >
       <td scope="row" className="px-6 py-4">
         <div className="flex gap-[14px] items-center">
           <img
@@ -28,7 +31,7 @@ export default function ReviewRow({ review }: { review: Review }) {
         <p className="line-clamp-2">{review.tour.name}</p>
       </td>
       <td className="px-6 py-4 text-center capitalize text-main">
-        {format(review.createdAt, 'HH:mm MM/dd/yyyy')}
+        {formatDate(review.createdAt)}
       </td>
       <td className="px-6 py-4">
         <Modal>

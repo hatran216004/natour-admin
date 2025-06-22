@@ -2,13 +2,23 @@ import classNames from 'classnames';
 
 export default function Spinner({
   size = 'lg',
-  className = ''
+  className = '',
+  center = false
 }: {
   size?: 'lg' | 'sm' | 'md';
   className?: string;
+  center?: boolean;
 }) {
   return (
-    <div role="status" className={className}>
+    <div
+      role="status"
+      className={classNames(
+        className,
+        center
+          ? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+          : ''
+      )}
+    >
       <svg
         aria-hidden="true"
         className={classNames('text-gray-200 animate-spin fill-primary', {

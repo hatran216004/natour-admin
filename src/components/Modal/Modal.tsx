@@ -66,6 +66,7 @@ export default function Modal({
     }
 
     return () => document.removeEventListener('keydown', handleEscapeKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalName]);
 
   function hasScrollbar(target: HTMLElement) {

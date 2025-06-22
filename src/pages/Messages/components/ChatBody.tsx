@@ -169,7 +169,7 @@ export default function ChatBody() {
 
   return (
     <div className="flex flex-col flex-1 relative">
-      {!isNearBottom() && messages.length > 0 && (
+      {!isNearBottom(300) && messages.length > 0 && (
         <button
           onClick={() => scrollToBottom(false)}
           className="animate-bounce z-10 border-gray-300 w-11 h-11 flex items-center justify-center cursor-pointer text-primary top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white absolute rounded-[50%] shadow-custom"

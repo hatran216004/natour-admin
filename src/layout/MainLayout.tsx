@@ -10,7 +10,7 @@ export default function MainLayout() {
           <div className="sm:hidden lg:block lg:col-span-3 h-full bg-white rounded-xl shadow-custom">
             <Sidebar />
           </div>
-          <div className="col-span-12 lg:col-span-9 flex flex-col h-full">
+          <div className="col-span-12 lg:col-span-9 flex flex-col h-full overflow-auto relative">
             <Header />
             <Outlet />
           </div>

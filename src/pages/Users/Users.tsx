@@ -24,7 +24,7 @@ export default function Users() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Heading heading="manage users" />
-          <Modal>
+          <Modal closeMethods={['button', 'escape']}>
             <Modal.Open name="create-user">
               <Button
                 size="md"
@@ -48,7 +48,7 @@ export default function Users() {
       )}
       {!isLoading && (
         <>
-          <div className="overflow-y-auto">
+          <div className="overflow-y-auto flex-1">
             <Table>
               <Table.Header>
                 <tr>

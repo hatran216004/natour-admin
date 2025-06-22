@@ -1,12 +1,15 @@
 export default function UserListItem({
   name,
   photo,
-  email
+  email,
+  lineClamp = true
 }: {
   name?: string;
   photo?: string;
   email?: string;
+  lineClamp?: boolean;
 }) {
+  const emailText = lineClamp ? `${email?.slice(0, 10)}...` : email;
   return (
     <div className="flex gap-[14px] items-center">
       <img
@@ -16,7 +19,7 @@ export default function UserListItem({
       />
       <div>
         <h2 className="text-main text-sm font-bold capitalize">{name}</h2>
-        <h2 className="text-[#718096] text-sm">{email}</h2>
+        <h2 className="text-[#718096] text-sm">{emailText}</h2>
       </div>
     </div>
   );

@@ -19,11 +19,11 @@ function useAutoScrollToBottom<T extends HTMLElement = HTMLDivElement>(
 
   const [isUserScrolling, setIsUserScrolling] = useState(false);
 
-  function isNearBottom() {
+  function isNearBottom(distance: number = threshold) {
     if (!scrollRefPanel.current) return false;
 
     const { scrollTop, clientHeight, scrollHeight } = scrollRefPanel.current;
-    return scrollHeight - scrollTop - clientHeight < threshold;
+    return scrollHeight - scrollTop - clientHeight < distance;
   }
 
   function scrollToBottom(smooth: boolean = true) {

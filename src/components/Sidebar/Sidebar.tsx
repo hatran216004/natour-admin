@@ -1,8 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import icons from '../../assets/icons';
 import { links } from '../../utils/links';
-import Button from '../Button';
-import { FiLogOut } from 'react-icons/fi';
 
 export default function Sidebar() {
   const location = useLocation();
@@ -11,7 +9,7 @@ export default function Sidebar() {
     <div className="h-full bg-white rounded-xl shadow-custom">
       <div className="p-6 flex flex-col h-full">
         <div className="center gap-3">
-          <img src={icons.logo_bold} alt="" />
+          <img src={icons.logo_bold} alt="Logo" />
           <h3 className="text-main font-bold text-sm uppercase">
             natours dashboard
           </h3>
@@ -89,12 +87,6 @@ export default function Sidebar() {
             );
           })}
         </ul>
-        <Button
-          className="w-full mt-auto gap-5"
-          icon={<FiLogOut className="w-5 h-5" />}
-        >
-          Logout
-        </Button>
       </div>
     </div>
   );

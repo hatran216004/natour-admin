@@ -5,8 +5,7 @@ import Menu from '../../../components/Menu';
 import MenuItem from '../../../components/MenuItem';
 import { MdDelete } from 'react-icons/md';
 import { LuPencilLine } from 'react-icons/lu';
-import { formatCurrency } from '../../../utils/helpers';
-import { format } from 'date-fns';
+import { formatCurrency, formatDate } from '../../../utils/helpers';
 import Modal from '../../../components/Modal';
 import DeleteTourContent from './DeleteTourContent';
 import UpdateTourContent from './UpdateTourContent';
@@ -14,7 +13,7 @@ import UpdateTourContent from './UpdateTourContent';
 export default function TourRow({ tour }: { tour: Tour }) {
   return (
     <tr
-      className="bg-white border-b border-gray-200 text-main capitalize text-center"
+      className="bg-white border-b border-gray-200 text-main capitalize text-center font-medium"
       key={tour._id}
     >
       <td className="px-6 py-4">{tour.name}</td>
@@ -32,7 +31,7 @@ export default function TourRow({ tour }: { tour: Tour }) {
         <div>
           {tour.startDates.map((day, index) => (
             <p key={index} className="text-nowrap">
-              {format(day.date, 'dd-MM-yyyy')}
+              {formatDate(day.date)}
             </p>
           ))}
         </div>
@@ -50,7 +49,7 @@ export default function TourRow({ tour }: { tour: Tour }) {
         {tour.ratingsAverage}⭐({tour.ratingsQuantity})
       </td>
       <td className="px-6 py-4">
-        <Modal>
+        <Modal closeMethods={['button', 'escape']}>
           <Popover
             className="center w-[38px] h-[30px] mx-auto hover:bg-gray-200 rounded-full"
             placement="bottom-center"

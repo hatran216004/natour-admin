@@ -23,6 +23,15 @@ export const userSchema = yup.object().shape({
   role: yup.string()
 });
 
+export const bookingSchema = yup.object({
+  status: yup.string().required('This field is required'),
+  participants: yup
+    .number()
+    .required('This field is required')
+    .min(1, 'participants need at least 1 characters'),
+  special_requirements: yup.string()
+});
+
 // const locationsSchema = yup.object({
 //   coordinates: yup
 //     .array()
@@ -147,3 +156,4 @@ export const tourSchema = yup.object().shape({
 
 export type UserSchema = yup.InferType<typeof userSchema>;
 export type TourSchema = yup.InferType<typeof tourSchema>;
+export type BookingSchema = yup.InferType<typeof bookingSchema>;

@@ -4,6 +4,7 @@ import { FaRegUser } from 'react-icons/fa';
 import { MdCardTravel, MdOutlineRateReview } from 'react-icons/md';
 import { RiBillLine } from 'react-icons/ri';
 import { CiUser } from 'react-icons/ci';
+import { IoMdChatbubbles } from 'react-icons/io';
 import Dashboard from '../pages/Dashboard';
 import Tours from '../pages/Tours';
 import Bookings from '../pages/Bookings';
@@ -11,7 +12,7 @@ import Reviews from '../pages/Reviews';
 import Users from '../pages/Users';
 import UserProfile from '../pages/UserProfile';
 import Messages from '../pages/Messages';
-import { IoMdChatbubbles } from 'react-icons/io';
+import BookingDetail from '../pages/Bookings/BookingDetail';
 
 type NavLink = {
   href: string;
@@ -74,6 +75,10 @@ export const routes: Routes[] = [
   {
     path: 'bookings',
     element: Bookings
+  },
+  {
+    path: 'bookings/:id',
+    element: BookingDetail
   },
   {
     path: 'reviews',

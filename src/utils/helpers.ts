@@ -1,8 +1,14 @@
+import { format } from 'date-fns';
+
 export function formatCurrency(price: number) {
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND'
   }).format(price);
+}
+
+export function formatDate(date: string | Date, detail: boolean = false) {
+  return format(date, detail ? 'dd-MM-yyyy hh:ss:mm' : 'dd-MM-yyyy');
 }
 
 export function timeAgo(isoDate: Date) {

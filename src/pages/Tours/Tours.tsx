@@ -19,7 +19,7 @@ export default function Tours() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Heading heading="manage tours" />
-          <Modal>
+          <Modal closeMethods={['button', 'escape']}>
             <Modal.Open name="create-tour">
               <Button
                 size="md"
@@ -43,7 +43,7 @@ export default function Tours() {
       )}
       {!isLoading && (
         <>
-          <div className="overflow-x-auto h-full">
+          <div className="overflow-x-auto flex-1">
             <Table>
               <Table.Header>
                 <tr className="text-nowrap">

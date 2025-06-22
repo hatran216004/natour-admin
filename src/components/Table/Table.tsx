@@ -1,3 +1,5 @@
+import classNames from 'classnames';
+
 type BodyProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
@@ -5,15 +7,20 @@ type BodyProps = {
   render: (data: any) => React.ReactNode;
 };
 
-type Props = { children: React.ReactNode };
+type Props = { className?: string; children: React.ReactNode };
 
 export default function Table({ children }: Props) {
   return <table className="mt-3 w-full text-sm">{children}</table>;
 }
 
-function Header({ children }: Props) {
+function Header({ className, children }: Props) {
   return (
-    <thead className="text-xs text-[#A0AEC0] uppercase bg-gray-50">
+    <thead
+      className={classNames(
+        'text-xs text-[#A0AEC0] uppercase bg-gray-50',
+        className
+      )}
+    >
       {children}
     </thead>
   );

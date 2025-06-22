@@ -53,7 +53,6 @@ const Popover = ({
   const click = useClick(context);
   const dismiss = useDismiss(context, {
     // capture: true // đóng menu khi menu item stopPropagation
-    // outsidePress: false // không đóng menu khi bấm ra ngoài
   });
   const role = useRole(context, { role: 'tooltip' });
   const { getReferenceProps, getFloatingProps } = useInteractions([

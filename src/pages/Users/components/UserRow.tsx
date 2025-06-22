@@ -20,7 +20,10 @@ export default function UserRow({
   user: User;
 }) {
   return (
-    <tr className="bg-white border-b border-gray-200" key={user._id}>
+    <tr
+      className="bg-white border-b border-gray-200 font-medium"
+      key={user._id}
+    >
       <td scope="row" className="px-6 py-4">
         <UserListItem email={user.email} name={user.name} photo={user.photo} />
       </td>
@@ -41,7 +44,7 @@ export default function UserRow({
         {user.role?.name}
       </td>
       <td className="px-6 py-4">
-        <Modal>
+        <Modal closeMethods={['button', 'escape']}>
           <Popover
             className="center w-[38px] h-[30px] mx-auto hover:bg-gray-200 rounded-full"
             placement="bottom-center"
