@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useQueryClient } from '@tanstack/react-query';
 import { Socket } from 'socket.io-client';
 
@@ -47,24 +45,24 @@ function useSocketHandlers(socket: Socket | null) {
         mock: false
       });
 
-      setConversations(
-        conversations.map((conv) =>
-          conv._id === selectedConversation._id
-            ? {
-                ...conv,
-                _id: conversationId,
-                lastMessage: { text, sender },
-                mock: false,
-                updatedAt
-              }
-            : conv
-        )
-      );
-
       queryClient.invalidateQueries({
         queryKey: ['conversations']
       });
     }
+
+    setConversations(
+      conversations.map((conv) =>
+        conv._id === selectedConversation._id
+          ? {
+              ...conv,
+              _id: conversationId,
+              lastMessage: { text, sender },
+              mock: false,
+              updatedAt
+            }
+          : conv
+      )
+    );
 
     socket?.emit(CHAT_EVENTS.STOP_TYPING, {
       recipientId: selectedConversation.userId,
@@ -73,7 +71,7 @@ function useSocketHandlers(socket: Socket | null) {
   };
 
   const handleNewMesage = (message: Message) => {
-    const { conversationId, sender } = message;
+    const { conversationId, sender, updatedAt } = message;
     handleStartNewConversation(conversationId);
 
     if (message.conversationId === selectedConversation._id) {
@@ -90,7 +88,8 @@ function useSocketHandlers(socket: Socket | null) {
         conv._id === conversationId
           ? {
               ...conv,
-              lastMessage: { sender, text: message.text }
+              lastMessage: { sender, text: message.text },
+              updatedAt
             }
           : conv
       )
