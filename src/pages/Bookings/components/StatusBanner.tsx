@@ -3,26 +3,40 @@ import { Booking } from '../../../types/booking.type';
 import { formatDate } from '../../../utils/helpers';
 
 const statusColors = {
-  confirmed: {
+  Paid: {
     border: 'border-green-200 from-green-50 to-emerald-50',
     bg: 'bg-green-100',
     text: 'text-green-800',
     subtext: 'text-green-600',
     badge: 'text-green-800 bg-green-100'
   },
-  pending: {
+  Unpaid: {
     border: 'border-yellow-200 from-yellow-50 to-yellow-50',
     bg: 'bg-yellow-100',
     text: 'text-yellow-800',
     subtext: 'text-yellow-600',
     badge: 'text-yellow-800 bg-yellow-100'
   },
-  failed: {
+  Failed: {
     border: 'border-red-200 from-red-50 to-red-50',
     bg: 'bg-red-100',
     text: 'text-red-800',
     subtext: 'text-red-600',
     badge: 'text-red-800 bg-red-100'
+  },
+  Cancelled: {
+    border: 'border-gray-300 from-gray-50 to-gray-100',
+    bg: 'bg-gray-200',
+    text: 'text-gray-800',
+    subtext: 'text-gray-600',
+    badge: 'text-gray-800 bg-gray-200'
+  },
+  Refunded: {
+    border: 'border-blue-200 from-blue-50 to-blue-100',
+    bg: 'bg-blue-100',
+    text: 'text-blue-800',
+    subtext: 'text-blue-600',
+    badge: 'text-blue-800 bg-blue-100'
   }
 };
 
@@ -30,7 +44,7 @@ export default function StatusBanner({
   status,
   updatedAt
 }: {
-  status: Booking['status'];
+  status: Booking['paymentStatus'];
   updatedAt: string;
 }) {
   const cssStatus = statusColors[status];

@@ -2,14 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useSocket } from '../../../context/SocketContext';
 import { useSelectedConversation } from '../../../store/messages.store';
 import { useAuthStore } from '../../../store/auth.store';
+import { CHAT_EVENTS } from '../../../services/socket/events';
+import { UserTypingData } from '../../../types/messages.type';
 
 // const TYPING_TIMEOUT = 3000;
-
-type TypingType = {
-  conversationId: string;
-  recipientId: string | null;
-  senderId: string | null;
-};
 
 function useTyping(typingTimeout = 3000) {
   const { socket } = useSocket();
@@ -21,31 +17,29 @@ function useTyping(typingTimeout = 3000) {
   useEffect(() => {
     if (!socket || !selectedConversation._id || !user?._id) return;
 
-    function handleTyping(data: TypingType) {
+    const onTyping = (data: UserTypingData) => {
       if (
         data.conversationId === selectedConversation._id &&
-        data.senderId !== user?._id
+        data.userId !== user?._id
       )
-        setIsTyping(true);
+        setIsTyping(data.isTyping);
 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
 
-      typingTimeoutRef.current = setTimeout(handleStopTyping, typingTimeout);
-    }
+      typingTimeoutRef.current = setTimeout(onStopTyping, typingTimeout);
+    };
 
-    function handleStopTyping() {
+    const onStopTyping = () => {
       typingTimeoutRef.current = null;
       setIsTyping(false);
-    }
+    };
 
-    socket.on('userTyping', handleTyping);
-    socket.on('userStopTyping', handleStopTyping);
+    socket.on(CHAT_EVENTS.USER_TYPING, onTyping);
 
     return () => {
-      socket.off('userTyping', handleTyping);
-      socket.off('userStopTyping', handleStopTyping);
+      socket.off(CHAT_EVENTS.USER_TYPING, onTyping);
 
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };

@@ -1,58 +1,62 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import io, { Socket } from 'socket.io-client';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '../store/auth.store';
+import { Socket } from 'socket.io-client';
+import socketService from '../services/socket/socket';
+import { USER_EVENTS } from '../services/socket/events';
 
 type ValueType = {
   socket: Socket | null;
-  setSocket: React.Dispatch<React.SetStateAction<Socket | null>>;
   onlineUsers: string[];
-  isOnline: boolean;
 };
 
-const SocketContext = createContext<ValueType>(null!);
+const Context = createContext<ValueType | null>(null);
 
-function SocketProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthStore();
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [onlineUsers, setOnlineUsers] = useState([]);
-  const [isOnline, setIsOnline] = useState(false);
+export default function SocketContext({
+  children
+}: {
+  children: React.ReactNode;
+}) {
+  const { isAuthenticated, user, token } = useAuthStore();
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000', {
-      query: {
-        userId: user?._id
-      }
-    });
-    socket.on('getOnlineUsers', (users) => {
-      setOnlineUsers(users);
-      setIsOnline(users.includes(user?._id));
-    });
+    if (!token || !isAuthenticated || !user) return;
 
-    setSocket(socket);
+    socketRef.current = socketService.connect(token);
 
+    const onOnlineUsers = (data: string[]) => {
+      setOnlineUsers(data);
+    };
+
+    socketRef.current.on(USER_EVENTS.ONLINE_USERS, onOnlineUsers);
     return () => {
-      if (socket) {
-        socket.close();
+      if (socketRef.current) {
+        socketRef.current.off(USER_EVENTS.ONLINE_USERS, onOnlineUsers);
+        socketRef.current.disconnect();
       }
     };
-  }, [user?._id]);
+  }, [user, isAuthenticated, token]);
 
   return (
-    <SocketContext.Provider
-      value={{ socket, onlineUsers, isOnline, setSocket }}
+    <Context.Provider
+      value={{
+        socket: socketRef.current,
+        onlineUsers
+      }}
     >
       {children}
-    </SocketContext.Provider>
+    </Context.Provider>
   );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useSocket() {
-  const value = useContext(SocketContext);
+  const value = useContext(Context);
+
   if (!value) {
-    throw new Error('SocketContext is being used out of range');
+    throw new Error('useSocket must be used within a SocketProvider');
   }
   return value;
 }
-
-export default SocketProvider;

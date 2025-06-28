@@ -14,30 +14,30 @@ import classNames from 'classnames';
 import UpdateBookingContent from './UpdateBookingContent';
 import { LuPencilLine } from 'react-icons/lu';
 const cssStatus = {
-  confirmed: {
+  Paid: {
     bg: 'bg-[#48BB78]',
     text: 'text-white'
   },
-  pending: {
+  Unpaid: {
     bg: 'bg-yellow-300',
     text: 'text-yellow-600'
   },
-  failed: {
+  Failed: {
     bg: 'bg-red-300',
     text: 'text-red-600'
   },
-  refunded: {
+  Refunded: {
     bg: 'bg-blue-200',
     text: 'text-blue-700'
   },
-  'refund-requested': {
+  Cancelled: {
     bg: 'bg-orange-200',
     text: 'text-orange-700'
   }
 };
 
 export default function BookingRow({ booking }: { booking: Booking }) {
-  const bookingStatus = cssStatus[booking.status];
+  const bookingStatus = cssStatus[booking.paymentStatus];
 
   return (
     <tr className="bg-white border-b border-gray-200 text-nowrap font-medium capitalize">
@@ -49,7 +49,9 @@ export default function BookingRow({ booking }: { booking: Booking }) {
           photo={booking.user.photo}
         />
       </td>
-      <td className="px-6 py-4 text-center">{formatCurrency(booking.price)}</td>
+      <td className="px-6 py-4 text-center">
+        {formatCurrency(booking.amount)}
+      </td>
       <td className="px-6 py-4 text-center capitalize text-main">
         {booking.participants}
       </td>
@@ -61,7 +63,7 @@ export default function BookingRow({ booking }: { booking: Booking }) {
             bookingStatus.text
           )}
         >
-          {booking.status.split('-').join(' ')}
+          {booking.paymentStatus.split('-').join(' ')}
         </span>
       </td>
       <td className="px-6 py-4">{booking.paymentMethod}</td>
@@ -105,11 +107,16 @@ export default function BookingRow({ booking }: { booking: Booking }) {
             <UpdateBookingContent
               booking={booking}
               statusOpts={[
-                { label: 'confirmed', value: 'confirmed' },
-                { label: 'pending', value: 'pending' },
+                { label: 'Paid', value: 'Paid' },
+                { label: 'Unpaid', value: 'Unpaid' },
                 {
-                  label: 'failed',
-                  value: 'failed'
+                  label: 'Failed',
+                  value: 'Failed'
+                },
+                { label: 'Cancelled', value: 'Cancelled' },
+                {
+                  label: 'Rufunded',
+                  value: 'Rufunded'
                 }
               ]}
             />

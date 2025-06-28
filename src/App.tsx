@@ -13,10 +13,10 @@ import { routes } from './utils/links.ts';
 import Login from './pages/Login';
 import LoginLayout from './layout/LoginLayout.tsx';
 import MainLayout from './layout/MainLayout.tsx';
-import SocketProvider from './context/SocketContext.tsx';
 import ForgotPassword from './pages/Login/ForgotPassword.tsx';
 import ResetNewPassword from './pages/Login/ResetNewPassword.tsx';
 import NotFound from './pages/NotFound';
+import SocketContext from './context/SocketContext.tsx';
 
 function ProtectedRoutes() {
   const { isAuthenticated } = useAuthStore();
@@ -30,7 +30,7 @@ function RejectedRoutes() {
 
 function App() {
   return (
-    <SocketProvider>
+    <SocketContext>
       <BrowserRouter>
         <Routes>
           <Route path="*" element={<NotFound />} />
@@ -81,7 +81,7 @@ function App() {
           }
         }}
       />
-    </SocketProvider>
+    </SocketContext>
   );
 }
 

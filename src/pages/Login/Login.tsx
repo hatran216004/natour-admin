@@ -42,7 +42,9 @@ export default function Signup() {
       onError: (error) => {
         const axiosError = error as AxiosError<{ message: string }>;
         const errorMessage = axiosError.response?.data?.message as string;
-        toast.error(errorMessage);
+        toast.error(
+          errorMessage || 'Something went wrong. Please try again later!'
+        );
       }
     });
   }

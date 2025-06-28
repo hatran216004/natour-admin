@@ -36,7 +36,7 @@ export default function Bookings() {
                     user
                   </th>
                   <th scope="col" className="px-6 py-3 text-center">
-                    price
+                    amount
                   </th>
                   <th scope="col" className="px-6 py-3 text-center">
                     participants

@@ -3,31 +3,43 @@ import { formatCurrency, formatDate } from '../../../utils/helpers';
 import { Booking } from '../../../types/booking.type';
 
 const statusCss = {
-  confirmed: {
+  Paid: {
     bg: 'bg-green-50',
     subtext: 'text-green-600',
     text: 'text-green-800',
     mediumText: 'text-green-700'
   },
-  failed: {
+  Failed: {
     bg: 'bg-red-50',
     subtext: 'text-red-600',
     text: 'text-red-800',
     mediumText: 'text-red-700'
   },
-  pending: {
+  Unpaid: {
     bg: 'bg-yellow-50',
     subtext: 'text-yellow-600',
     text: 'text-yellow-800',
     mediumText: 'text-yellow-700'
+  },
+  Cancelled: {
+    bg: 'bg-gray-50',
+    subtext: 'text-gray-500',
+    text: 'text-gray-800',
+    mediumText: 'text-gray-700'
+  },
+  Refunded: {
+    bg: 'bg-blue-50',
+    subtext: 'text-blue-600',
+    text: 'text-blue-800',
+    mediumText: 'text-blue-700'
   }
 };
 
 export default function PaymentDetail({ booking }: { booking: Booking }) {
   const paymentPaidStatus =
-    booking?.status === 'confirmed' ? 'Paid in full' : 'Not paid in full';
+    booking?.paymentStatus === 'Paid' ? 'Paid in full' : 'Not paid in full';
 
-  const cssStatus = statusCss[booking.status];
+  const cssStatus = statusCss[booking.paymentStatus];
 
   return (
     <>
@@ -56,7 +68,7 @@ export default function PaymentDetail({ booking }: { booking: Booking }) {
           <div className="flex justify-between items-center pt-3">
             <span className="text-lg font-semibold text-gray-900">Total</span>
             <span className="text-xl font-bold text-gray-800">
-              {formatCurrency(booking.price)}
+              {formatCurrency(booking.amount)}
             </span>
           </div>
         </div>
@@ -76,18 +88,13 @@ export default function PaymentDetail({ booking }: { booking: Booking }) {
               </span>
             </div>
             <span className={classNames('text-sm', cssStatus.subtext)}>
-              {formatDate(booking.createdAt, true)}
+              {formatDate(booking.paymentTime, true)}
             </span>
           </div>
           <div className={classNames('mt-2 text-sm', cssStatus.mediumText)}>
             • Payment method:{' '}
             <span className="capitalize">{booking.paymentMethod}</span>
-            <p>
-              • Payment id:{' '}
-              {booking.transactionId
-                ? booking.transactionId
-                : booking.paymentId}
-            </p>
+            <p>• Payment id: {booking.orderCode}</p>
           </div>
         </div>
       </div>

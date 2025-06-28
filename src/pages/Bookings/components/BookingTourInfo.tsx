@@ -46,7 +46,7 @@ export default function BookingTourInfo({ booking }: { booking: Booking }) {
       </div>
       <div className="text-right">
         <div className="text-2xl font-bold text-gray-800">
-          {formatCurrency(booking.price)}
+          {formatCurrency(booking.amount)}
         </div>
         <div className="text-sm text-gray-500">
           / {booking.participants} participant

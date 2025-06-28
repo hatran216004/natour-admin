@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useConversationsStore } from '../../../store/messages.store';
@@ -12,8 +13,10 @@ import useUrl from '../../../hooks/useUrl';
 import EmptyConversations from './EmptyConversations';
 import { Conversation } from '../../../types/conversations.type';
 import { useAuthStore } from '../../../store/auth.store';
+import { useSocket } from '../../../context/SocketContext';
 
 export default function ConversationsSection() {
+  const { onlineUsers } = useSocket();
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuthStore();
   const { conversations, isLoading } = useConversations();
@@ -53,14 +56,14 @@ export default function ConversationsSection() {
       const users = searchData?.data?.data?.users;
 
       const newConversations: Conversation[] = users
-        .map((user, index) => {
+        .map((user) => {
           const isExistConversation = conversations.find(
             (ele) => ele.participants[0]._id === user._id
           );
           if (isExistConversation)
             return { ...isExistConversation, mock: false };
           return {
-            _id: index.toString(),
+            _id: uuidv4(),
             lastMessage: {
               text: '',
               sender: user._id
@@ -70,7 +73,10 @@ export default function ConversationsSection() {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                photo: user.photo
+                photo: user.photo,
+                status: onlineUsers.includes(user._id)
+                  ? 'online'
+                  : ('offline' as 'online' | 'offline')
               }
             ],
             createdAt: new Date(),

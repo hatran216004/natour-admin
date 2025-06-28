@@ -51,7 +51,7 @@ export default function ChatBubble({
           />
         )}
         <div
-          className={classNames('max-w-[50%] p-2 rounded-xl', {
+          className={classNames('max-w-[50%] px-2 py-1 rounded-xl', {
             'bg-primary text-white': isMine,
             'bg-[#eee]': !isMine
           })}

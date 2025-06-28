@@ -15,16 +15,16 @@ export type Booking = {
     name: string;
     email: string;
   };
-  price: number;
+  amount: number;
   participants: number;
-  status: 'confirmed' | 'failed' | 'pending';
+  paymentStatus: 'Unpaid' | 'Paid' | 'Cancelled' | 'Refunded' | 'Failed';
   paymentMethod: string;
-  paymentId: string;
-  specialRequirements: string;
+  orderCode: string;
   startDate: string;
-  transactionId?: string;
+  paymentTime: string;
   createdAt: string;
   updatedAt: string;
+  specialRequirements: string;
 };
 
 export type BookingList = {

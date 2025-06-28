@@ -8,6 +8,7 @@ export type User = {
     name: string;
     _id: string;
   };
+  status?: 'online' | 'offline';
 };
 
 export type UsersList = {

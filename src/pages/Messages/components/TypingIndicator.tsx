@@ -1,6 +1,6 @@
 export default function TypingIndicator() {
   return (
-    <div className="inline-flex items-center gap-1 rounded-2xl bg-[#eeeeee] px-4 py-2">
+    <div className="inline-flex items-center gap-1 rounded-2xl bg-[#eeeeee]">
       {[...Array(5)].map((_, i) => (
         <span
           key={i}

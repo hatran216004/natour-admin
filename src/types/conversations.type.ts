@@ -3,6 +3,7 @@ export type Participant = {
   name: string;
   email: string;
   photo: string;
+  status: 'online' | 'offline';
 };
 
 export type Conversation = {

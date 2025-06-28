@@ -48,7 +48,7 @@ export default function BookingDetail() {
           </header>
           <div className="bg-white shadow-md max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <StatusBanner
-              status={booking.status}
+              status={booking.paymentStatus}
               updatedAt={booking.updatedAt}
             />
 
@@ -72,22 +72,24 @@ export default function BookingDetail() {
                   <PaymentDetail booking={booking} />
                 </BookingDetailPanel>
 
-                <BookingDetailPanel title="Special Requirements">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Customer request:
-                    </h4>
-                    <div className="space-y-2">
-                      <div className="bg-blue-50 p-3 rounded-lg">
-                        <div className="flex justify-between items-start">
-                          <p className="text-blue-800 text-sm">
-                            {booking.specialRequirements}
-                          </p>
+                {booking.specialRequirements && (
+                  <BookingDetailPanel title="Special Requirements">
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Customer request:
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <div className="flex justify-between items-start">
+                            <p className="text-blue-800 text-sm">
+                              {booking.specialRequirements}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </BookingDetailPanel>
+                  </BookingDetailPanel>
+                )}
               </div>
               <div className="space-y-6">
                 {/* Quick Actions */}
@@ -102,6 +104,7 @@ export default function BookingDetail() {
 
                 <BookingDetailPanel title="Booking History">
                   <BookingHistory
+                    paymentTime={booking.paymentTime}
                     createdAt={booking.createdAt}
                     updatedAt={booking.updatedAt}
                   />

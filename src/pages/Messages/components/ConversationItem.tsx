@@ -1,6 +1,9 @@
 import { useAuthStore } from '../../../store/auth.store';
 import { Conversation } from '../../../types/conversations.type';
-import { useSelectedConversation } from '../../../store/messages.store';
+import {
+  useMessages,
+  useSelectedConversation
+} from '../../../store/messages.store';
 import classNames from 'classnames';
 import { timeAgo } from '../../../utils/helpers';
 import { useSocket } from '../../../context/SocketContext';
@@ -10,8 +13,9 @@ export default function ConversationItem({
 }: {
   conversation: Conversation;
 }) {
-  const { onlineUsers } = useSocket();
   const { user } = useAuthStore();
+  const { clearMessages } = useMessages();
+  const { onlineUsers } = useSocket();
   const { selectedConversation, setSelectedConversation } =
     useSelectedConversation();
 
@@ -25,7 +29,8 @@ export default function ConversationItem({
       ? messageElements.slice(0, 10).join('') + '...'
       : lastMessage?.text;
 
-  function handleSelectecConversation() {
+  const handler = () => {
+    clearMessages();
     setSelectedConversation({
       _id: conversation._id,
       photo: recipient.photo,
@@ -34,18 +39,15 @@ export default function ConversationItem({
       email: recipient.email,
       mock: conversation.mock
     });
-  }
+  };
 
   return (
     <li
       className={classNames(
         'cursor-pointer hover:opacity-90 px-3 py-2 rounded-lg shadow-sm',
-        {
-          'bg-gray-200': isActive,
-          'bg-white': !isActive
-        }
+        isActive ? 'bg-gray-200' : 'bg-white'
       )}
-      onClick={handleSelectecConversation}
+      onClick={handler}
     >
       <div className="flex items-center ">
         <figure className="relative flex-shrink-0 mr-4">
@@ -57,10 +59,9 @@ export default function ConversationItem({
           <span
             className={classNames(
               'w-3 h-3 border-gray-600 border-2 rounded-full absolute right-0 bottom-0',
-              {
-                'bg-green-500': onlineUsers.includes(recipient._id),
-                'bg-gray-400': !onlineUsers.includes(recipient._id)
-              }
+              onlineUsers.includes(recipient._id)
+                ? 'bg-green-500'
+                : ' bg-gray-400'
             )}
           ></span>
           {conversation.unreadCount > 0 && lastMessage.sender !== user?._id && (

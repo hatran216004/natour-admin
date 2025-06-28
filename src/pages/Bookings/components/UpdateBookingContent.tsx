@@ -40,7 +40,7 @@ export default function UpdateBookingContent({
   } = useForm<FormData>({
     resolver: yupResolver(updateBookingSchema),
     defaultValues: {
-      status: booking.status,
+      status: booking.paymentStatus,
       participants: booking.participants,
       special_requirements: booking.specialRequirements
     }

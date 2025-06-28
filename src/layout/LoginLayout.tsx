@@ -21,12 +21,6 @@ export default function LoginLayout() {
                 </h2>
               </div>
               <div className="center gap-3 p-2">
-                <img src={icons.userCircle} alt="User" />
-                <h2 className="uppercase text-xs text-white leading-5 font-bold ">
-                  sign up
-                </h2>
-              </div>
-              <div className="center gap-3 p-2">
                 <img src={icons.key} alt="User" />
                 <h2 className="uppercase text-xs text-white leading-5 font-bold ">
                   sign in
@@ -37,8 +31,7 @@ export default function LoginLayout() {
           <div className="center flex-col mt-8">
             <h3 className="text-white text-3xl font-bold">Welcome!</h3>
             <p className="mt-3 text-lg text-center text-white max-w-[400px]">
-              Use these awesome forms to login or create new account in your
-              project for free.
+              Use these awesome forms to login your account.
             </p>
           </div>
         </div>

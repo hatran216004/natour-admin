@@ -5,8 +5,10 @@ import http from '../utils/http';
 
 export const conversationsApi = {
   getUserConversations: () =>
-    http.get<SuccessResponseApi<ConversationsList>>('/messages/conversations'),
-  getAllMessages: (otherUserId: string) =>
-    http.get<SuccessResponseApi<MessagesList>>(`/messages/${otherUserId}`),
+    http.get<SuccessResponseApi<ConversationsList>>('/conversations/me'),
+  getAllMessages: (conversationId: string) =>
+    http.get<SuccessResponseApi<MessagesList>>(
+      `/conversations/${conversationId}/messages`
+    ),
   deleteConversation: (id: string) => http.delete(`/conversations/${id}`)
 };

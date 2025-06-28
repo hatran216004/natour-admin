@@ -1,10 +1,10 @@
 import React from 'react';
-import { FaHome } from 'react-icons/fa';
-import { FaRegUser } from 'react-icons/fa';
+import { VscHome } from 'react-icons/vsc';
+import { PiUsersThreeThin } from 'react-icons/pi';
 import { MdCardTravel, MdOutlineRateReview } from 'react-icons/md';
 import { RiBillLine } from 'react-icons/ri';
-import { CiUser } from 'react-icons/ci';
-import { IoMdChatbubbles } from 'react-icons/io';
+import { LiaUserSolid } from 'react-icons/lia';
+import { PiChats } from 'react-icons/pi';
 import Dashboard from '../pages/Dashboard';
 import Tours from '../pages/Tours';
 import Bookings from '../pages/Bookings';
@@ -29,7 +29,7 @@ export const links: NavLink[] = [
   {
     href: '/dashboard',
     label: 'dashboard',
-    icon: FaHome
+    icon: VscHome
   },
   {
     href: '/tours',
@@ -39,7 +39,7 @@ export const links: NavLink[] = [
   {
     href: '/users',
     label: 'users',
-    icon: FaRegUser
+    icon: PiUsersThreeThin
   },
   {
     href: '/reviews',
@@ -54,12 +54,12 @@ export const links: NavLink[] = [
   {
     href: '/messages',
     label: 'messages',
-    icon: IoMdChatbubbles
+    icon: PiChats
   },
   {
     href: '/profile',
     label: 'profile',
-    icon: CiUser
+    icon: LiaUserSolid
   }
 ];
 

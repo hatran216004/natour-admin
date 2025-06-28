@@ -8,7 +8,7 @@ export function formatCurrency(price: number) {
 }
 
 export function formatDate(date: string | Date, detail: boolean = false) {
-  return format(date, detail ? 'dd-MM-yyyy hh:ss:mm' : 'dd-MM-yyyy');
+  return format(new Date(date), detail ? 'dd-MM-yyyy HH:mm:ss' : 'dd-MM-yyyy');
 }
 
 export function timeAgo(isoDate: Date) {

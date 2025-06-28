@@ -1,162 +1,94 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useAuthStore } from '../../../store/auth.store';
 import {
-  useConversationsStore,
+  useMessages,
   useSelectedConversation
 } from '../../../store/messages.store';
-import { useSocket } from '../../../context/SocketContext';
-import useMessages from '../hooks/useMessages';
 
 import TypingIndicator from './TypingIndicator';
 import Loading from '../../../components/Loading';
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import EmptyChatMessages from './EmptyChatMessages';
-import { Message } from '../../../types/messages.type';
 import useTyping from '../hooks/useTyping';
-import useAutoScrollToBottom from '../hooks/useAutoScrollToBottom';
-import { Conversation } from '../../../types/conversations.type';
-import { IoArrowDown } from 'react-icons/io5';
-import { useQueryClient } from '@tanstack/react-query';
+import { useSocket } from '../../../context/SocketContext';
+import { useQuery } from '@tanstack/react-query';
+import { conversationsApi } from '../../../services/conversation.api';
+import useChatEvents from '../../../hooks/useChatEvents';
+import NewMessageIndicator from './NewMessageIndicator';
+import useScrollToBottom from '../hooks/useScrollToBottom';
 
 export default function ChatBody() {
-  const queryClient = useQueryClient();
-  const { socket } = useSocket();
-  const { isTyping } = useTyping();
-  const { messages, isLoading, handleUpdateMessages } = useMessages();
-  const { selectedConversation } = useSelectedConversation();
-  const { conversations, setConversations } = useConversationsStore();
   const { user } = useAuthStore();
+  const { socket } = useSocket();
+
+  const { tryEmitSeenMessage, tryEmitUnReadMessageCount } =
+    useChatEvents(socket);
+  const { isTyping } = useTyping();
+  const { messages, setMessages, getLastMessage } = useMessages();
+  const { selectedConversation } = useSelectedConversation();
+
+  const isFirst = useRef(true);
+
   const {
-    scrollRef,
-    scrollRefPanel,
-    previousConversationId,
-    handleScroll,
-    scrollToBottom,
-    isNearBottom
-  } = useAutoScrollToBottom(messages);
+    chatPanelRef,
+    hasNewMessages,
+    newMessageCount,
+    scrollToNewMessages,
+    isNearBottom,
+    scrollToBottom
+  } = useScrollToBottom();
+  const lastMessage = getLastMessage();
 
-  function tryEmitSeenMessage() {
-    const unSeenMessage = messages.filter(
-      (msg) => !msg.isSeen && msg.sender !== user?._id
-    );
+  const { data, isLoading } = useQuery({
+    queryKey: ['messages-conversation', selectedConversation._id],
+    queryFn: () => conversationsApi.getAllMessages(selectedConversation._id),
+    enabled: !selectedConversation.mock && !!selectedConversation._id
+  });
 
-    if (unSeenMessage.length > 0) {
-      const seenData = unSeenMessage.map((msg) => ({
-        _id: msg?._id,
-        conversationId: msg?.conversationId,
-        senderId: msg?.sender,
-        recipientId: user?._id
-      }));
-      socket?.emit('seenMeessage', seenData);
+  useEffect(() => {
+    scrollToBottom(false);
+  }, [selectedConversation._id, scrollToBottom]);
+
+  useEffect(() => {
+    if (messages.length && isFirst.current) {
+      scrollToBottom(false);
+      isFirst.current = false;
     }
-  }
+  }, [messages, scrollToBottom]);
 
-  function handleStartNewConversation(conversationId: string) {
-    const existingConversation = conversations.find(
-      (conv) => conv._id === conversationId
-    );
-    if (!existingConversation) {
-      queryClient.invalidateQueries({
-        queryKey: ['conversations']
-      });
+  useEffect(() => {
+    if (data?.data.data.messages) {
+      setMessages(data.data.data.messages);
     }
-  }
+  }, [data, setMessages]);
 
   useEffect(() => {
     if (isTyping && isNearBottom()) scrollToBottom();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTyping]);
+  }, [isTyping, isNearBottom, scrollToBottom]);
 
   useEffect(() => {
-    const conversationChanged =
-      previousConversationId.current !== selectedConversation._id;
-    if (messages.length > 0 && isNearBottom() && !conversationChanged) {
-      tryEmitSeenMessage();
-    }
+    if (!messages.length || !lastMessage) return;
+    const isNotMyMsg = lastMessage.sender !== user?._id;
+    const isSameConversation =
+      lastMessage.conversationId === selectedConversation._id;
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    function handleNewMessage(message: Message) {
-      const { _id, conversationId, sender } = message;
-
-      handleStartNewConversation(conversationId);
-
-      if (message.conversationId === selectedConversation._id) {
-        handleUpdateMessages(message);
-
-        if (isNearBottom() && sender !== user?._id) {
-          socket?.emit('seenMeessage', [
-            {
-              _id,
-              conversationId,
-              senderId: sender,
-              recipientId: user?._id
-            }
-          ]);
-        } else {
-          socket?.emit('updateUnreadConversation', {
-            conversationId,
-            recipientId: user?._id
-          });
-        }
+    if (isNotMyMsg) {
+      if (isNearBottom() && isSameConversation) {
+        tryEmitSeenMessage();
       } else {
-        socket?.emit('updateUnreadConversation', {
-          conversationId,
-          recipientId: user?._id
-        });
+        tryEmitUnReadMessageCount();
       }
-
-      setConversations(
-        conversations.map((conv) =>
-          conv._id === conversationId
-            ? {
-                ...conv,
-                lastMessage: { sender, text: message.text }
-              }
-            : conv
-        )
-      );
     }
-
-    function handleMessageSeen(messages: Message[]) {
-      handleUpdateMessages(messages, true);
-    }
-
-    function handleUpdateUnreadCount(conversation: Conversation) {
-      setConversations(
-        conversations.map((conv) =>
-          conv._id === conversation._id
-            ? { ...conv, unreadCount: conversation.unreadCount }
-            : conv
-        )
-      );
-    }
-
-    socket.on('newMessage', handleNewMessage);
-    socket.on('messageSeen', handleMessageSeen);
-    socket.on('updatedUnreadConversation', handleUpdateUnreadCount);
-    socket.on('removeUnreadCount', handleUpdateUnreadCount);
-    return () => {
-      socket.off('newMessage', handleNewMessage);
-      socket.off('messageSeen', handleMessageSeen);
-      socket.off('updatedUnreadConversation', handleUpdateUnreadCount);
-      socket.off('removeUnreadCount', handleUpdateUnreadCount);
-    };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    socket,
+    messages,
+    lastMessage,
+    user?._id,
     selectedConversation._id,
-    conversations,
-    setConversations,
-    handleUpdateMessages
+    isNearBottom,
+    tryEmitSeenMessage,
+    tryEmitUnReadMessageCount
   ]);
 
   if (!selectedConversation.userId) {
@@ -169,18 +101,18 @@ export default function ChatBody() {
 
   return (
     <div className="flex flex-col flex-1 relative">
-      {!isNearBottom(300) && messages.length > 0 && (
-        <button
-          onClick={() => scrollToBottom(false)}
-          className="animate-bounce z-10 border-gray-300 w-11 h-11 flex items-center justify-center cursor-pointer text-primary top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white absolute rounded-[50%] shadow-custom"
-        >
-          <IoArrowDown size={24} />
-        </button>
-      )}
+      <NewMessageIndicator
+        newMessageCount={newMessageCount}
+        onScrollToBottom={() => {
+          scrollToNewMessages();
+          tryEmitSeenMessage();
+        }}
+        isVisible={!isNearBottom(200) && hasNewMessages}
+      />
+
       <div
-        className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-1 relative"
-        ref={scrollRefPanel}
-        onScroll={() => handleScroll(tryEmitSeenMessage)}
+        className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-2 relative"
+        ref={chatPanelRef}
       >
         {isLoading && !messages.length && <Loading />}
         {selectedConversation.mock && (
@@ -224,13 +156,9 @@ export default function ChatBody() {
             <TypingIndicator />
           </ChatBubble>
         )}
-        <span ref={scrollRef}></span>
       </div>
 
-      <ChatInput
-        disabled={isLoading}
-        handleUpdateMessages={handleUpdateMessages}
-      />
+      <ChatInput disabled={isLoading} />
     </div>
   );
 }
