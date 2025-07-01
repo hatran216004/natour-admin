@@ -5,6 +5,7 @@ import { MdCardTravel, MdOutlineRateReview } from 'react-icons/md';
 import { RiBillLine } from 'react-icons/ri';
 import { LiaUserSolid } from 'react-icons/lia';
 import { PiChats } from 'react-icons/pi';
+import { GoShieldCheck } from 'react-icons/go';
 import Dashboard from '../pages/Dashboard';
 import Tours from '../pages/Tours';
 import Bookings from '../pages/Bookings';
@@ -13,6 +14,7 @@ import Users from '../pages/Users';
 import UserProfile from '../pages/UserProfile';
 import Messages from '../pages/Messages';
 import BookingDetail from '../pages/Bookings/BookingDetail';
+import RolePermissions from '../pages/RolePermissions';
 
 type NavLink = {
   href: string;
@@ -52,10 +54,16 @@ export const links: NavLink[] = [
     icon: RiBillLine
   },
   {
-    href: '/messages',
-    label: 'messages',
+    href: '/roles-permissions',
+    label: 'roles-permissions',
+    icon: GoShieldCheck
+  },
+  {
+    href: '/chat',
+    label: 'chat',
     icon: PiChats
   },
+
   {
     href: '/profile',
     label: 'profile',
@@ -93,7 +101,11 @@ export const routes: Routes[] = [
     element: UserProfile
   },
   {
-    path: 'messages',
+    path: 'chat',
     element: Messages
+  },
+  {
+    path: 'roles-permissions',
+    element: RolePermissions
   }
 ];

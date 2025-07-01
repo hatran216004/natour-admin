@@ -48,7 +48,7 @@ export default function Sidebar() {
                           isActive ? 'text-main' : 'text-[#A0AEC0]'
                         } text-base font-bold capitalize`}
                       >
-                        {link.label}
+                        {link.label.split('-').join(' ')}
                       </span>
                     </Link>
                   </li>
@@ -80,7 +80,7 @@ export default function Sidebar() {
                       isActive ? 'text-main' : 'text-[#A0AEC0]'
                     } text-base font-bold capitalize`}
                   >
-                    {link.label}
+                    {link.label.split('-').join(' ')}
                   </span>
                 </Link>
               </li>

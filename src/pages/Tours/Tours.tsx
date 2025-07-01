@@ -45,43 +45,21 @@ export default function Tours() {
         <>
           <div className="overflow-x-auto flex-1">
             <Table>
-              <Table.Header>
-                <tr className="text-nowrap">
-                  <th scope="col" className="px-6 py-3 text-center">
-                    name
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    image cover
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    start location
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    starts day
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    difficulty
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    duration
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    guides
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    max group size
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    price
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    ratings
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    actions
-                  </th>
-                </tr>
-              </Table.Header>
+              <Table.Header
+                data={[
+                  'name',
+                  'image cover',
+                  'start location',
+                  'starts day',
+                  'difficulty',
+                  'duration',
+                  'guides',
+                  'max group size',
+                  'price',
+                  'ratings',
+                  'actions'
+                ]}
+              />
               <Table.Body
                 data={tours}
                 render={(tour: Tour) => <TourRow tour={tour} key={tour._id} />}

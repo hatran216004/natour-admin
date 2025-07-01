@@ -50,22 +50,7 @@ export default function Users() {
         <>
           <div className="overflow-y-auto flex-1">
             <Table>
-              <Table.Header>
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    user
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    role
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    actions
-                  </th>
-                </tr>
-              </Table.Header>
+              <Table.Header data={['user', 'status', 'role', 'actions']} />
               <Table.Body
                 data={users}
                 render={(user: User) => {

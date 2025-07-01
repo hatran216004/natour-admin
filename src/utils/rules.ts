@@ -32,13 +32,20 @@ export const bookingSchema = yup.object({
   special_requirements: yup.string()
 });
 
-// const locationsSchema = yup.object({
-//   coordinates: yup
-//     .array()
-//     .of(yup.number().required('Coordinates must a number')),
-//   description: yup.string().required('Location need a description'),
-//   day: yup.number().required('Location need a day')
-// });
+export const roleSchema = yup.object({
+  name: yup.string().required('This field is required'),
+  permissions: yup
+    .array()
+    .of(yup.string())
+    .min(1, 'Role need at least 1 permission')
+    .required('This field is required'),
+  description: yup.string().required('This field is required')
+});
+
+export const permissionSchema = yup.object({
+  name: yup.string().required('This field is required'),
+  description: yup.string().required('This field is required')
+});
 
 export const tourSchema = yup.object().shape({
   name: yup
@@ -157,3 +164,5 @@ export const tourSchema = yup.object().shape({
 export type UserSchema = yup.InferType<typeof userSchema>;
 export type TourSchema = yup.InferType<typeof tourSchema>;
 export type BookingSchema = yup.InferType<typeof bookingSchema>;
+export type RoleSchema = yup.InferType<typeof roleSchema>;
+export type PermissionSchema = yup.InferType<typeof permissionSchema>;

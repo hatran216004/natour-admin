@@ -13,7 +13,7 @@ export const bookingApi = {
   }: {
     id: string;
     body: {
-      status: string;
+      paymentStatus: string;
       participants: number;
       specialRequirements: string;
     };

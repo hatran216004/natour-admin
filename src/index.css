@@ -19,4 +19,8 @@
   .center {
     @apply flex items-center justify-center;
   }
+
+  button {
+    @apply focus:outline-none;
+  }
 }

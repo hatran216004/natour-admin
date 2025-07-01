@@ -1,8 +1,8 @@
 import { Permission } from './permission.type';
 
 export type Role = {
-  name: string;
+  name: 'lead-guide' | 'admin' | 'guide' | 'user';
   description: string;
   _id: string;
-  permisions: Permission[];
+  permissions: Permission[];
 };

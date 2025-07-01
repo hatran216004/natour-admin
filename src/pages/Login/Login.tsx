@@ -33,6 +33,10 @@ export default function Signup() {
     mutate(data, {
       onSuccess: (data) => {
         const user = data.data?.data.user;
+
+        if (user.role?.name === 'user')
+          return toast.error(`You don't have permission to access this route`);
+
         const token = data.data?.token as string;
         setAccessToken(token);
         setUser(user);

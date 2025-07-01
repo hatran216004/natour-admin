@@ -19,6 +19,7 @@ import {
 interface Props {
   children: React.ReactNode;
   renderPopover: React.ReactNode;
+  escapeKey?: boolean;
   className?: string;
   as?: ElementType;
   initialOpen?: boolean;
@@ -33,6 +34,7 @@ interface Props {
 const Popover = ({
   children,
   className,
+  escapeKey = true,
   renderPopover,
   as: Element = 'div',
   initialOpen,
@@ -52,7 +54,7 @@ const Popover = ({
   const focus = useFocus(context);
   const click = useClick(context);
   const dismiss = useDismiss(context, {
-    // capture: true // đóng menu khi menu item stopPropagation
+    escapeKey
   });
   const role = useRole(context, { role: 'tooltip' });
   const { getReferenceProps, getFloatingProps } = useInteractions([

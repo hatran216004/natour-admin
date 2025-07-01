@@ -1,7 +1,5 @@
 import classNames from 'classnames';
 import { PiDotsThreeVerticalBold } from 'react-icons/pi';
-import { MdDelete } from 'react-icons/md';
-import { LuPencilLine } from 'react-icons/lu';
 import { User } from '../../../types/user.type';
 import { SelectOptsType } from '../../../types/utils.type';
 import Popover from '../../../components/Popover/Popover';
@@ -11,6 +9,7 @@ import Modal from '../../../components/Modal';
 import DeleteUserContent from './DeleteUserContent';
 import UpdateUserContent from './UpdateUserContent';
 import UserListItem from '../../../components/UserListItem';
+import { Check, X } from 'lucide-react';
 
 export default function UserRow({
   user,
@@ -20,42 +19,55 @@ export default function UserRow({
   user: User;
 }) {
   return (
-    <tr
-      className="bg-white border-b border-gray-200 font-medium"
-      key={user._id}
-    >
-      <td scope="row" className="px-6 py-4">
-        <UserListItem email={user.email} name={user.name} photo={user.photo} />
+    <tr className="hover:bg-gray-50 transition-colors" key={user._id}>
+      <td scope="row" className="px-6 py-4 whitespace-nowrap">
+        <UserListItem
+          email={user.email}
+          name={user.name}
+          photo={user.photo}
+          lineClamp={false}
+        />
       </td>
-      <td className="px-6 py-4 text-center">
+      <td className="px-6 py-4 whitespace-nowrap">
         <span
           className={classNames(
-            'px-4 py-1 text-center rounded-xl capitalize text-white font-bold',
-            {
-              'bg-[#48BB78]': user.active,
-              'bg-[#CBD5E0]': !user.active
-            }
+            'capitalize inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors',
+            user.active
+              ? 'bg-green-100 text-green-800 hover:bg-green-200'
+              : 'bg-red-100 text-red-800 hover:bg-red-200'
           )}
         >
-          {user.active ? 'active' : 'inactive'}
+          {user.active ? (
+            <>
+              <Check className="h-3 w-3 mr-1" />
+              Active
+            </>
+          ) : (
+            <>
+              <X className="h-3 w-3 mr-1" />
+              Inactive
+            </>
+          )}
         </span>
       </td>
-      <td className="px-6 py-4 text-center capitalize text-main">
-        {user.role?.name}
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full capitalize">
+          {user.role?.name}
+        </span>
       </td>
-      <td className="px-6 py-4">
+      <td className="px-6 py-4 whitespace-nowrap">
         <Modal closeMethods={['button', 'escape']}>
           <Popover
-            className="center w-[38px] h-[30px] mx-auto hover:bg-gray-200 rounded-full"
+            className="center w-[38px] h-[30px] hover:bg-gray-200 rounded-full"
             placement="bottom-center"
             renderPopover={
               <Menu>
                 <Modal.Open name="delete-user">
-                  <MenuItem text="delete" icon={<MdDelete />} />
+                  <MenuItem text="delete" />
                 </Modal.Open>
 
                 <Modal.Open name="update-user">
-                  <MenuItem text="update" isLastItem icon={<LuPencilLine />} />
+                  <MenuItem text="update" isLastItem />
                 </Modal.Open>
               </Menu>
             }

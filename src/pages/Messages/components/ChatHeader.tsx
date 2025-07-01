@@ -4,7 +4,7 @@ import { useSelectedConversation } from '../../../store/messages.store';
 import Popover from '../../../components/Popover';
 import Menu from '../../../components/Menu';
 import MenuItem from '../../../components/MenuItem';
-import { MdDelete, MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import Modal from '../../../components/Modal';
 import DeleteConversationContent from './DeleteConversationContent';
 
@@ -49,30 +49,28 @@ export default function ChatHeader() {
         </div>
       </div>
 
-      <Modal>
-        <Popover
-          className="center w-[38px] h-[30px] hover:bg-gray-200 rounded-full"
-          placement="bottom-center"
-          renderPopover={
-            <Menu>
-              <Modal.Open name="delete-conversation">
-                <MenuItem
-                  className="border-b-slate-50"
-                  text="delete conversation"
-                  icon={<MdDelete />}
-                />
-              </Modal.Open>
-            </Menu>
-          }
-        >
-          <button className="center px-3 py-2 cursor-pointer">
-            <MdOutlineKeyboardArrowDown />
-          </button>
-        </Popover>
-        <Modal.Content openName="delete-conversation">
-          <DeleteConversationContent />
-        </Modal.Content>
-      </Modal>
+      {!selectedConversation.mock && (
+        <Modal>
+          <Popover
+            className="center w-[38px] h-[30px] hover:bg-gray-200 rounded-full"
+            placement="bottom-center"
+            renderPopover={
+              <Menu>
+                <Modal.Open name="delete-conversation">
+                  <MenuItem className="border-b-slate-50" text="delete" />
+                </Modal.Open>
+              </Menu>
+            }
+          >
+            <button className="center px-3 py-2 cursor-pointer">
+              <MdOutlineKeyboardArrowDown />
+            </button>
+          </Popover>
+          <Modal.Content openName="delete-conversation">
+            <DeleteConversationContent />
+          </Modal.Content>
+        </Modal>
+      )}
     </div>
   );
 }

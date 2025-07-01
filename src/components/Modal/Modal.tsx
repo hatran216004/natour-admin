@@ -214,7 +214,7 @@ function Content({
       tabIndex={-1}
       className={`${
         classNames ? classNames.join(' ') : ''
-      } bg-[#00000099] opacity-0 invisible fixed inset-0 z-50 transition-[opacity,visibility] duration-[0.3s]`}
+      } bg-[#00000099] opacity-0 invisible fixed inset-0 z-50 transition-[opacity,visibility] duration-[0.2s]`}
     >
       <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] p-4 max-h-full bg-white rounded-lg shadow-sm">
         {allowButtonClose && (

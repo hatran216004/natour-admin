@@ -12,6 +12,7 @@ export type AuthSuccessResponseApi<Data> = {
 export type ErrorResponseApi = {
   status: string;
   message: string;
+  statusCode: number;
 };
 
 export type SelectOptsType = {

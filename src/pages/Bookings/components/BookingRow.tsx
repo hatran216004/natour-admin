@@ -1,4 +1,3 @@
-import { MdDelete } from 'react-icons/md';
 import Menu from '../../../components/Menu';
 import Modal from '../../../components/Modal';
 import Popover from '../../../components/Popover';
@@ -7,32 +6,31 @@ import { Booking } from '../../../types/booking.type';
 import { formatCurrency, formatDate } from '../../../utils/helpers';
 import MenuItem from '../../../components/MenuItem';
 import { PiDotsThreeVerticalBold } from 'react-icons/pi';
-import { FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import DeleteBookingContent from './DeleteBookingContent';
 import classNames from 'classnames';
 import UpdateBookingContent from './UpdateBookingContent';
-import { LuPencilLine } from 'react-icons/lu';
+
 const cssStatus = {
   Paid: {
-    bg: 'bg-[#48BB78]',
-    text: 'text-white'
+    bg: 'bg-green-100 hover:bg-green-200',
+    text: 'text-green-800'
   },
   Unpaid: {
-    bg: 'bg-yellow-300',
-    text: 'text-yellow-600'
+    bg: 'bg-yellow-100 hover:bg-yellow-200',
+    text: 'text-yellow-800'
   },
   Failed: {
-    bg: 'bg-red-300',
-    text: 'text-red-600'
+    bg: 'bg-red-100 hover:bg-red-200',
+    text: 'text-red-800'
   },
   Refunded: {
-    bg: 'bg-blue-200',
-    text: 'text-blue-700'
+    bg: 'bg-blue-100 hover:bg-blue-200',
+    text: 'text-blue-800'
   },
   Cancelled: {
-    bg: 'bg-orange-200',
-    text: 'text-orange-700'
+    bg: 'bg-orange-100 hover:bg-orange-200',
+    text: 'text-orange-800'
   }
 };
 
@@ -40,8 +38,8 @@ export default function BookingRow({ booking }: { booking: Booking }) {
   const bookingStatus = cssStatus[booking.paymentStatus];
 
   return (
-    <tr className="bg-white border-b border-gray-200 text-nowrap font-medium capitalize">
-      <td className="px-6 py-4 ">{booking.tour.name}</td>
+    <tr className="hover:bg-gray-50 transition-colors">
+      <td className="px-6 py-4 whitespace-nowrap">{booking.tour.name}</td>
       <td scope="row" className="px-6 py-4">
         <UserListItem
           email={booking.user.email}
@@ -49,13 +47,11 @@ export default function BookingRow({ booking }: { booking: Booking }) {
           photo={booking.user.photo}
         />
       </td>
-      <td className="px-6 py-4 text-center">
+      <td className="px-6 py-4 whitespace-nowrap">
         {formatCurrency(booking.amount)}
       </td>
-      <td className="px-6 py-4 text-center capitalize text-main">
-        {booking.participants}
-      </td>
-      <td className="px-6 py-4">
+      <td className="px-6 py-4 whitespace-nowrap">{booking.participants}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <span
           className={classNames(
             'block px-4 py-1 text-center rounded-xl capitalize font-bold',
@@ -66,30 +62,36 @@ export default function BookingRow({ booking }: { booking: Booking }) {
           {booking.paymentStatus.split('-').join(' ')}
         </span>
       </td>
-      <td className="px-6 py-4">{booking.paymentMethod}</td>
+      <td className="px-6 py-4 whitespace-nowrap">{booking.paymentMethod}</td>
       <td className="px-6 py-4">
         <p className="line-clamp-2 text-wrap">{booking.specialRequirements}</p>
       </td>
-      <td className="px-6 py-4">{formatDate(booking.startDate, true)}</td>
-      <td className="px-6 py-4">{formatDate(booking.createdAt, true)}</td>
-      <td className="px-6 py-4">{formatDate(booking.updatedAt, true)}</td>
-      <td className="px-6 py-4">
+      <td className="px-6 py-4 whitespace-nowrap">
+        {formatDate(booking.startDate, true)}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {formatDate(booking.createdAt, true)}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {formatDate(booking.updatedAt, true)}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <Modal closeMethods={['button', 'escape']}>
           <Popover
-            className="center w-[38px] h-[30px] mx-auto hover:bg-gray-200 rounded-full"
+            className="center w-[38px] h-[30px] hover:bg-gray-200 rounded-full"
             placement="bottom-center"
             renderPopover={
               <Menu>
                 <Modal.Open name="delete-booking">
-                  <MenuItem text="delete" icon={<MdDelete />} />
+                  <MenuItem text="delete" />
                 </Modal.Open>
 
                 <Modal.Open name="update-booking">
-                  <MenuItem text="update" icon={<LuPencilLine />} />
+                  <MenuItem text="update" />
                 </Modal.Open>
 
                 <Link to={`${booking._id}`}>
-                  <MenuItem text="see detail" isLastItem icon={<FaEye />} />
+                  <MenuItem text="detail" isLastItem />
                 </Link>
               </Menu>
             }
@@ -115,8 +117,8 @@ export default function BookingRow({ booking }: { booking: Booking }) {
                 },
                 { label: 'Cancelled', value: 'Cancelled' },
                 {
-                  label: 'Rufunded',
-                  value: 'Rufunded'
+                  label: 'Refunded',
+                  value: 'Refunded'
                 }
               ]}
             />

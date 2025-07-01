@@ -71,7 +71,7 @@ export default function UpdateBookingContent({
         id: booking._id,
         body: {
           participants,
-          status,
+          paymentStatus: status,
           specialRequirements: special_requirements ? special_requirements : ''
         }
       });

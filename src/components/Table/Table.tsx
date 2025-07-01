@@ -7,21 +7,31 @@ type BodyProps = {
   render: (data: any) => React.ReactNode;
 };
 
-type Props = { className?: string; children: React.ReactNode };
+type Props = {
+  data?: string[];
+  className?: string;
+  children?: React.ReactNode;
+};
 
 export default function Table({ children }: Props) {
   return <table className="mt-3 w-full text-sm">{children}</table>;
 }
 
-function Header({ className, children }: Props) {
+function Header({ data, className }: Props) {
   return (
-    <thead
-      className={classNames(
-        'text-xs text-[#A0AEC0] uppercase bg-gray-50',
-        className
-      )}
-    >
-      {children}
+    <thead className={classNames('bg-gray-50', className)}>
+      <tr>
+        {data &&
+          data?.map((ele) => (
+            <th
+              key={ele}
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-nowrap"
+            >
+              {ele}
+            </th>
+          ))}
+      </tr>
     </thead>
   );
 }
@@ -39,7 +49,11 @@ function Body({ data, render }: BodyProps) {
         </tr>
       </tbody>
     );
-  return <tbody>{data.map(render)}</tbody>;
+  return (
+    <tbody className="bg-white divide-y divide-gray-200">
+      {data.map(render)}
+    </tbody>
+  );
 }
 
 Table.Header = Header;

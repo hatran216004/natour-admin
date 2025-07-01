@@ -27,43 +27,22 @@ export default function Bookings() {
         <>
           <div className="overflow-y-auto flex-1">
             <Table>
-              <Table.Header className="text-nowrap">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-center ">
-                    tour
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    user
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    amount
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    participants
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Payment method
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Special requirements
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Start date
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Created at
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Updated at
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Actions
-                  </th>
-                </tr>
-              </Table.Header>
+              <Table.Header
+                data={[
+                  'tour',
+                  'user',
+                  'amount',
+                  'participants',
+                  'status',
+                  'payment method',
+                  'Special requirements',
+                  'Start date',
+                  'created at',
+                  'updated at',
+                  'actions'
+                ]}
+              />
+
               <Table.Body
                 data={data?.data.data.bookings}
                 render={(booking: Booking) => (

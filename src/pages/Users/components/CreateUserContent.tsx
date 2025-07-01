@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 import { userApi } from '../../../services/user.api';
-import { SelectOptsType } from '../../../types/utils.type';
+import { ErrorResponseApi, SelectOptsType } from '../../../types/utils.type';
 import { type UserSchema, userSchema } from '../../../utils/rules';
 import Select from '../../../components/Select';
 import Row from '../../../components/Row';
@@ -59,8 +59,8 @@ export default function CreateUserContent({
       onCloseModal?.();
     },
     onError: (err) => {
-      const errorMessage = (err as AxiosError<{ message: string }>).response
-        ?.data?.message;
+      const errorMessage = (err as AxiosError<ErrorResponseApi>).response?.data
+        .message;
       toast.error(errorMessage || 'An error occurred');
     }
   });

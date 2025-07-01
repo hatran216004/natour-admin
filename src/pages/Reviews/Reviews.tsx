@@ -25,28 +25,16 @@ export default function Reviews() {
         <>
           <div className="overflow-y-auto flex-1">
             <Table>
-              <Table.Header>
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    user
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    review
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    rating
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    tour
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    created at
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    actions
-                  </th>
-                </tr>
-              </Table.Header>
+              <Table.Header
+                data={[
+                  'user',
+                  'review',
+                  'rating',
+                  'tour',
+                  'created at',
+                  'actions'
+                ]}
+              />
               <Table.Body
                 data={data?.reviews}
                 render={(review: Review) => {

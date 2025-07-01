@@ -6,6 +6,8 @@ import axios, {
 } from 'axios';
 import { useAuthStore } from '../store/auth.store';
 import { authApi } from '../services/auth.api';
+import { ErrorResponseApi } from '../types/utils.type';
+import toast from 'react-hot-toast';
 
 class Http {
   instance: AxiosInstance;
@@ -59,8 +61,12 @@ class Http {
     this.instance.interceptors.response.use(
       (response) => response, // Trả về response nếu không có lỗi
 
-      async (error: AxiosError<{ message: string }>) => {
+      async (error: AxiosError<ErrorResponseApi>) => {
         console.log(error);
+        if (error.response?.status === 403) {
+          toast.error(`You don't have permission to access this route`);
+          return Promise.reject(error);
+        }
         if (
           !error.response?.data?.message.includes(
             'Token invalid or has expired'
