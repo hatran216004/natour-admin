@@ -1,7 +1,7 @@
 import {
   Booking,
   BookingList,
-  BookingQueryConfig,
+  BookingListConfig,
   MonthlyRevenue,
   StatusRatio,
   TopBooked
@@ -10,7 +10,7 @@ import { SuccessResponseApi } from '../types/utils.type';
 import http from '../utils/http';
 
 export const bookingApi = {
-  getAllBookings: (params: BookingQueryConfig) =>
+  getAllBookings: (params: BookingListConfig) =>
     http.get<SuccessResponseApi<BookingList>>('/bookings', { params }),
   getBooking: (id: string) =>
     http.get<SuccessResponseApi<{ booking: Booking }>>(`/bookings/${id}`),

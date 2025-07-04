@@ -34,9 +34,14 @@ export default function StartDatePickerList({ value, onChange }: Props) {
       {value.map((item, index) => (
         <Row key={index} className="items-center space-x-4">
           <DayPicker
-            value={item.date}
-            onChange={(date) => handleChange(index, { date: date as Date })}
-            minDate={new Date()}
+            selected={item.date}
+            onSelect={(date) => {
+              if (date instanceof Date) {
+                handleChange(index, { date });
+              }
+            }}
+            fromDate={new Date()}
+            mode="single"
             className="text-sm"
           />
           <Input

@@ -60,7 +60,7 @@ export default function AvatarPreview({
     }
   });
 
-  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
+  const onCropComplete = (_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedPixels(croppedAreaPixels);
   };
 
