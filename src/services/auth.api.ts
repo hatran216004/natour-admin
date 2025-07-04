@@ -26,5 +26,10 @@ export const authApi = {
     password: string;
     passwordConfirm: string;
   }) =>
-    http.patch(`/users/reset-password/${token}`, { password, passwordConfirm })
+    http.patch(`/users/reset-password/${token}`, { password, passwordConfirm }),
+  updatePassword: (body: {
+    currentPassword: string;
+    newPassword: string;
+    passwordConfirm: string;
+  }) => http.patch('/users/update-my-password', body)
 };

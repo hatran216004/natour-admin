@@ -33,14 +33,14 @@ export default function FilterSelect({
   }
 
   return (
-    <form className="max-w-sm flex items-center gap-3">
+    <form className="flex items-center gap-3">
       <label className="text-main capitalize font-semibold text-nowrap">
         {label}
       </label>
       <select
         value={currentValue}
         onChange={handleOnChange}
-        className="bg-gray-50 border border-gray-300 text-main text-sm rounded-lg block w-full px-2.5 py-1.5 focus:outline-none"
+        className="bg-gray-50 min-w-[134px] border cap capitalize border-gray-300 text-main text-sm rounded-lg block w-full px-2.5 py-1.5 focus:outline-none"
       >
         <option key="all" className="capitalize" value="all">
           all

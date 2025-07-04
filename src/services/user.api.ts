@@ -32,5 +32,11 @@ export const userApi = {
   getAllGuides: () =>
     http.get<SuccessResponseApi<{ guides: User[] }>>('users/guides'),
   searchUsers: (key: string) =>
-    http.get<SuccessResponseApi<UsersList>>(`users/search/${key}`)
+    http.get<SuccessResponseApi<UsersList>>(`users/search/${key}`),
+  updateMe: (body: FormData) =>
+    http.patch<SuccessResponseApi<{ user: User }>>('/users/update-me', body, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
 };

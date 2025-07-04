@@ -1,3 +1,5 @@
+export type TourDifficulty = 'easy' | 'medium' | 'difficult';
+
 export type Tour = {
   startLocation: {
     type: 'Point';
@@ -11,7 +13,7 @@ export type Tour = {
   price: number;
   duration: number;
   maxGroupSize: number;
-  difficulty: 'easy' | 'medium' | 'difficult';
+  difficulty: TourDifficulty;
   ratingsAverage?: number;
   ratingsQuantity?: number;
   summary: string;
@@ -63,7 +65,7 @@ export type ToursListConfig = {
   price?: number;
   duration?: number;
   maxGroupSize?: number;
-  difficulty?: 'easy' | 'medium' | 'difficult';
+  difficulty?: TourDifficulty;
   ratingsAverage?: number;
   ratingsQuantity?: number;
   durationWeeks?: number;

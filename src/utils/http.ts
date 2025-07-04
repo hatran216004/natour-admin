@@ -47,7 +47,7 @@ class Http {
   }
 
   private setupInterceptors(): void {
-    // Interceptor request này chỉ chạy với những request mới được tạo ra sau khi refresh token thành công:
+    // Interceptor request này chỉ chạy với những request mới được tạo ra sau khi refresh token thành công
     this.instance.interceptors.request.use(
       (config) => {
         const accessToken = useAuthStore.getState().token;
@@ -62,18 +62,25 @@ class Http {
       (response) => response, // Trả về response nếu không có lỗi
 
       async (error: AxiosError<ErrorResponseApi>) => {
-        console.log(error);
+        const errorMessage = error.response?.data?.message.toLocaleLowerCase();
+        const passwordChanged = useAuthStore.getState().user?.passwordChangedAt;
+        if (
+          error.response?.status === 401 &&
+          passwordChanged &&
+          errorMessage?.includes('password')
+        ) {
+          toast.error('User recently change password! Please log in again.');
+          return Promise.reject(error);
+        }
+
         if (error.response?.status === 403) {
           toast.error(`You don't have permission to access this route`);
           return Promise.reject(error);
         }
-        if (
-          !error.response?.data?.message.includes(
-            'Token invalid or has expired'
-          )
-        ) {
+        if (!errorMessage?.includes('token')) {
           return Promise.reject(error);
         }
+        console.log(error);
 
         // Xử lý khi có lỗi
         const originalConfig = error.config as InternalAxiosRequestConfig & {
@@ -102,7 +109,6 @@ class Http {
             }>('/users/refresh-token');
             const newAccessToken = res.data.token;
             useAuthStore.getState().setAccessToken(newAccessToken);
-
             // request gốc (originalRequest) đã bị chặn lại trước khi interceptor request có cơ hội chạy => cần cập nhật header của originalConfig
             originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;
             this.processQueue(null, newAccessToken);

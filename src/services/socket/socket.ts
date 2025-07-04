@@ -60,7 +60,7 @@ class SocketService {
     });
 
     this.socket.on('connect_error', (error) => {
-      // console.error('Connection error:', error);
+      console.error('Connection error:', error);
     });
   }
 

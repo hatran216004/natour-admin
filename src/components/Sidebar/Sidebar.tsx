@@ -6,7 +6,7 @@ export default function Sidebar() {
   const location = useLocation();
 
   return (
-    <div className="h-full bg-white rounded-xl shadow-custom">
+    <div className="h-full bg-white rounded-xl shadow-sm">
       <div className="p-6 flex flex-col h-full">
         <div className="center gap-3">
           <img src={icons.logo_bold} alt="Logo" />

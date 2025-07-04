@@ -8,7 +8,7 @@ export default function Notification() {
       renderPopover={
         <div
           id="toast-notification"
-          className="min-w-[400px] py-4 text-gray-900 bg-white rounded-lg shadow-lg space-y-2"
+          className="min-w-[400px] py-4 text-gray-900 bg-white rounded-lg shadow-xl space-y-2"
           role="alert"
         >
           <div className="px-4 flex items-center mb-3">

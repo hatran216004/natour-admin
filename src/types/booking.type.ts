@@ -1,9 +1,18 @@
+import { type TourDifficulty } from './tour.type';
+
+export type BookingStatus =
+  | 'Unpaid'
+  | 'Paid'
+  | 'Cancelled'
+  | 'Refunded'
+  | 'Failed';
+
 export type Booking = {
   _id: string;
   tour: {
     _id: string;
     name: string;
-    difficulty: 'easy' | 'medium' | 'difficult';
+    difficulty: TourDifficulty;
     duration: number;
     durationWeeks: number;
     imageCover: string;
@@ -17,7 +26,7 @@ export type Booking = {
   };
   amount: number;
   participants: number;
-  paymentStatus: 'Unpaid' | 'Paid' | 'Cancelled' | 'Refunded' | 'Failed';
+  paymentStatus: BookingStatus;
   paymentMethod: string;
   orderCode: string;
   startDate: string;
@@ -33,4 +42,35 @@ export type BookingList = {
     total: number;
     totalPages: number;
   };
+};
+
+export type TopBooked = {
+  data: {
+    bookedCount: number;
+    revenue: number;
+    tourId: string;
+    tourName: string;
+    tourPrice: number;
+    photo: string;
+  }[];
+};
+
+export type MonthlyRevenue = {
+  data: {
+    totalRevenue: number;
+    totalBooking: number;
+    year: number;
+    month: number;
+  }[];
+};
+
+export type StatusRatio = {
+  data: {
+    count: number;
+    status: BookingStatus;
+  }[];
+};
+
+export type BookingListConfig = {
+  paymentStatus?: BookingStatus;
 };

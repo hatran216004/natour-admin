@@ -1,3 +1,5 @@
+export type UserStatus = 'online' | 'offline';
+
 export type User = {
   _id: string;
   name: string;
@@ -8,7 +10,8 @@ export type User = {
     name: string;
     _id: string;
   };
-  status?: 'online' | 'offline';
+  status?: UserStatus;
+  passwordChangedAt?: string;
 };
 
 export type UsersList = {

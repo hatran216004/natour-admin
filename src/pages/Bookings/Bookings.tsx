@@ -4,14 +4,25 @@ import Main from '../../components/Main';
 import Spinner from '../../components/Spinner';
 import Table from '../../components/Table';
 import { bookingApi } from '../../services/booking.api';
-import { Booking } from '../../types/booking.type';
+import { Booking, BookingListConfig } from '../../types/booking.type';
 import BookingRow from './components/BookingRow';
 import Pagination from '../../components/Pagination';
+import FilterSelect from '../../components/FilterSelect';
+import useQueryParms from '../../hooks/useQueryParms';
+import { isUndefined, omitBy } from 'lodash';
 
 export default function Bookings() {
+  const queryParams = useQueryParms<BookingListConfig>();
+  const queryConfig: BookingListConfig = omitBy(
+    {
+      paymentStatus: queryParams.paymentStatus
+    },
+    isUndefined
+  );
+
   const { isLoading, data } = useQuery({
-    queryKey: ['bookings'],
-    queryFn: bookingApi.getAllBookings
+    queryKey: ['bookings', queryConfig],
+    queryFn: () => bookingApi.getAllBookings(queryConfig)
   });
 
   return (
@@ -20,7 +31,34 @@ export default function Bookings() {
         <div className="flex items-center gap-6">
           <Heading heading="manage bookings" />
         </div>
-        {/* <UserOperator rolesOpts={rolesOpts} /> */}
+        <div className="flex items-center gap-8">
+          <FilterSelect
+            label="status"
+            options={[
+              {
+                label: 'Paid',
+                value: 'Paid'
+              },
+              {
+                label: 'Unpaid',
+                value: 'Unpaid'
+              },
+              {
+                label: 'Cancelled',
+                value: 'Cancelled'
+              },
+              {
+                label: 'Failed',
+                value: 'Failed'
+              },
+              {
+                label: 'Refunded',
+                value: 'Refunded'
+              }
+            ]}
+            field="paymentStatus"
+          />
+        </div>
       </div>
       {isLoading && <Spinner size="lg" center={true} />}
       {!isLoading && (

@@ -51,8 +51,8 @@ export const tourSchema = yup.object().shape({
   name: yup
     .string()
     .required('A tour must have a name')
-    .min(10, 'A tour name must have more or equals than 10 charactors')
-    .max(40, 'A tour name must have less or equals than 40 charactors'),
+    .min(10, 'A tour name must have more or equals than 10 characters')
+    .max(40, 'A tour name must have less or equals than 40 characters'),
   price: yup
     .number()
     .required('A tour must have a price')
@@ -161,8 +161,28 @@ export const tourSchema = yup.object().shape({
     .required('Tour need at least 1 guide')
 });
 
+export const updatePasswordSchema = yup.object({
+  currentPassword: yup
+    .string()
+    .required('This field is required')
+    .min(8, 'Password need at least 8 characters'),
+  newPassword: yup
+    .string()
+    .required('This field is required')
+    .min(8, 'Password need at least 8 characters'),
+  passwordConfirm: yup
+    .string()
+    .required('This field is required')
+    .min(8, 'Password need at least 8 characters')
+    .oneOf(
+      [yup.ref('newPassword')],
+      'New password and confirm password does not match'
+    )
+});
+
 export type UserSchema = yup.InferType<typeof userSchema>;
 export type TourSchema = yup.InferType<typeof tourSchema>;
 export type BookingSchema = yup.InferType<typeof bookingSchema>;
 export type RoleSchema = yup.InferType<typeof roleSchema>;
 export type PermissionSchema = yup.InferType<typeof permissionSchema>;
+export type UpdatePasswordSchema = yup.InferType<typeof updatePasswordSchema>;
