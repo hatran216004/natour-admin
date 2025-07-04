@@ -6,7 +6,7 @@ class SocketService {
   private url: string;
 
   constructor() {
-    this.url = 'http://localhost:3000';
+    this.url = import.meta.env.VITE_API_BASE_URL;
   }
 
   connect(token?: string | null): Socket {
