@@ -4,7 +4,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { type TourSchema, tourSchema } from '../../../utils/rules';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { DayPicker } from 'react-day-picker';
-import { SelectOptsType } from '../../../types/utils.type';
+import { ErrorResponseApi, SelectOptsType } from '../../../types/utils.type';
 import Row from '../../../components/Row';
 import Input from '../../../components/Input';
 import Button from '../../../components/Button';
@@ -52,8 +52,6 @@ export default function CreateTourContent({
       })) || [],
     [guides]
   );
-
-  console.log(guideOpts);
 
   const {
     register,
@@ -126,7 +124,7 @@ export default function CreateTourContent({
         onCloseModal?.();
       },
       onError: (err) => {
-        const errorMessage = (err as AxiosError<{ message: string }>).response
+        const errorMessage = (err as AxiosError<ErrorResponseApi>).response
           ?.data.message;
         toast.error(errorMessage || 'Something went wrong, try again later');
       }

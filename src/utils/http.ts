@@ -1,136 +1,271 @@
 import axios, {
   AxiosError,
-  AxiosRequestConfig,
   InternalAxiosRequestConfig,
-  type AxiosInstance
+  type AxiosInstance,
+  type AxiosResponse
 } from 'axios';
 import { useAuthStore } from '../store/auth.store';
 import { authApi } from '../services/auth.api';
 import { ErrorResponseApi } from '../types/utils.type';
 import toast from 'react-hot-toast';
 
+interface QueueItem {
+  resolve: (value: AxiosResponse) => void;
+  reject: (reason?: AxiosError) => void;
+  config: InternalAxiosRequestConfig;
+}
+
+interface RefreshTokenResponse {
+  status: string;
+  token: string;
+}
+
+enum HttpStatus {
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403
+}
+
+// Constants
+const DEFAULT_TIMEOUT = 10000;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL}/api/v2`
+  : 'http://localhost:3000/api/v2';
+
 class Http {
   instance: AxiosInstance;
   private isRefreshing = false;
-  private failedQueue: Array<{
-    resolve: (value: unknown) => void;
-    reject: (reason?: unknown) => void;
-    config: AxiosRequestConfig;
-  }> = [];
+  private failedQueue: QueueItem[] = [];
 
   constructor() {
     this.instance = axios.create({
-      baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/v2`,
-      timeout: 10000,
+      baseURL: API_BASE_URL,
+      timeout: DEFAULT_TIMEOUT,
       headers: { 'Content-Type': 'application/json' },
       withCredentials: true
     });
     this.setupInterceptors();
   }
 
-  // Xử lý lại các request bị chặn (do token hết hạn) sau khi nhận được token mới hoặc khi refresh token thất bại.
-  private processQueue(
-    error: AxiosError | null,
-    token: string | null = null
-  ): void {
+  /**
+   * Xử lý lại các request bị chặn sau khi refresh token
+   */
+  private processQueue(error: AxiosError | null, token?: string): void {
     this.failedQueue.forEach(({ resolve, reject, config }) => {
-      if (error) reject(error);
-      else {
-        if (config.headers && token) {
+      if (error) {
+        reject(error);
+      } else {
+        // Cập nhật token mới vào header
+        if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-        resolve(this.instance(config)); // gửi lại request ban đầu với token mới và hoàn thành Promise
+        // Gửi lại request với token mới
+        this.instance(config).then(resolve).catch(reject);
       }
     });
     this.failedQueue = [];
   }
 
+  /**
+   * Kiểm tra xem error có phải là token-related không
+   */
+  private isTokenError(error: AxiosError<ErrorResponseApi>): boolean {
+    const errorMessage = error.response?.data?.message?.toLowerCase();
+    return errorMessage!.includes('token') || errorMessage!.includes('jwt');
+  }
+
+  /**
+   * Xử lý lỗi password changed
+   */
+  private handlePasswordChangedError(
+    error: AxiosError<ErrorResponseApi>
+  ): boolean {
+    const errorMessage = error.response?.data?.message?.toLowerCase();
+    const passwordChanged = useAuthStore.getState().user?.passwordChangedAt;
+
+    if (
+      error.response?.status === HttpStatus.UNAUTHORIZED &&
+      passwordChanged &&
+      errorMessage?.includes('password')
+    ) {
+      toast.error('User recently changed password! Please log in again.');
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Xử lý lỗi forbidden
+   */
+  private handleForbiddenError(error: AxiosError): boolean {
+    if (error.response?.status === HttpStatus.FORBIDDEN) {
+      toast.error("You don't have permission to access this route");
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Thực hiện refresh token
+   */
+  private async refreshToken(): Promise<string> {
+    try {
+      const response = await this.instance.patch<RefreshTokenResponse>(
+        '/users/refresh-token'
+      );
+      const newAccessToken = response.data.token;
+
+      // Cập nhật token mới vào store
+      useAuthStore.getState().setAccessToken(newAccessToken);
+
+      return newAccessToken;
+    } catch (error) {
+      // Logout user khi refresh token thất bại
+      await this.logoutUser();
+      throw error;
+    }
+  }
+
+  /**
+   * Logout user và clean up
+   */
+  private async logoutUser(): Promise<void> {
+    const { setAccessToken, setUser } = useAuthStore.getState();
+    setUser(null);
+    setAccessToken(null);
+
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.warn('Logout API call failed:', error);
+    }
+  }
+
+  /**
+   * Xử lý refresh token cho request bị lỗi 401
+   */
+  private async handleTokenRefresh(
+    originalConfig: InternalAxiosRequestConfig & { _retry?: boolean }
+  ): Promise<AxiosResponse> {
+    // Nếu đang refresh token, thêm request vào queue
+    if (this.isRefreshing) {
+      return new Promise((resolve, reject) => {
+        this.failedQueue.push({
+          resolve,
+          reject,
+          config: originalConfig
+        });
+      });
+    }
+
+    // Đánh dấu request đã retry và bắt đầu refresh
+    originalConfig._retry = true;
+    this.isRefreshing = true;
+
+    try {
+      const newAccessToken = await this.refreshToken();
+
+      // Cập nhật token cho request gốc
+      originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;
+
+      // Xử lý các request trong queue
+      this.processQueue(null, newAccessToken);
+
+      // Gửi lại request gốc
+      return this.instance(originalConfig);
+    } catch (refreshError) {
+      // Xử lý tất cả requests trong queue với lỗi
+      this.processQueue(refreshError as AxiosError);
+      throw refreshError;
+    } finally {
+      this.isRefreshing = false;
+    }
+  }
+
   private setupInterceptors(): void {
-    // Interceptor request này chỉ chạy với những request mới được tạo ra sau khi refresh token thành công
+    // Request interceptor - thêm token vào header
     this.instance.interceptors.request.use(
-      (config) => {
+      (config: InternalAxiosRequestConfig) => {
         const accessToken = useAuthStore.getState().token;
-        if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+        if (accessToken && !config.headers.Authorization) {
+          config.headers.Authorization = `Bearer ${accessToken}`;
+        }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error: AxiosError) => Promise.reject(error)
     );
 
-    // Response interceptor - xử lý refresh token
+    // Response interceptor - xử lý errors và refresh token
     this.instance.interceptors.response.use(
-      (response) => response, // Trả về response nếu không có lỗi
-
+      (response: AxiosResponse) => response,
       async (error: AxiosError<ErrorResponseApi>) => {
-        const errorMessage = error.response?.data?.message.toLocaleLowerCase();
-        const passwordChanged = useAuthStore.getState().user?.passwordChangedAt;
-        if (
-          error.response?.status === 401 &&
-          passwordChanged &&
-          errorMessage?.includes('password')
-        ) {
-          toast.error('User recently change password! Please log in again.');
+        // Xử lý lỗi password changed
+        if (this.handlePasswordChangedError(error)) {
           return Promise.reject(error);
         }
 
-        if (error.response?.status === 403) {
-          toast.error(`You don't have permission to access this route`);
+        // Xử lý lỗi forbidden
+        if (this.handleForbiddenError(error)) {
           return Promise.reject(error);
         }
-        if (!errorMessage?.includes('token')) {
-          return Promise.reject(error);
-        }
-        console.log(error);
 
-        // Xử lý khi có lỗi
+        // Nếu không phải lỗi token-related, reject ngay
+        if (!this.isTokenError(error)) {
+          return Promise.reject(error);
+        }
+
         const originalConfig = error.config as InternalAxiosRequestConfig & {
-          _retry: boolean;
+          _retry?: boolean;
         };
-        // Kiểm tra nếu lỗi 401 và chưa thử refresh
-        if (error.response?.status === 401 && !originalConfig._retry) {
-          // Nếu đang refresh token, request bị lỗi sẽ được đẩy vào failedQueue
-          if (this.isRefreshing) {
-            return new Promise((resolve, reject) => {
-              this.failedQueue.push({
-                resolve,
-                reject,
-                config: originalConfig
-              });
-            });
-          }
 
-          originalConfig._retry = true;
-          this.isRefreshing = true;
-
+        // Xử lý refresh token cho lỗi 401
+        if (
+          error.response?.status === HttpStatus.UNAUTHORIZED &&
+          !originalConfig._retry
+        ) {
           try {
-            const res = await this.instance.patch<{
-              status: string;
-              token: string;
-            }>('/users/refresh-token');
-            const newAccessToken = res.data.token;
-            useAuthStore.getState().setAccessToken(newAccessToken);
-            // request gốc (originalRequest) đã bị chặn lại trước khi interceptor request có cơ hội chạy => cần cập nhật header của originalConfig
-            originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;
-            this.processQueue(null, newAccessToken);
-            // Xử lý các request trong hàng đợi
+            return await this.handleTokenRefresh(originalConfig);
           } catch (refreshError) {
-            // Xử lý khi refresh token thất bại
-            // Đăng xuất người dùng khi refresh token không hợp lệ
-            const { setAccessToken, setUser } = useAuthStore.getState();
-            setUser(null);
-            setAccessToken(null);
-            await authApi.logout();
-            this.processQueue(refreshError as AxiosError, null);
             return Promise.reject(refreshError);
-          } finally {
-            this.isRefreshing = false;
           }
         }
+
         return Promise.reject(error);
       }
     );
+  }
+
+  /**
+   * Thêm method để manually refresh token (nếu cần)
+   */
+  public async forceRefreshToken(): Promise<void> {
+    if (this.isRefreshing) {
+      return;
+    }
+
+    try {
+      await this.refreshToken();
+    } catch (error) {
+      console.error('Force refresh token failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Thêm method để clear queue (nếu cần)
+   */
+  public clearQueue(): void {
+    this.failedQueue = [];
+  }
+
+  /**
+   * Thêm method để get queue size (for debugging)
+   */
+  public getQueueSize(): number {
+    return this.failedQueue.length;
   }
 }
 
 const http = new Http().instance;
 
 export default http;
+export { Http };

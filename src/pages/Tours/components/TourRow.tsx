@@ -31,7 +31,9 @@ export default function TourRow({ tour }: { tour: Tour }) {
           ))}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">{tour.difficulty}</td>
+      <td className="px-6 py-4 whitespace-nowrap capitalize">
+        {tour.difficulty}
+      </td>
       <td className="px-6 py-4 whitespace-nowrap">{tour.duration} days</td>
       <td className="px-6 py-4 whitespace-nowrap">
         <p className="min-w-[200px] text-left">

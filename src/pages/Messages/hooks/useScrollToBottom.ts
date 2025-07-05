@@ -7,7 +7,6 @@ function useScrollToBottom<T extends HTMLElement = HTMLDivElement>() {
   const chatPanelRef = useRef<T>(null);
   const [newMessageCount, setNewMessageCount] = useState(0);
   const { messages } = useMessages();
-  const prevMessagesLength = useRef(messages.length);
 
   const isNearBottom = useCallback((threshold: number = 100) => {
     if (!chatPanelRef.current) return false;
@@ -16,19 +15,22 @@ function useScrollToBottom<T extends HTMLElement = HTMLDivElement>() {
     return scrollHeight - scrollTop - clientHeight < threshold;
   }, []);
 
-  const scrollToBottom = (smooth: boolean = true) => {
+  const scrollToBottom = useCallback((smooth: boolean = true) => {
     if (!chatPanelRef.current) return;
 
     chatPanelRef.current.scrollTo({
       top: chatPanelRef.current.scrollHeight,
       behavior: smooth ? 'smooth' : 'instant'
     });
-  };
+  }, []);
 
-  const scrollToNewMessages = (smooth: boolean = true) => {
-    scrollToBottom(smooth);
-    setNewMessageCount(0);
-  };
+  const scrollToNewMessages = useCallback(
+    (smooth: boolean = true) => {
+      scrollToBottom(smooth);
+      setNewMessageCount(0);
+    },
+    [scrollToBottom, setNewMessageCount]
+  );
 
   useEffect(() => {
     if (isNearBottom()) {
@@ -37,24 +39,19 @@ function useScrollToBottom<T extends HTMLElement = HTMLDivElement>() {
   }, [isNearBottom]);
 
   useEffect(() => {
-    const currentLength = messages.length;
-    const preLength = prevMessagesLength.current;
+    if (!messages.length) return;
 
-    if (preLength > 0 && currentLength > preLength) {
-      const newMessages = messages.slice(preLength);
-
+    const isMine = messages[messages.length - 1].sender === user?._id;
+    if (isMine) {
+      scrollToBottom();
+      setNewMessageCount(0);
+    } else {
       if (!isNearBottom()) {
-        const isNotMyMessage = newMessages[0].sender !== user?._id;
-        if (isNotMyMessage)
-          setNewMessageCount((pre) => pre + newMessages.length);
-      } else {
-        scrollToBottom();
-        setNewMessageCount(0);
+        const unSeenMessages = messages.filter((m) => !m.isSeen).length;
+        setNewMessageCount(unSeenMessages);
       }
     }
-
-    prevMessagesLength.current = currentLength;
-  }, [messages, user?._id, isNearBottom]);
+  }, [user?._id, messages, isNearBottom, setNewMessageCount, scrollToBottom]);
 
   return {
     chatPanelRef,
@@ -62,7 +59,8 @@ function useScrollToBottom<T extends HTMLElement = HTMLDivElement>() {
     hasNewMessages: newMessageCount > 0,
     isNearBottom,
     scrollToBottom,
-    scrollToNewMessages
+    scrollToNewMessages,
+    setNewMessageCount
   };
 }
 

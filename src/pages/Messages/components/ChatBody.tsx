@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useAuthStore } from '../../../store/auth.store';
 import {
@@ -18,15 +18,17 @@ import { conversationsApi } from '../../../services/conversation.api';
 import useChatEvents from '../../../hooks/useChatEvents';
 import NewMessageIndicator from './NewMessageIndicator';
 import useScrollToBottom from '../hooks/useScrollToBottom';
+import { CircleArrowDown } from 'lucide-react';
 
 export default function ChatBody() {
   const { user } = useAuthStore();
   const { socket } = useSocket();
+  const [showScrollDown, setShowScrollDown] = useState(false);
 
   const { tryEmitSeenMessage, tryEmitUnReadMessageCount } =
     useChatEvents(socket);
   const { isTyping } = useTyping();
-  const { messages, setMessages, getLastMessage } = useMessages();
+  const { messages, setMessages } = useMessages();
   const { selectedConversation } = useSelectedConversation();
 
   const isFirst = useRef(true);
@@ -37,9 +39,9 @@ export default function ChatBody() {
     newMessageCount,
     scrollToNewMessages,
     isNearBottom,
-    scrollToBottom
+    scrollToBottom,
+    setNewMessageCount
   } = useScrollToBottom();
-  const lastMessage = getLastMessage();
 
   const { data, isLoading } = useQuery({
     queryKey: ['messages-conversation', selectedConversation._id],
@@ -48,7 +50,13 @@ export default function ChatBody() {
   });
 
   useEffect(() => {
-    scrollToBottom(false);
+    const timeout = setTimeout(() => {
+      scrollToBottom(false);
+    }, 0);
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
   }, [selectedConversation._id, scrollToBottom]);
 
   useEffect(() => {
@@ -65,31 +73,45 @@ export default function ChatBody() {
   }, [data, setMessages]);
 
   useEffect(() => {
-    if (isTyping && isNearBottom()) scrollToBottom();
+    if (isTyping && isNearBottom()) {
+      scrollToBottom();
+    }
   }, [isTyping, isNearBottom, scrollToBottom]);
 
   useEffect(() => {
-    if (!messages.length || !lastMessage) return;
+    if (!messages.length) return;
+
+    const lastMessage = messages[messages.length - 1];
     const isNotMyMsg = lastMessage.sender !== user?._id;
-    const isSameConversation =
-      lastMessage.conversationId === selectedConversation._id;
 
     if (isNotMyMsg) {
-      if (isNearBottom() && isSameConversation) {
+      if (isNearBottom()) {
+        scrollToBottom(false);
         tryEmitSeenMessage();
-      } else {
+      }
+      if (!isNearBottom()) {
         tryEmitUnReadMessageCount();
       }
     }
   }, [
     messages,
-    lastMessage,
     user?._id,
-    selectedConversation._id,
     isNearBottom,
     tryEmitSeenMessage,
-    tryEmitUnReadMessageCount
+    tryEmitUnReadMessageCount,
+    scrollToBottom
   ]);
+
+  const handleScroll = () => {
+    if (isNearBottom()) {
+      tryEmitSeenMessage();
+      setNewMessageCount(0);
+      setShowScrollDown(false);
+    }
+
+    if (!isNearBottom(400) && !selectedConversation.mock)
+      setShowScrollDown(true);
+  };
 
   if (!selectedConversation.userId) {
     return (
@@ -98,9 +120,19 @@ export default function ChatBody() {
       </EmptyChatMessages>
     );
   }
-
   return (
     <div className="flex flex-col flex-1 relative">
+      {showScrollDown && (
+        <div
+          className="absolute text-primary bottom-32 right-20 z-10 cursor-pointer hover:opacity-80"
+          onClick={() => {
+            scrollToBottom();
+            setShowScrollDown(false);
+          }}
+        >
+          <CircleArrowDown size={30} />
+        </div>
+      )}
       <NewMessageIndicator
         newMessageCount={newMessageCount}
         onScrollToBottom={() => {
@@ -113,6 +145,7 @@ export default function ChatBody() {
       <div
         className="py-4 px-2 mx-2 h-[432px] max-h-full overflow-y-auto space-y-2 relative"
         ref={chatPanelRef}
+        onScroll={handleScroll}
       >
         {isLoading && !messages.length && <Loading />}
         {selectedConversation.mock && (

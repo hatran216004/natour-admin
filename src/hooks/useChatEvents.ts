@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   Message,
   MessagesSeenConfirmData,
@@ -17,7 +17,7 @@ function useChatEvents(socket: Socket | null) {
     useSocketHandlers(socket);
   const { updateMessages } = useMessages();
 
-  const tryEmitSeenMessage = () => {
+  const tryEmitSeenMessage = useCallback(() => {
     if (!socket || !user) return;
 
     const unSeenMessage = messages.filter(
@@ -37,9 +37,9 @@ function useChatEvents(socket: Socket | null) {
         socket.emit(CHAT_EVENTS.MARK_MESSAGES_AS_SEEN, seenData);
       }
     }
-  };
+  }, [messages, socket, user, getLastMessage]);
 
-  const tryEmitUnReadMessageCount = () => {
+  const tryEmitUnReadMessageCount = useCallback(() => {
     if (!socket || !user) return;
 
     const lastMessage = getLastMessage();
@@ -48,7 +48,7 @@ function useChatEvents(socket: Socket | null) {
         conversationId: lastMessage.conversationId,
         recipientId: user._id
       });
-  };
+  }, [socket, user, getLastMessage]);
 
   useEffect(() => {
     if (!socket) return;
